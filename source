@@ -18,12 +18,7 @@ local islandNames = {
 	"Mainland",
 	"Blizzard Island",
 	"Forest Island",
-	"Royal Island",
-	"Desert Island",
-	"Mountain Island",
-	"Jungle Island",
-	"Lunar Islands",
-	"Volcano Island",
+	
 }
 
 for i, name in ipairs(islandNames) do
@@ -72,6 +67,7 @@ local function followLoopFrom(folder)
 		while true do
 			local now = tick()
 
+			-- Switch target every 15 seconds or if lost
 			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
 				local targets = getValidTargets()
 				if #targets > 0 then
@@ -90,6 +86,7 @@ local function followLoopFrom(folder)
 				end
 			end
 
+			-- Follow current target
 			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
 				local targetHRP = currentTarget.HumanoidRootPart
 				local distance = (hrp.Position - targetHRP.Position).Magnitude
@@ -108,71 +105,18 @@ local function followLoopFrom(folder)
 	end)
 end
 
--- ✅ Folder References (Based on Place ID)
-local folders = {}
-local placeId = game.PlaceId
+-- ✅ Folder References
+local folders = {
+	workspace.Islands.Mainland,
+	workspace.Islands["Blizzard Island"],
+	workspace.Islands["Forest Island"],
 
-if placeId == 6989310863 then
-	-- Show only bu1 to bu3
-	for i = 4, 9 do
-		local btn = buttons["bu" .. i]
-		if btn then btn.Visible = false end
-	end
-
-	folders = {
-		workspace.Islands.Mainland,
-		workspace.Islands["Blizzard Island"],
-		workspace.Islands["Forest Island"],
-	}
-
-elseif placeId == 16948692582 then
-	-- Show only bu4 to bu6
-	for i = 1, 3 do
-		local btn = buttons["bu" .. i]
-		if btn then btn.Visible = false end
-	end
-	for i = 7, 9 do
-		local btn = buttons["bu" .. i]
-		if btn then btn.Visible = false end
-	end
-
-	folders = {
-		workspace.Islands["Royal Island"],
-		workspace.Islands["Desert Island"],
-		workspace.Islands["Mountain Island"],
-	}
-
-elseif placeId == 16948702874 then
-	-- Show only bu7 to bu9
-	for i = 1, 6 do
-		local btn = buttons["bu" .. i]
-		if btn then btn.Visible = false end
-	end
-
-	folders = {
-		workspace.Islands["Jungle Island"],
-		workspace.Islands["Lunar Islands"],
-		workspace.Islands["Volcano Island"],
-	}
-
-else
-	-- Default: show all buttons and use all folders
-	folders = {
-		workspace.Islands.Mainland,
-		workspace.Islands["Blizzard Island"],
-		workspace.Islands["Forest Island"],
-		workspace.Islands["Royal Island"],
-		workspace.Islands["Desert Island"],
-		workspace.Islands["Mountain Island"],
-		workspace.Islands["Jungle Island"],
-		workspace.Islands["Lunar Island"],
-		workspace.Islands["Volcano Island"],
-	}
-end
+}
 
 -- ✅ Button Activation
-for i, folder in ipairs(folders) do
+for i = 1, 9 do
 	local btn = buttons["bu" .. i]
+	local folder = folders[i]
 	if btn and folder then
 		btn.MouseButton1Click:Connect(function()
 			followLoopFrom(folder)
