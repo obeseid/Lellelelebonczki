@@ -22,7 +22,7 @@ local islandNames = {
 	"Desert Island",
 	"Mountain Island",
 	"Jungle Island",
-	"Lunar Island",
+	"Lunar Islands",
 	"Volcano Island",
 }
 
@@ -151,7 +151,7 @@ elseif placeId == 16948702874 then
 
 	folders = {
 		workspace.Islands["Jungle Island"],
-		workspace.Islands["Lunar Island"],
+		workspace.Islands["Lunar Islands"],
 		workspace.Islands["Volcano Island"],
 	}
 
