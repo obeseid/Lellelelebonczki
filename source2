@@ -17,6 +17,7 @@ Frame.BorderSizePixel = 0
 local islandNames = {
 	"Royal Island",
 	"Desert Island",
+    "Glacier Island",
 	"Mountain Island",
 	
 }
@@ -109,6 +110,7 @@ end
 local folders = {
 	workspace.Islands["Royal Island"],
 	workspace.Islands["Desert Island"],
+    workspace.Islands["Glacier Island"],
 	workspace.Islands["Mountain Island"],
 
 }
