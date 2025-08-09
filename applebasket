@@ -1,0 +1,65 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local basketContainer = workspace:WaitForChild("Misc"):WaitForChild("GoldenAppleBasket")
+
+-- Create simple GUI with a toggle button
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TeleportToggleGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 150, 0, 50)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+toggleButton.TextColor3 = Color3.new(1, 1, 1)
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.TextSize = 24
+toggleButton.Text = "Teleport"
+toggleButton.Parent = screenGui
+
+local enabled = false
+
+local function getTargetPart()
+	for _, obj in pairs(basketContainer:GetChildren()) do
+		if obj:IsA("Model") and obj.Name == "Golden Apple Basket" then
+			local basketFolder = obj:FindFirstChild("Basket")
+			if basketFolder then
+				local handles = basketFolder:FindFirstChild("Meshes/Fruit Basket_Handles")
+				if handles and handles:IsA("BasePart") then
+					return handles
+				end
+			end
+		end
+	end
+	return nil
+end
+
+local function teleportToPart(part)
+	if not character.PrimaryPart then
+		character.PrimaryPart = character:FindFirstChild("HumanoidRootPart")
+	end
+	if character.PrimaryPart then
+		character:SetPrimaryPartCFrame(part.CFrame + Vector3.new(0, 5, 0))
+	else
+		warn("No PrimaryPart found on character.")
+	end
+end
+
+toggleButton.MouseButton1Click:Connect(function()
+	enabled = not enabled
+	toggleButton.Text = "Teleport: " .. (enabled and "ON" or "OFF")
+
+	if enabled then
+		local targetPart = getTargetPart()
+		if targetPart then
+			teleportToPart(targetPart)
+		else
+			warn("Golden Apple Basket or target part not found.")
+		end
+		enabled = false
+		toggleButton.Text = "Teleport: OFF"
+	end
+end)
