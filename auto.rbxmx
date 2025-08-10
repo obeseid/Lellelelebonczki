@@ -1,0 +1,3156 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="ScreenGui" referent="RBXC3F1B733B8B04E8489F94BAF362105B5">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<bool name="AutoLocalize">true</bool>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="ClipToDeviceSafeArea">true</bool>
+			<bool name="DefinesCapabilities">false</bool>
+			<int name="DisplayOrder">0</int>
+			<bool name="Enabled">true</bool>
+			<string name="Name">TabGUI</string>
+			<bool name="ResetOnSpawn">true</bool>
+			<Ref name="RootLocalizationTable">null</Ref>
+			<token name="SafeAreaCompatibility">1</token>
+			<token name="ScreenInsets">2</token>
+			<token name="SelectionBehaviorDown">0</token>
+			<token name="SelectionBehaviorLeft">0</token>
+			<token name="SelectionBehaviorRight">0</token>
+			<token name="SelectionBehaviorUp">0</token>
+			<bool name="SelectionGroup">false</bool>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+			<token name="ZIndexBehavior">1</token>
+		</Properties>
+		<Item class="Frame" referent="RBX75F8177BBA20488B8BEC70D2842DA2F1">
+			<Properties>
+				<bool name="Active">false</bool>
+				<Vector2 name="AnchorPoint">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoLocalize">true</bool>
+				<token name="AutomaticSize">0</token>
+				<Color3 name="BackgroundColor3">
+					<R>0.309803933</R>
+					<G>0.905882359</G>
+					<B>0.145098045</B>
+				</Color3>
+				<float name="BackgroundTransparency">0</float>
+				<Color3 name="BorderColor3">
+					<R>0.580392182</R>
+					<G>0.964705884</G>
+					<B>1</B>
+				</Color3>
+				<token name="BorderMode">0</token>
+				<int name="BorderSizePixel">3</int>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="ClipsDescendants">false</bool>
+				<bool name="DefinesCapabilities">false</bool>
+				<bool name="Draggable">false</bool>
+				<bool name="Interactable">true</bool>
+				<int name="LayoutOrder">0</int>
+				<string name="Name">Pages</string>
+				<Ref name="NextSelectionDown">null</Ref>
+				<Ref name="NextSelectionLeft">null</Ref>
+				<Ref name="NextSelectionRight">null</Ref>
+				<Ref name="NextSelectionUp">null</Ref>
+				<UDim2 name="Position">
+					<XS>0.0910311192</XS>
+					<XO>0</XO>
+					<YS>0.12475998</YS>
+					<YO>0</YO>
+				</UDim2>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<float name="Rotation">0</float>
+				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
+				<UDim2 name="Size">
+					<XS>0</XS>
+					<XO>446</XO>
+					<YS>0</YS>
+					<YO>222</YO>
+				</UDim2>
+				<token name="SizeConstraint">0</token>
+				<int64 name="SourceAssetId">-1</int64>
+				<token name="Style">0</token>
+				<BinaryString name="Tags"></BinaryString>
+				<bool name="Visible">true</bool>
+				<int name="ZIndex">1</int>
+			</Properties>
+			<Item class="Frame" referent="RBXF24F527B7130435EBEFE77E0533B84B6">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>0.309803933</R>
+						<G>0.905882359</G>
+						<B>0.145098045</B>
+					</Color3>
+					<float name="BackgroundTransparency">0</float>
+					<Color3 name="BorderColor3">
+						<R>0.580392182</R>
+						<G>0.964705884</G>
+						<B>1</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">3</int>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="DefinesCapabilities">false</bool>
+					<bool name="Draggable">false</bool>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Page2</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>-0.002370039</XS>
+						<XO>0</XO>
+						<YS>-0.00461440906</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0</XS>
+						<XO>446</XO>
+						<YS>0</YS>
+						<YO>222</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<bool name="Visible">false</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="TextButton" referent="RBX2A90B7EE241D40048FB4F345B4C8A8BE">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882359</G>
+							<B>0.898039222</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">mi1</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.0695067272</XS>
+							<XO>0</XO>
+							<YS>0.252252251</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>130</XO>
+							<YS>0</YS>
+							<YO>53</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Remove lava (Volcano)</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBXF57635627CB04C6C9846A3E91AE194B5">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{D7F81683-59CE-41FE-8603-0F6030A5ED2B}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+button.MouseButton1Click:Connect(function()
+	workspace.Islands["Volcano Island"].LavaParts:Destroy()
+end)]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBX9C38DEB4A1844605B25BF59BA653E280">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882359</G>
+							<B>0.898039222</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">mi2</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.0695067272</XS>
+							<XO>0</XO>
+							<YS>0.644144118</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>130</XO>
+							<YS>0</YS>
+							<YO>53</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Check for apple basket</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBX3F1EED9B18104DC98219859AA9DBD4CF">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{E9533985-CB2C-4E94-813D-EA4452EBEDBE}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+button.MouseButton1Click:Connect(function()
+	
+	local Players = game:GetService("Players")
+	local player = Players.LocalPlayer
+	local character = player.Character or player.CharacterAdded:Wait()
+
+	local basketContainer = workspace:WaitForChild("Misc"):WaitForChild("GoldenAppleBasket")
+
+	local function getTargetPart()
+		for _, obj in pairs(basketContainer:GetChildren()) do
+			if obj:IsA("Model") and obj.Name == "Golden Apple Basket" then
+				local basketFolder = obj:FindFirstChild("Basket")
+				if basketFolder then
+					local handles = basketFolder:FindFirstChild("Meshes/Fruit Basket_Handles")
+					if handles and handles:IsA("BasePart") then
+						return handles
+					end
+				end
+			end
+		end
+		return nil
+	end
+
+	local function teleportToPart(part)
+		if not character.PrimaryPart then
+			character.PrimaryPart = character:FindFirstChild("HumanoidRootPart")
+		end
+		if character.PrimaryPart then
+			character:SetPrimaryPartCFrame(part.CFrame + Vector3.new(0, 5, 0))
+		else
+			warn("No PrimaryPart found on character.")
+		end
+	end
+
+	-- Example: instantly teleport when this script runs
+	local targetPart = getTargetPart()
+	if targetPart then
+		teleportToPart(targetPart)
+	else
+		warn("Golden Apple Basket or target part not found.")
+	end
+
+	
+end)]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBX72169791547448F8AFE9EE656E2F0F00">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882359</G>
+							<B>0.898039222</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">mi3</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.603139043</XS>
+							<XO>0</XO>
+							<YS>0.252252251</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>130</XO>
+							<YS>0</YS>
+							<YO>53</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Volcanic minerals farm</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBXCA861FEF209E4F3B8D663AEEAB77D5C7">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{0CDA1BA6-DE1B-4211-873C-885E6E71AA33}</string>
+							<ProtectedString name="Source"><![CDATA[-- LocalScript inside a TextButton (StarterGui > ScreenGui > TextButton)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local button = script.Parent
+local volcanoIsland = workspace:WaitForChild("Islands"):WaitForChild("Volcano Island")
+
+local scanning = false
+local teleporting = false -- prevents duplicate teleports during delay
+
+local function teleportAbove(rock)
+	if not rock:IsA("BasePart") then return end
+	local targetPos = rock.Position + Vector3.new(0, rock.Size.Y / 2 + 5, 0)
+	humanoidRootPart.CFrame = CFrame.new(targetPos)
+end
+
+local function scanForRocks()
+	while scanning do
+		if not teleporting then
+			for _, model in ipairs(volcanoIsland:GetChildren()) do
+				if model:IsA("Model") then
+					local rock = model:FindFirstChild("Rock")
+					if rock and rock:IsA("BasePart") and rock:FindFirstChildWhichIsA("ParticleEmitter") then
+						teleporting = true
+						button.Text = "Rock Found! Teleporting in 20s..."
+
+						task.delay(20, function()
+							if scanning and rock and rock.Parent and rock:IsA("BasePart") then
+								teleportAbove(rock)
+								button.Text = "Teleported!"
+							else
+								button.Text = "Rock Gone"
+							end
+							teleporting = false
+						end)
+
+						break -- only handle first found rock
+					end
+				end
+			end
+		end
+		task.wait(1) -- check every second
+	end
+end
+
+button.MouseButton1Click:Connect(function()
+	if not scanning then
+		scanning = true
+		button.Text = "Scanning..."
+		task.spawn(scanForRocks)
+	else
+		scanning = false
+		teleporting = false
+		button.Text = "Scan Stopped"
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBXE43CB1A1CD82453C96FFD83B977B4B06">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882359</G>
+							<B>0.898039222</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">mi4</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.603139043</XS>
+							<XO>0</XO>
+							<YS>0.644144118</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>130</XO>
+							<YS>0</YS>
+							<YO>53</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Training receipts farm</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBX67824C8CF62C4996A3A7D65AABBE87DC">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{1B8647FE-9208-467B-859C-C0B670DE306D}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+local player = game.Players.LocalPlayer
+
+local function teleportLoop()
+	local character = player.Character or player.CharacterAdded:Wait()
+	local hrp = character:WaitForChild("HumanoidRootPart")
+
+	local checkpointsFolder = workspace:WaitForChild("Islands")
+		:WaitForChild("Training Island")
+		:WaitForChild("Outdoor Arena")
+		:WaitForChild("DynamicArena")
+		:WaitForChild("_LAYOUT")
+		:WaitForChild("CheckpointActivity")
+		:WaitForChild("Routes")
+		:WaitForChild("Checkpoints")
+
+	local checkpointNames = {"1", "2", "3", "4"}
+
+	while true do
+		for _, name in ipairs(checkpointNames) do
+			local checkpoint = checkpointsFolder:FindFirstChild(name)
+			if checkpoint and checkpoint:IsA("BasePart") then
+				hrp.CFrame = checkpoint.CFrame
+			else
+				warn("Checkpoint named "..name.." not found or is not a part")
+			end
+			wait(2)
+		end
+	end
+end
+
+local teleporting = false
+
+button.MouseButton1Click:Connect(function()
+	if not teleporting then
+		teleporting = true
+		button.Text = "Teleporting..."
+		coroutine.wrap(teleportLoop)()
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+			</Item>
+			<Item class="Frame" referent="RBXC578FA07515B4F03A885DCAF19C11124">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>0.309803933</R>
+						<G>0.905882359</G>
+						<B>0.145098045</B>
+					</Color3>
+					<float name="BackgroundTransparency">0</float>
+					<Color3 name="BorderColor3">
+						<R>0.580392182</R>
+						<G>0.964705884</G>
+						<B>1</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">3</int>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="DefinesCapabilities">false</bool>
+					<bool name="Draggable">false</bool>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Page1</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>-0.002370039</XS>
+						<XO>0</XO>
+						<YS>-0.00461440906</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0</XS>
+						<XO>446</XO>
+						<YS>0</YS>
+						<YO>222</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="TextButton" referent="RBXE413B842F3FC4548A2DEE9B0F5A941E0">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882359</G>
+							<B>0.898039222</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu1</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.0515695065</XS>
+							<XO>0</XO>
+							<YS>0.379641891</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Mainland</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBXFBC1129C366647B292543EEC5246295C">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{CFEEE338-9703-48A3-A1FF-F6D6F77B07A3}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands.Mainland
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBX090A835F3F2D4326AB5F934DE1AC827B">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu2</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.0515695065</XS>
+							<XO>0</XO>
+							<YS>0.663425684</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Blizzard</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBXC535F970819D4B3FA5B410B3699AC3D1">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{5B9A0691-D2F2-4280-9CDD-F142334CA5BF}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Blizzard Island"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBX2B233F6588A24989B54EF073A711C438">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu3</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.0515695065</XS>
+							<XO>0</XO>
+							<YS>0.92919153</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Forest</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBX0ECEA882AB314ECA8B80735E119B1570">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{591396D6-224C-4CE2-B176-EAEC18C284AA}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Forest Island"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBXD7FF4EA05EEA4824AB3878DF122E1222">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu4</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.365470856</XS>
+							<XO>0</XO>
+							<YS>0.35261488</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Royal</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBXC4EBF4B8337046FF8B643E537C254E58">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{F91F91A3-D9EC-4028-B539-DB39E642C619}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Royal Island"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBX774CDAD9026E4011B5F4E88F5D739164">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu5</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.365470856</XS>
+							<XO>0</XO>
+							<YS>0.537299573</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Desert</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBX99CC357EF2F0409CAA4F36FC05E36F42">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{63DA92DE-EFA8-4E7C-8688-97CF6FF50F21}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Desert Island"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBXA45DE5BE114F4B9CA531CF4E85CFF360">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu6</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.365470856</XS>
+							<XO>0</XO>
+							<YS>0.740002334</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Glacier</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBX0DA1828503D940B38457D1CBF3EDB05C">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{0ADCA0D8-5DAA-4CB3-84DD-968BE5BD6828}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Glacier Island"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBXF57141EBA09F44DD92AA73E92BE2BEE5">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu7</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.365470856</XS>
+							<XO>0</XO>
+							<YS>0.956218541</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Mountain</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBX683E18600543409FAF9DDA4CCC047941">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{0B36FE6A-3782-44B5-AFA9-741E5C35DCE8}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Mountain Island"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBX5FEA24BD02604CCD9D9A0FA670E6EFD7">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu8</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.706278026</XS>
+							<XO>0</XO>
+							<YS>0.375137478</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Jungle</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBX1BF95D4DB45A48A4908474CA6A5332AC">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{7DAF11C5-917B-48C6-936B-419DF4A8CC33}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Jungle Island"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBX03C1C4E23338485AA157268BE71CC1F5">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu9</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.706278026</XS>
+							<XO>0</XO>
+							<YS>0.658921242</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Lunar</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBXCB20197E35464124B07C8A3C285541E8">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{F0328FF4-B3B6-4924-9824-24ABE10A0E25}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Lunar Islands"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="TextButton" referent="RBXB474411A8815471AB004CB06735B598E">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.623529434</R>
+							<G>0.905882418</G>
+							<B>0.898039281</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">3</int>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="DefinesCapabilities">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<Ref name="HoverHapticEffect">null</Ref>
+						<bool name="Interactable">true</bool>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">bu10</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<string name="OpenTypeFeatures"></string>
+						<UDim2 name="Position">
+							<XS>0.706278026</XS>
+							<XO>0</XO>
+							<YS>0.92919153</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="PressHapticEffect">null</Ref>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>87</XO>
+							<YS>0</YS>
+							<YO>-35</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Volcano</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="TextDirection">0</token>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">14</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="LocalScript" referent="RBX32CC8B9D801C468ABA234034FA42A1F7">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">LocalScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{2FF6FBFC-F343-4ED8-A719-06AD65790432}</string>
+							<ProtectedString name="Source"><![CDATA[local button = script.Parent
+
+local currentTask
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+
+		while true do
+			local now = tick()
+
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets()
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+
+					currentTarget = newTarget
+					lastSwitch = now
+
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Folder References
+local folders = {
+	workspace.Islands["Volcano Island"]
+}
+
+-- When the button is clicked, start following from each folder
+button.MouseButton1Click:Connect(function()
+	for _, folder in ipairs(folders) do
+		if folder and folder:IsA("Folder") then
+			followLoopFrom(folder)
+		else
+			warn("Invalid folder:", folder)
+		end
+	end
+end)
+]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+			</Item>
+		</Item>
+		<Item class="Frame" referent="RBX4D68B7CE6C074685B4F956E0BC1DE327">
+			<Properties>
+				<bool name="Active">false</bool>
+				<Vector2 name="AnchorPoint">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoLocalize">true</bool>
+				<token name="AutomaticSize">0</token>
+				<Color3 name="BackgroundColor3">
+					<R>1</R>
+					<G>1</G>
+					<B>1</B>
+				</Color3>
+				<float name="BackgroundTransparency">1</float>
+				<Color3 name="BorderColor3">
+					<R>0</R>
+					<G>0</G>
+					<B>0</B>
+				</Color3>
+				<token name="BorderMode">0</token>
+				<int name="BorderSizePixel">3</int>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="ClipsDescendants">false</bool>
+				<bool name="DefinesCapabilities">false</bool>
+				<bool name="Draggable">false</bool>
+				<bool name="Interactable">true</bool>
+				<int name="LayoutOrder">0</int>
+				<string name="Name">Topbar</string>
+				<Ref name="NextSelectionDown">null</Ref>
+				<Ref name="NextSelectionLeft">null</Ref>
+				<Ref name="NextSelectionRight">null</Ref>
+				<Ref name="NextSelectionUp">null</Ref>
+				<UDim2 name="Position">
+					<XS>0.0915384591</XS>
+					<XO>0</XO>
+					<YS>0.125628144</YS>
+					<YO>0</YO>
+				</UDim2>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<float name="Rotation">0</float>
+				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
+				<UDim2 name="Size">
+					<XS>0</XS>
+					<XO>446</XO>
+					<YS>0</YS>
+					<YO>34</YO>
+				</UDim2>
+				<token name="SizeConstraint">0</token>
+				<int64 name="SourceAssetId">-1</int64>
+				<token name="Style">0</token>
+				<BinaryString name="Tags"></BinaryString>
+				<bool name="Visible">true</bool>
+				<int name="ZIndex">1</int>
+			</Properties>
+			<Item class="TextButton" referent="RBX7EE11EF0D56B49A88C053C23BFCFA182">
+				<Properties>
+					<bool name="Active">true</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoButtonColor">true</bool>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>0.952941179</R>
+						<G>0.80392158</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">0</float>
+					<Color3 name="BorderColor3">
+						<R>0.580392182</R>
+						<G>0.964705884</G>
+						<B>1</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">3</int>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="DefinesCapabilities">false</bool>
+					<bool name="Draggable">false</bool>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
+					<Ref name="HoverHapticEffect">null</Ref>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<float name="LineHeight">1</float>
+					<string name="LocalizationMatchIdentifier"></string>
+					<string name="LocalizationMatchedSourceText"></string>
+					<int name="MaxVisibleGraphemes">-1</int>
+					<bool name="Modal">false</bool>
+					<string name="Name">Tab1</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<string name="OpenTypeFeatures"></string>
+					<UDim2 name="Position">
+						<XS>-1.71062666e-08</XS>
+						<XO>0</XO>
+						<YS>0</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="PressHapticEffect">null</Ref>
+					<bool name="RichText">false</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">true</bool>
+					<bool name="Selected">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0</XS>
+						<XO>222</XO>
+						<YS>0</YS>
+						<YO>34</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<string name="Text">Farm</string>
+					<Color3 name="TextColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<token name="TextDirection">0</token>
+					<bool name="TextScaled">true</bool>
+					<float name="TextSize">14</float>
+					<Color3 name="TextStrokeColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<float name="TextStrokeTransparency">1</float>
+					<float name="TextTransparency">0</float>
+					<token name="TextTruncate">0</token>
+					<bool name="TextWrapped">true</bool>
+					<token name="TextXAlignment">2</token>
+					<token name="TextYAlignment">1</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+			</Item>
+			<Item class="TextButton" referent="RBX0788D2AF48EB49AD95AD24C8BA2F7617">
+				<Properties>
+					<bool name="Active">true</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoButtonColor">true</bool>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>0.952941179</R>
+						<G>0.80392158</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">0</float>
+					<Color3 name="BorderColor3">
+						<R>0.580392182</R>
+						<G>0.964705884</G>
+						<B>1</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">3</int>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="DefinesCapabilities">false</bool>
+					<bool name="Draggable">false</bool>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
+					<Ref name="HoverHapticEffect">null</Ref>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<float name="LineHeight">1</float>
+					<string name="LocalizationMatchIdentifier"></string>
+					<string name="LocalizationMatchedSourceText"></string>
+					<int name="MaxVisibleGraphemes">-1</int>
+					<bool name="Modal">false</bool>
+					<string name="Name">Tab2</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<string name="OpenTypeFeatures"></string>
+					<UDim2 name="Position">
+						<XS>0.497757852</XS>
+						<XO>0</XO>
+						<YS>0</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="PressHapticEffect">null</Ref>
+					<bool name="RichText">false</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">true</bool>
+					<bool name="Selected">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0</XS>
+						<XO>222</XO>
+						<YS>0</YS>
+						<YO>34</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<string name="Text">Misc</string>
+					<Color3 name="TextColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<token name="TextDirection">0</token>
+					<bool name="TextScaled">true</bool>
+					<float name="TextSize">14</float>
+					<Color3 name="TextStrokeColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<float name="TextStrokeTransparency">1</float>
+					<float name="TextTransparency">0</float>
+					<token name="TextTruncate">0</token>
+					<bool name="TextWrapped">true</bool>
+					<token name="TextXAlignment">2</token>
+					<token name="TextYAlignment">1</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="LocalScript" referent="RBX9133C51A06C84D95884C2F45714E65FD">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<bool name="Disabled">false</bool>
+				<Content name="LinkedSource"><null></null></Content>
+				<string name="Name">LocalScript</string>
+				<token name="RunContext">0</token>
+				<string name="ScriptGuid">{9D431696-F66F-4399-AE2B-FAFBF8404266}</string>
+				<ProtectedString name="Source"><![CDATA[-- References
+local pagesFrame = script.Parent:WaitForChild("Pages")
+local page1 = pagesFrame:WaitForChild("Page1")
+local page2 = pagesFrame:WaitForChild("Page2")
+
+local topbar = script.Parent:WaitForChild("Topbar")
+local tab1 = topbar:WaitForChild("Tab1")
+local tab2 = topbar:WaitForChild("Tab2")
+
+-- Function to switch pages
+local function showPage(pageName)
+	-- Hide all pages first
+	for _, page in ipairs(pagesFrame:GetChildren()) do
+		if page:IsA("Frame") then
+			page.Visible = false
+		end
+	end
+
+	-- Show the chosen page
+	local chosenPage = pagesFrame:FindFirstChild(pageName)
+	if chosenPage then
+		chosenPage.Visible = true
+	end
+end
+
+-- Button connections
+tab1.MouseButton1Click:Connect(function()
+	showPage("Page1")
+end)
+
+tab2.MouseButton1Click:Connect(function()
+	showPage("Page2")
+end)
+]]></ProtectedString>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>
