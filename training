@@ -1,0 +1,63 @@
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TeleportGui"
+screenGui.Parent = playerGui
+
+-- Create TextButton
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 150, 0, 50)
+button.Position = UDim2.new(0, 20, 0, 20)
+button.BackgroundColor3 = Color3.fromRGB(95, 242, 27)
+button.TextColor3 = Color3.new(0, 0, 0)
+button.Font = Enum.Font.SourceSansBold
+button.TextSize = 24
+button.Text = "Start okay?"
+button.Parent = screenGui
+
+-- Teleport variables
+local teleporting = false
+local teleportCoroutine
+
+local function teleportLoop()
+	local character = player.Character or player.CharacterAdded:Wait()
+	local hrp = character:WaitForChild("HumanoidRootPart")
+
+	local checkpointsFolder = workspace:WaitForChild("Islands")
+		:WaitForChild("Training Island")
+		:WaitForChild("Outdoor Arena")
+		:WaitForChild("DynamicArena")
+		:WaitForChild("_LAYOUT")
+		:WaitForChild("CheckpointActivity")
+		:WaitForChild("Routes")
+		:WaitForChild("Checkpoints")
+
+	local checkpointNames = {"1", "2", "3", "4"}
+
+	while teleporting do
+		for _, name in ipairs(checkpointNames) do
+			if not teleporting then return end
+			local checkpoint = checkpointsFolder:FindFirstChild(name)
+			if checkpoint and checkpoint:IsA("BasePart") then
+				hrp.CFrame = checkpoint.CFrame
+			else
+				warn("Checkpoint named "..name.." not found or is not a part")
+			end
+			wait(2)
+		end
+	end
+end
+
+button.MouseButton1Click:Connect(function()
+	if not teleporting then
+		teleporting = true
+		button.Text = "okpa"
+		teleportCoroutine = coroutine.create(teleportLoop)
+		coroutine.resume(teleportCoroutine)
+	else
+		teleporting = false
+		button.Text = "Start Teleport"
+	end
+end)
