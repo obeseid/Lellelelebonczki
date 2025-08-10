@@ -1,0 +1,1514 @@
+--[=[
+ d888b  db    db d888888b      .d888b.      db      db    db  .d8b.  
+88' Y8b 88    88   `88'        VP  `8D      88      88    88 d8' `8b 
+88      88    88    88            odD'      88      88    88 88ooo88 
+88  ooo 88    88    88          .88'        88      88    88 88~~~88 
+88. ~8~ 88b  d88   .88.        j88.         88booo. 88b  d88 88   88    @uniquadev
+ Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER 
+]=]
+
+-- Instances: 36 | Scripts: 15 | Modules: 0 | Tags: 0
+local G2L = {};
+
+-- StarterGui.TabGUI
+G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
+G2L["1"]["Enabled"] = false;
+G2L["1"]["Name"] = [[TabGUI]];
+G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
+
+
+-- StarterGui.TabGUI.Pages
+G2L["2"] = Instance.new("Frame", G2L["1"]);
+G2L["2"]["BorderSizePixel"] = 3;
+G2L["2"]["BackgroundColor3"] = Color3.fromRGB(80, 232, 38);
+G2L["2"]["Size"] = UDim2.new(0, 446, 0, 222);
+G2L["2"]["Position"] = UDim2.new(0.09103, 0, 0.12476, 0);
+G2L["2"]["BorderColor3"] = Color3.fromRGB(149, 247, 255);
+G2L["2"]["Name"] = [[Pages]];
+
+
+-- StarterGui.TabGUI.Pages.Page2
+G2L["3"] = Instance.new("Frame", G2L["2"]);
+G2L["3"]["Visible"] = false;
+G2L["3"]["BorderSizePixel"] = 3;
+G2L["3"]["BackgroundColor3"] = Color3.fromRGB(80, 232, 38);
+G2L["3"]["Size"] = UDim2.new(0, 446, 0, 222);
+G2L["3"]["Position"] = UDim2.new(-0.00237, 0, -0.00461, 0);
+G2L["3"]["BorderColor3"] = Color3.fromRGB(149, 247, 255);
+G2L["3"]["Name"] = [[Page2]];
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi1
+G2L["4"] = Instance.new("TextButton", G2L["3"]);
+G2L["4"]["TextWrapped"] = true;
+G2L["4"]["BorderSizePixel"] = 3;
+G2L["4"]["TextSize"] = 14;
+G2L["4"]["TextScaled"] = true;
+G2L["4"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["4"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["4"]["Size"] = UDim2.new(0, 130, 0, 53);
+G2L["4"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4"]["Text"] = [[Remove lava (Volcano)]];
+G2L["4"]["Name"] = [[mi1]];
+G2L["4"]["Position"] = UDim2.new(0.06951, 0, 0.25225, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi1.LocalScript
+G2L["5"] = Instance.new("LocalScript", G2L["4"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi2
+G2L["6"] = Instance.new("TextButton", G2L["3"]);
+G2L["6"]["TextWrapped"] = true;
+G2L["6"]["BorderSizePixel"] = 3;
+G2L["6"]["TextSize"] = 14;
+G2L["6"]["TextScaled"] = true;
+G2L["6"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["6"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["6"]["Size"] = UDim2.new(0, 130, 0, 53);
+G2L["6"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6"]["Text"] = [[Check for apple basket]];
+G2L["6"]["Name"] = [[mi2]];
+G2L["6"]["Position"] = UDim2.new(0.06951, 0, 0.64414, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi2.LocalScript
+G2L["7"] = Instance.new("LocalScript", G2L["6"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi3
+G2L["8"] = Instance.new("TextButton", G2L["3"]);
+G2L["8"]["TextWrapped"] = true;
+G2L["8"]["BorderSizePixel"] = 3;
+G2L["8"]["TextSize"] = 14;
+G2L["8"]["TextScaled"] = true;
+G2L["8"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["8"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["8"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["8"]["Size"] = UDim2.new(0, 130, 0, 53);
+G2L["8"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["8"]["Text"] = [[Volcanic]];
+G2L["8"]["Name"] = [[mi3]];
+G2L["8"]["Position"] = UDim2.new(0.60314, 0, 0.25225, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi3.LocalScript
+G2L["9"] = Instance.new("LocalScript", G2L["8"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi4
+G2L["a"] = Instance.new("TextButton", G2L["3"]);
+G2L["a"]["TextWrapped"] = true;
+G2L["a"]["BorderSizePixel"] = 3;
+G2L["a"]["TextSize"] = 14;
+G2L["a"]["TextScaled"] = true;
+G2L["a"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["a"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["a"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["a"]["Size"] = UDim2.new(0, 130, 0, 53);
+G2L["a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["a"]["Text"] = [[training]];
+G2L["a"]["Name"] = [[mi4]];
+G2L["a"]["Position"] = UDim2.new(0.60314, 0, 0.64414, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi4.LocalScript
+G2L["b"] = Instance.new("LocalScript", G2L["a"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1
+G2L["c"] = Instance.new("Frame", G2L["2"]);
+G2L["c"]["BorderSizePixel"] = 3;
+G2L["c"]["BackgroundColor3"] = Color3.fromRGB(80, 232, 38);
+G2L["c"]["Size"] = UDim2.new(0, 446, 0, 222);
+G2L["c"]["Position"] = UDim2.new(-0.00237, 0, -0.00461, 0);
+G2L["c"]["BorderColor3"] = Color3.fromRGB(149, 247, 255);
+G2L["c"]["Name"] = [[Page1]];
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu1
+G2L["d"] = Instance.new("TextButton", G2L["c"]);
+G2L["d"]["TextWrapped"] = true;
+G2L["d"]["BorderSizePixel"] = 3;
+G2L["d"]["TextSize"] = 14;
+G2L["d"]["TextScaled"] = true;
+G2L["d"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["d"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["d"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["d"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["d"]["Text"] = [[Mainland]];
+G2L["d"]["Name"] = [[bu1]];
+G2L["d"]["Position"] = UDim2.new(0.05157, 0, 0.37964, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu1.LocalScript
+G2L["e"] = Instance.new("LocalScript", G2L["d"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu2
+G2L["f"] = Instance.new("TextButton", G2L["c"]);
+G2L["f"]["TextWrapped"] = true;
+G2L["f"]["BorderSizePixel"] = 3;
+G2L["f"]["TextSize"] = 14;
+G2L["f"]["TextScaled"] = true;
+G2L["f"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["f"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["f"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["f"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["f"]["Text"] = [[Blizzard]];
+G2L["f"]["Name"] = [[bu2]];
+G2L["f"]["Position"] = UDim2.new(0.05157, 0, 0.66343, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu2.LocalScript
+G2L["10"] = Instance.new("LocalScript", G2L["f"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu3
+G2L["11"] = Instance.new("TextButton", G2L["c"]);
+G2L["11"]["TextWrapped"] = true;
+G2L["11"]["BorderSizePixel"] = 3;
+G2L["11"]["TextSize"] = 14;
+G2L["11"]["TextScaled"] = true;
+G2L["11"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["11"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["11"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["11"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["11"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["11"]["Text"] = [[Forest]];
+G2L["11"]["Name"] = [[bu3]];
+G2L["11"]["Position"] = UDim2.new(0.05157, 0, 0.92919, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu3.LocalScript
+G2L["12"] = Instance.new("LocalScript", G2L["11"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu4
+G2L["13"] = Instance.new("TextButton", G2L["c"]);
+G2L["13"]["TextWrapped"] = true;
+G2L["13"]["BorderSizePixel"] = 3;
+G2L["13"]["TextSize"] = 14;
+G2L["13"]["TextScaled"] = true;
+G2L["13"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["13"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["13"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["13"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["13"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["13"]["Text"] = [[Royal]];
+G2L["13"]["Name"] = [[bu4]];
+G2L["13"]["Position"] = UDim2.new(0.36547, 0, 0.35261, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu4.LocalScript
+G2L["14"] = Instance.new("LocalScript", G2L["13"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu5
+G2L["15"] = Instance.new("TextButton", G2L["c"]);
+G2L["15"]["TextWrapped"] = true;
+G2L["15"]["BorderSizePixel"] = 3;
+G2L["15"]["TextSize"] = 14;
+G2L["15"]["TextScaled"] = true;
+G2L["15"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["15"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["15"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["15"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["15"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["15"]["Text"] = [[Desert]];
+G2L["15"]["Name"] = [[bu5]];
+G2L["15"]["Position"] = UDim2.new(0.36547, 0, 0.5373, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu5.LocalScript
+G2L["16"] = Instance.new("LocalScript", G2L["15"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu6
+G2L["17"] = Instance.new("TextButton", G2L["c"]);
+G2L["17"]["TextWrapped"] = true;
+G2L["17"]["BorderSizePixel"] = 3;
+G2L["17"]["TextSize"] = 14;
+G2L["17"]["TextScaled"] = true;
+G2L["17"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["17"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["17"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["17"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["17"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["17"]["Text"] = [[Glacier]];
+G2L["17"]["Name"] = [[bu6]];
+G2L["17"]["Position"] = UDim2.new(0.36547, 0, 0.74, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu6.LocalScript
+G2L["18"] = Instance.new("LocalScript", G2L["17"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu7
+G2L["19"] = Instance.new("TextButton", G2L["c"]);
+G2L["19"]["TextWrapped"] = true;
+G2L["19"]["BorderSizePixel"] = 3;
+G2L["19"]["TextSize"] = 14;
+G2L["19"]["TextScaled"] = true;
+G2L["19"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["19"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["19"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["19"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["19"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["19"]["Text"] = [[Mountain]];
+G2L["19"]["Name"] = [[bu7]];
+G2L["19"]["Position"] = UDim2.new(0.36547, 0, 0.95622, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu7.LocalScript
+G2L["1a"] = Instance.new("LocalScript", G2L["19"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu8
+G2L["1b"] = Instance.new("TextButton", G2L["c"]);
+G2L["1b"]["TextWrapped"] = true;
+G2L["1b"]["BorderSizePixel"] = 3;
+G2L["1b"]["TextSize"] = 14;
+G2L["1b"]["TextScaled"] = true;
+G2L["1b"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1b"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["1b"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["1b"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["1b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1b"]["Text"] = [[Jungle]];
+G2L["1b"]["Name"] = [[bu8]];
+G2L["1b"]["Position"] = UDim2.new(0.70628, 0, 0.37514, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu8.LocalScript
+G2L["1c"] = Instance.new("LocalScript", G2L["1b"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu9
+G2L["1d"] = Instance.new("TextButton", G2L["c"]);
+G2L["1d"]["TextWrapped"] = true;
+G2L["1d"]["BorderSizePixel"] = 3;
+G2L["1d"]["TextSize"] = 14;
+G2L["1d"]["TextScaled"] = true;
+G2L["1d"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1d"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["1d"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["1d"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["1d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1d"]["Text"] = [[Lunar]];
+G2L["1d"]["Name"] = [[bu9]];
+G2L["1d"]["Position"] = UDim2.new(0.70628, 0, 0.65892, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu9.LocalScript
+G2L["1e"] = Instance.new("LocalScript", G2L["1d"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu10
+G2L["1f"] = Instance.new("TextButton", G2L["c"]);
+G2L["1f"]["TextWrapped"] = true;
+G2L["1f"]["BorderSizePixel"] = 3;
+G2L["1f"]["TextSize"] = 14;
+G2L["1f"]["TextScaled"] = true;
+G2L["1f"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1f"]["BackgroundColor3"] = Color3.fromRGB(160, 232, 230);
+G2L["1f"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["1f"]["Size"] = UDim2.new(0, 87, 0, -35);
+G2L["1f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1f"]["Text"] = [[Volcano]];
+G2L["1f"]["Name"] = [[bu10]];
+G2L["1f"]["Position"] = UDim2.new(0.70628, 0, 0.92919, 0);
+
+
+-- StarterGui.TabGUI.Pages.Page1.bu10.LocalScript
+G2L["20"] = Instance.new("LocalScript", G2L["1f"]);
+
+
+
+-- StarterGui.TabGUI.Topbar
+G2L["21"] = Instance.new("Frame", G2L["1"]);
+G2L["21"]["BorderSizePixel"] = 3;
+G2L["21"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["21"]["Size"] = UDim2.new(0, 446, 0, 34);
+G2L["21"]["Position"] = UDim2.new(0.09154, 0, 0.12563, 0);
+G2L["21"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["21"]["Name"] = [[Topbar]];
+G2L["21"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.TabGUI.Topbar.Tab1
+G2L["22"] = Instance.new("TextButton", G2L["21"]);
+G2L["22"]["TextWrapped"] = true;
+G2L["22"]["BorderSizePixel"] = 3;
+G2L["22"]["TextSize"] = 14;
+G2L["22"]["TextScaled"] = true;
+G2L["22"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["22"]["BackgroundColor3"] = Color3.fromRGB(244, 206, 255);
+G2L["22"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["22"]["Size"] = UDim2.new(0, 222, 0, 34);
+G2L["22"]["BorderColor3"] = Color3.fromRGB(149, 247, 255);
+G2L["22"]["Text"] = [[test]];
+G2L["22"]["Name"] = [[Tab1]];
+G2L["22"]["Position"] = UDim2.new(-0, 0, 0, 0);
+
+
+-- StarterGui.TabGUI.Topbar.Tab2
+G2L["23"] = Instance.new("TextButton", G2L["21"]);
+G2L["23"]["TextWrapped"] = true;
+G2L["23"]["BorderSizePixel"] = 3;
+G2L["23"]["TextSize"] = 14;
+G2L["23"]["TextScaled"] = true;
+G2L["23"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["23"]["BackgroundColor3"] = Color3.fromRGB(244, 206, 255);
+G2L["23"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["23"]["Size"] = UDim2.new(0, 222, 0, 34);
+G2L["23"]["BorderColor3"] = Color3.fromRGB(149, 247, 255);
+G2L["23"]["Text"] = [[Misc]];
+G2L["23"]["Name"] = [[Tab2]];
+G2L["23"]["Position"] = UDim2.new(0.49776, 0, 0, 0);
+
+
+-- StarterGui.TabGUI.LocalScript
+G2L["24"] = Instance.new("LocalScript", G2L["1"]);
+
+
+
+-- StarterGui.TabGUI.Pages.Page2.mi1.LocalScript
+local function C_5()
+local script = G2L["5"];
+	local button = script.Parent
+	
+	button.MouseButton1Click:Connect(function()
+		workspace.Islands["Volcano Island"].LavaParts:Destroy()
+	end)
+end;
+task.spawn(C_5);
+-- StarterGui.TabGUI.Pages.Page2.mi2.LocalScript
+local function C_7()
+local script = G2L["7"];
+	local button = script.Parent
+	button.MouseButton1Click:Connect(function()
+		
+		local Players = game:GetService("Players")
+		local player = Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+	
+		local basketContainer = workspace:WaitForChild("Misc"):WaitForChild("GoldenAppleBasket")
+	
+		local function getTargetPart()
+			for _, obj in pairs(basketContainer:GetChildren()) do
+				if obj:IsA("Model") and obj.Name == "Golden Apple Basket" then
+					local basketFolder = obj:FindFirstChild("Basket")
+					if basketFolder then
+						local handles = basketFolder:FindFirstChild("Meshes/Fruit Basket_Handles")
+						if handles and handles:IsA("BasePart") then
+							return handles
+						end
+					end
+				end
+			end
+			return nil
+		end
+	
+		local function teleportToPart(part)
+			if not character.PrimaryPart then
+				character.PrimaryPart = character:FindFirstChild("HumanoidRootPart")
+			end
+			if character.PrimaryPart then
+				character:SetPrimaryPartCFrame(part.CFrame + Vector3.new(0, 5, 0))
+			else
+				warn("No PrimaryPart found on character.")
+			end
+		end
+	
+		-- Example: instantly teleport when this script runs
+		local targetPart = getTargetPart()
+		if targetPart then
+			teleportToPart(targetPart)
+		else
+			warn("Golden Apple Basket or target part not found.")
+		end
+	
+		
+	end)
+end;
+task.spawn(C_7);
+-- StarterGui.TabGUI.Pages.Page2.mi3.LocalScript
+local function C_9()
+local script = G2L["9"];
+	-- LocalScript inside a TextButton (StarterGui > ScreenGui > TextButton)
+	
+	local Players = game:GetService("Players")
+	local player = Players.LocalPlayer
+	local character = player.Character or player.CharacterAdded:Wait()
+	local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+	
+	local button = script.Parent
+	local volcanoIsland = workspace:WaitForChild("Islands"):WaitForChild("Volcano Island")
+	
+	local scanning = false
+	local teleporting = false -- prevents duplicate teleports during delay
+	
+	local function teleportAbove(rock)
+		if not rock:IsA("BasePart") then return end
+		local targetPos = rock.Position + Vector3.new(0, rock.Size.Y / 2 + 5, 0)
+		humanoidRootPart.CFrame = CFrame.new(targetPos)
+	end
+	
+	local function scanForRocks()
+		while scanning do
+			if not teleporting then
+				for _, model in ipairs(volcanoIsland:GetChildren()) do
+					if model:IsA("Model") then
+						local rock = model:FindFirstChild("Rock")
+						if rock and rock:IsA("BasePart") and rock:FindFirstChildWhichIsA("ParticleEmitter") then
+							teleporting = true
+							button.Text = "Rock Found! Teleporting in 20s..."
+	
+							task.delay(20, function()
+								if scanning and rock and rock.Parent and rock:IsA("BasePart") then
+									teleportAbove(rock)
+									button.Text = "Teleported!"
+								else
+									button.Text = "Rock Gone"
+								end
+								teleporting = false
+							end)
+	
+							break -- only handle first found rock
+						end
+					end
+				end
+			end
+			task.wait(1) -- check every second
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		if not scanning then
+			scanning = true
+			button.Text = "Scanning..."
+			task.spawn(scanForRocks)
+		else
+			scanning = false
+			teleporting = false
+			button.Text = "Scan Stopped"
+		end
+	end)
+	
+end;
+task.spawn(C_9);
+-- StarterGui.TabGUI.Pages.Page2.mi4.LocalScript
+local function C_b()
+local script = G2L["b"];
+	local button = script.Parent
+	local player = game.Players.LocalPlayer
+	
+	local function teleportLoop()
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:WaitForChild("HumanoidRootPart")
+	
+		local checkpointsFolder = workspace:WaitForChild("Islands")
+			:WaitForChild("Training Island")
+			:WaitForChild("Outdoor Arena")
+			:WaitForChild("DynamicArena")
+			:WaitForChild("_LAYOUT")
+			:WaitForChild("CheckpointActivity")
+			:WaitForChild("Routes")
+			:WaitForChild("Checkpoints")
+	
+		local checkpointNames = {"1", "2", "3", "4"}
+	
+		while true do
+			for _, name in ipairs(checkpointNames) do
+				local checkpoint = checkpointsFolder:FindFirstChild(name)
+				if checkpoint and checkpoint:IsA("BasePart") then
+					hrp.CFrame = checkpoint.CFrame
+				else
+					warn("Checkpoint named "..name.." not found or is not a part")
+				end
+				wait(2)
+			end
+		end
+	end
+	
+	local teleporting = false
+	
+	button.MouseButton1Click:Connect(function()
+		if not teleporting then
+			teleporting = true
+			button.Text = "Teleporting..."
+			coroutine.wrap(teleportLoop)()
+		end
+	end)
+	
+end;
+task.spawn(C_b);
+-- StarterGui.TabGUI.Pages.Page1.bu1.LocalScript
+local function C_e()
+local script = G2L["e"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands.Mainland
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_e);
+-- StarterGui.TabGUI.Pages.Page1.bu2.LocalScript
+local function C_10()
+local script = G2L["10"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Blizzard Island"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_10);
+-- StarterGui.TabGUI.Pages.Page1.bu3.LocalScript
+local function C_12()
+local script = G2L["12"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Forest Island"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_12);
+-- StarterGui.TabGUI.Pages.Page1.bu4.LocalScript
+local function C_14()
+local script = G2L["14"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Royal Island"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_14);
+-- StarterGui.TabGUI.Pages.Page1.bu5.LocalScript
+local function C_16()
+local script = G2L["16"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Desert Island"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_16);
+-- StarterGui.TabGUI.Pages.Page1.bu6.LocalScript
+local function C_18()
+local script = G2L["18"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Glacier Island"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_18);
+-- StarterGui.TabGUI.Pages.Page1.bu7.LocalScript
+local function C_1a()
+local script = G2L["1a"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Mountain Island"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_1a);
+-- StarterGui.TabGUI.Pages.Page1.bu8.LocalScript
+local function C_1c()
+local script = G2L["1c"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Jungle Island"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_1c);
+-- StarterGui.TabGUI.Pages.Page1.bu9.LocalScript
+local function C_1e()
+local script = G2L["1e"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Lunar Islands"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_1e);
+-- StarterGui.TabGUI.Pages.Page1.bu10.LocalScript
+local function C_20()
+local script = G2L["20"];
+	local button = script.Parent
+	
+	local currentTask
+	
+	local function followLoopFrom(folder)
+		if currentTask then
+			task.cancel(currentTask)
+		end
+	
+		local players = game:GetService("Players")
+		local lp = players.LocalPlayer
+		local char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local humanoid = char:WaitForChild("Humanoid")
+	
+		local function getValidTargets()
+			local targets = {}
+			for _, model in ipairs(folder:GetChildren()) do
+				if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+					table.insert(targets, model)
+				end
+			end
+			return targets
+		end
+	
+		currentTask = task.spawn(function()
+			local currentTarget = nil
+			local lastSwitch = 0
+	
+			while true do
+				local now = tick()
+	
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local targets = getValidTargets()
+					if #targets > 0 then
+						local newTarget
+						repeat
+							newTarget = targets[math.random(1, #targets)]
+						until newTarget ~= currentTarget or #targets == 1
+	
+						currentTarget = newTarget
+						lastSwitch = now
+	
+						local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+						if targetHRP then
+							hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						end
+					end
+				end
+	
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+	
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+	
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+	
+				task.wait(0.2)
+			end
+		end)
+	end
+	
+	-- ✅ Folder References
+	local folders = {
+		workspace.Islands["Volcano Island"]
+	}
+	
+	-- When the button is clicked, start following from each folder
+	button.MouseButton1Click:Connect(function()
+		for _, folder in ipairs(folders) do
+			if folder and folder:IsA("Folder") then
+				followLoopFrom(folder)
+			else
+				warn("Invalid folder:", folder)
+			end
+		end
+	end)
+	
+end;
+task.spawn(C_20);
+-- StarterGui.TabGUI.LocalScript
+local function C_24()
+local script = G2L["24"];
+	-- References
+	local pagesFrame = script.Parent:WaitForChild("Pages")
+	local page1 = pagesFrame:WaitForChild("Page1")
+	local page2 = pagesFrame:WaitForChild("Page2")
+	
+	local topbar = script.Parent:WaitForChild("Topbar")
+	local tab1 = topbar:WaitForChild("Tab1")
+	local tab2 = topbar:WaitForChild("Tab2")
+	
+	-- Function to switch pages
+	local function showPage(pageName)
+		-- Hide all pages first
+		for _, page in ipairs(pagesFrame:GetChildren()) do
+			if page:IsA("Frame") then
+				page.Visible = false
+			end
+		end
+	
+		-- Show the chosen page
+		local chosenPage = pagesFrame:FindFirstChild(pageName)
+		if chosenPage then
+			chosenPage.Visible = true
+		end
+	end
+	
+	-- Button connections
+	tab1.MouseButton1Click:Connect(function()
+		showPage("Page1")
+	end)
+	
+	tab2.MouseButton1Click:Connect(function()
+		showPage("Page2")
+	end)
+	
+end;
+task.spawn(C_24);
+
+return G2L["1"], require;
