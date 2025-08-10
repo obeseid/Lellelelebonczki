@@ -1,0 +1,81 @@
+-- LocalScript (StarterPlayerScripts or StarterGui)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local volcanoIsland = workspace:WaitForChild("Islands"):WaitForChild("Volcano Island")
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "VolcanoTeleporterGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Create TextButton
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 200, 0, 50)
+button.Position = UDim2.new(0, 20, 0, 20)
+button.BackgroundColor3 = Color3.fromRGB(105, 238, 57)
+button.TextColor3 = Color3.new(0.317647, 0.721569, 0.835294)
+button.Font = Enum.Font.SourceSansBold
+button.TextSize = 24
+button.Text = "Start Scanning"
+button.Parent = screenGui
+
+local scanning = false
+local teleporting = false
+
+local function teleportAbove(rock)
+	if not rock:IsA("BasePart") then return end
+	local targetPos = rock.Position + Vector3.new(0, rock.Size.Y / 2 + 5, 0)
+	humanoidRootPart.CFrame = CFrame.new(targetPos)
+end
+
+local function scanForRocks()
+	while scanning do
+		if not teleporting then
+			local foundRock = false
+			for _, model in ipairs(volcanoIsland:GetChildren()) do
+				if model:IsA("Model") then
+					local rock = model:FindFirstChild("Rock")
+					if rock and rock:IsA("BasePart") and rock:FindFirstChildWhichIsA("ParticleEmitter") then
+						foundRock = true
+						teleporting = true
+						button.Text = "Rock Found! Teleporting in 20s..."
+
+						task.delay(20, function()
+							if scanning and rock and rock.Parent and rock:IsA("BasePart") then
+								teleportAbove(rock)
+								button.Text = "Teleported!"
+							else
+								button.Text = "Rock Gone"
+							end
+							teleporting = false
+						end)
+
+						break
+					end
+				end
+			end
+			if not foundRock then
+				button.Text = "Scanning..."
+			end
+		end
+		task.wait(1)
+	end
+	button.Text = "Scan Stopped"
+end
+
+button.MouseButton1Click:Connect(function()
+	if not scanning then
+		scanning = true
+		button.Text = "Scanning..."
+		task.spawn(scanForRocks)
+	else
+		scanning = false
+		teleporting = false
+		button.Text = "Scan Stopped"
+	end
+end)
