@@ -79,3 +79,5 @@ button.MouseButton1Click:Connect(function()
 		button.Text = "Scan Stopped"
 	end
 end)
+
+workspace.Islands["Volcano Island"].LavaParts:Destroy()
