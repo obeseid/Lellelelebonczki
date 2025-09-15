@@ -25,56 +25,40 @@ button.Parent = screenGui
 local scanning = false
 local teleporting = false
 
--- Track teleports per rock model
-local teleportCounts = {}
-
 local function teleportAbove(rock)
 	if not rock:IsA("BasePart") then return end
 	local targetPos = rock.Position + Vector3.new(0, rock.Size.Y / 2 + 5, 0)
 	humanoidRootPart.CFrame = CFrame.new(targetPos)
 end
 
-local function findEligibleRock()
-	-- Look through all models and find a rock we can still teleport to (< 3 times)
-	for _, model in ipairs(volcanoIsland:GetChildren()) do
-		if model:IsA("Model") then
-			local rock = model:FindFirstChild("Rock")
-			if rock and rock:IsA("BasePart") and rock:FindFirstChildWhichIsA("ParticleEmitter") then
-				local modelName = model.Name
-				teleportCounts[modelName] = teleportCounts[modelName] or 0
-				if teleportCounts[modelName] < 3 then
-					return rock, modelName
-				end
-			end
-		end
-	end
-	return nil, nil
-end
-
 local function scanForRocks()
 	while scanning do
 		if not teleporting then
-			local rock, modelName = findEligibleRock()
-			if rock then
-				teleporting = true
-				button.Text = "Rock Found! Teleporting in 20s..."
+			local foundRock = false
+			for _, model in ipairs(volcanoIsland:GetChildren()) do
+				if model:IsA("Model") then
+					local rock = model:FindFirstChild("Rock")
+					if rock and rock:IsA("BasePart") and rock:FindFirstChildWhichIsA("ParticleEmitter") then
+						foundRock = true
+						teleporting = true
+						button.Text = "Rock Found! Teleporting in 20s..."
 
-				task.delay(20, function()
-					if scanning and rock and rock.Parent and rock:IsA("BasePart") then
-						if teleportCounts[modelName] < 3 then
-							teleportAbove(rock)
-							teleportCounts[modelName] += 1
-							button.Text = "Teleported (" .. teleportCounts[modelName] .. "/3)"
-						else
-							button.Text = "Rock Limit Reached, Searching..."
-						end
-					else
-						button.Text = "Rock Gone"
+						task.delay(20, function()
+							if scanning and rock and rock.Parent and rock:IsA("BasePart") then
+								teleportAbove(rock)
+								button.Text = "Teleported!"
+							else
+								button.Text = "Rock Gone"
+							end
+							teleporting = false
+						end)
+
+						break
 					end
-					teleporting = false
-				end)
-			else
-				button.Text = "Scanning okay?"
+				end
+			end
+			if not foundRock then
+				button.Text = "Scanning..."
 			end
 		end
 		task.wait(1)
