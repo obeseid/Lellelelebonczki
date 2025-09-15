@@ -31,32 +31,6 @@ local function teleportAbove(rock)
 	humanoidRootPart.CFrame = CFrame.new(targetPos)
 end
 
-local function handleRock(rock)
-	teleporting = true
-	button.Text = "Rock Found! Teleporting in 20s..."
-
-	-- Start a separate task so scanning keeps running
-	task.spawn(function()
-		local startTime = tick()
-		while tick() - startTime < 20 and scanning do
-			if not rock.Parent then
-				button.Text = "Rock Gone"
-				teleporting = false
-				return
-			end
-			task.wait(0.5)
-		end
-
-		if scanning and rock and rock.Parent and rock:IsA("BasePart") then
-			teleportAbove(rock)
-			button.Text = "Teleported!"
-		else
-			button.Text = "Rock Gone"
-		end
-		teleporting = false
-	end)
-end
-
 local function scanForRocks()
 	while scanning do
 		if not teleporting then
@@ -66,7 +40,19 @@ local function scanForRocks()
 					local rock = model:FindFirstChild("Rock")
 					if rock and rock:IsA("BasePart") and rock:FindFirstChildWhichIsA("ParticleEmitter") then
 						foundRock = true
-						handleRock(rock)
+						teleporting = true
+						button.Text = "Rock Found! Teleporting in 20s..."
+
+						task.delay(20, function()
+							if scanning and rock and rock.Parent and rock:IsA("BasePart") then
+								teleportAbove(rock)
+								button.Text = "Teleported!"
+							else
+								button.Text = "Rock Gone"
+							end
+							teleporting = false
+						end)
+
 						break
 					end
 				end
