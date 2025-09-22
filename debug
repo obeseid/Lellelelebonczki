@@ -1,0 +1,57 @@
+-- LocalScript in StarterGui
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- === GUI SETUP ===
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "DebugLogger"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 350, 0, 250)
+frame.Position = UDim2.new(0, 20, 0, 100)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.Parent = screenGui
+
+local scrolling = Instance.new("ScrollingFrame")
+scrolling.Size = UDim2.new(1, 0, 1, 0)
+scrolling.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrolling.BackgroundTransparency = 1
+scrolling.Parent = frame
+
+local uiList = Instance.new("UIListLayout")
+uiList.Parent = scrolling
+
+local function logMessage(msg)
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -4, 0, 20)
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.fromRGB(200, 200, 200)
+	label.Font = Enum.Font.Code
+	label.TextSize = 14
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Text = msg
+	label.Parent = scrolling
+
+	scrolling.CanvasSize = UDim2.new(0, 0, 0, uiList.AbsoluteContentSize.Y)
+	scrolling.CanvasPosition = Vector2.new(
+		0,
+		math.max(0, uiList.AbsoluteContentSize.Y - scrolling.AbsoluteWindowSize.Y)
+	)
+end
+
+-- === REQUIRE HOOK ===
+local realRequire = require
+
+function require(module)
+	local success, path = pcall(function()
+		return module:GetFullName()
+	end)
+	if success then
+		logMessage("[Module Required] " .. path)
+	end
+	return realRequire(module)
+end
+
+-- Startup
+logMessage("Debug Logger initialized")
