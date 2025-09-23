@@ -1,57 +1,27 @@
--- LocalScript in StarterGui
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- === GUI SETUP ===
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "DebugLogger"
-screenGui.Parent = player:WaitForChild("PlayerGui")
+-- Require the module you want to patch
+local ModifyAnimalSpawnData = require(
+    ReplicatedStorage.References.Utilities.Server.Functions.ModifyAnimalSpawnData
+)
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 350, 0, 250)
-frame.Position = UDim2.new(0, 20, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.Parent = screenGui
+-- Save the original function
+local original = ModifyAnimalSpawnData.ApplySpawnData
 
-local scrolling = Instance.new("ScrollingFrame")
-scrolling.Size = UDim2.new(1, 0, 1, 0)
-scrolling.CanvasSize = UDim2.new(0, 0, 0, 0)
-scrolling.BackgroundTransparency = 1
-scrolling.Parent = frame
+-- Monkey patch it
+ModifyAnimalSpawnData.ApplySpawnData = function(animal, region)
+    -- Call the original to get whatever spawn data it normally makes
+    local spawnData = original(animal, region)
 
-local uiList = Instance.new("UIListLayout")
-uiList.Parent = scrolling
+    -- If the region is Blizzard Island, force one item to have very high weight
+    if region == "Blizzard Island" and type(spawnData) == "table" then
+        for _, entry in pairs(spawnData) do
+            if entry.value == "iceyPink" then -- pick whichever you want
+                entry.weight = 999999 -- crank it up
+                print("[TEST PATCH] Boosted iceyPink weight to", entry.weight)
+            end
+        end
+    end
 
-local function logMessage(msg)
-	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(1, -4, 0, 20)
-	label.BackgroundTransparency = 1
-	label.TextColor3 = Color3.fromRGB(200, 200, 200)
-	label.Font = Enum.Font.Code
-	label.TextSize = 14
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.Text = msg
-	label.Parent = scrolling
-
-	scrolling.CanvasSize = UDim2.new(0, 0, 0, uiList.AbsoluteContentSize.Y)
-	scrolling.CanvasPosition = Vector2.new(
-		0,
-		math.max(0, uiList.AbsoluteContentSize.Y - scrolling.AbsoluteWindowSize.Y)
-	)
+    return spawnData
 end
-
--- === REQUIRE HOOK ===
-local realRequire = require
-
-function require(module)
-	local success, path = pcall(function()
-		return module:GetFullName()
-	end)
-	if success then
-		logMessage("[Module Required] " .. path)
-	end
-	return realRequire(module)
-end
-
--- Startup
-logMessage("Debug Logger initialized")
