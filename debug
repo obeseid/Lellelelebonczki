@@ -1,30 +1,24 @@
--- LocalScript: Patch Blizzard Island hair/colour table
+-- LocalScript: Patch all hair/colour tables for testing
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Safely navigate to the module
+-- Navigate safely to the module
 local References = ReplicatedStorage:WaitForChild("References")
 local Utilities = References:WaitForChild("Utilities")
 local ServerFolder = Utilities:WaitForChild("Server")
 local FunctionsFolder = ServerFolder:WaitForChild("Functions")
 local ModifyAnimalSpawnData = require(FunctionsFolder:WaitForChild("ModifyAnimalSpawnData"))
 
--- Patch hair/colour table (tbl_19_upvr) for Blizzard Island
-local hairTable = ModifyAnimalSpawnData.tbl_19_upvr and ModifyAnimalSpawnData.tbl_19_upvr["Blizzard Island"]
-if hairTable then
-    local patched = false
-    for _, entry in pairs(hairTable) do
-        if entry.value == "iceyPink" then
+-- Patch every entry in every island table
+local hairTables = ModifyAnimalSpawnData.tbl_19_upvr
+if hairTables then
+    for islandName, entries in pairs(hairTables) do
+        for _, entry in pairs(entries) do
             entry.weight = 999999
-            patched = true
         end
-    end
-    if patched then
-        print("[PATCH] Boosted iceyPink in Blizzard Island hair/colour table")
-    else
-        print("[PATCH] No iceyPink entry found in Blizzard Island hair/colour table")
+        print("[PATCH] Boosted all weights in", islandName)
     end
 else
-    warn("[PATCH] Blizzard Island hair/colour table not found!")
+    warn("[PATCH] Hair/colour table (tbl_19_upvr) not found!")
 end
 
-print("[PATCH] Blizzard Island patch complete")
+print("[PATCH] All hair/colour tables patched")
