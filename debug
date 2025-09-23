@@ -1,27 +1,44 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- LocalScript: Patch ModifyAnimalSpawnData for testing
 
--- Require the module you want to patch
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+-- Replace with your own player check if needed
+local localPlayer = Players.LocalPlayer
+
+-- Require the module (even if already loaded)
 local ModifyAnimalSpawnData = require(
     ReplicatedStorage.References.Utilities.Server.Functions.ModifyAnimalSpawnData
 )
 
--- Save the original function
-local original = ModifyAnimalSpawnData.ApplySpawnData
+-- Safety check
+if not ModifyAnimalSpawnData then
+    warn("[PATCH] ModifyAnimalSpawnData module not found!")
+    return
+end
 
--- Monkey patch it
-ModifyAnimalSpawnData.ApplySpawnData = function(animal, region)
-    -- Call the original to get whatever spawn data it normally makes
-    local spawnData = original(animal, region)
+-- Access the Blizzard Island table directly
+-- Adjust this path if the table is stored under a different name in the module
+local blizzardTable = ModifyAnimalSpawnData.tbl_2_upvr and ModifyAnimalSpawnData.tbl_2_upvr["Blizzard Island"]
 
-    -- If the region is Blizzard Island, force one item to have very high weight
-    if region == "Blizzard Island" and type(spawnData) == "table" then
-        for _, entry in pairs(spawnData) do
-            if entry.value == "iceyPink" then -- pick whichever you want
-                entry.weight = 999999 -- crank it up
-                print("[TEST PATCH] Boosted iceyPink weight to", entry.weight)
-            end
+if blizzardTable then
+    for _, entry in pairs(blizzardTable) do
+        if entry.value == "iceyPink" then
+            entry.weight = 999999
+            print("Success")
         end
     end
-
-    return spawnData
+else
+    warn("[PATCH] Blizzard Island table not found in module!")
 end
+
+-- Optional: Wrap ApplySpawnData to log every call
+if ModifyAnimalSpawnData.ApplySpawnData then
+    local originalFunc = ModifyAnimalSpawnData.ApplySpawnData
+    ModifyAnimalSpawnData.ApplySpawnData = function(animal, region)
+        print("[PATCH] ApplySpawnData called for:", animal, region)
+        return originalFunc(animal, region)
+    end
+end
+
+print("[PATCH] ModifyAnimalSpawnData patch complete")
