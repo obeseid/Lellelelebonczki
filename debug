@@ -1,4 +1,4 @@
--- LocalScript: Patch ModifyAnimalSpawnData for testing
+-- LocalScript: Patch Blizzard Island for testing
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
@@ -8,36 +8,30 @@ local ModifyAnimalSpawnData = require(
     ReplicatedStorage.References.Utilities.Server.Functions.ModifyAnimalSpawnData
 )
 
--- Safety check
-if not ModifyAnimalSpawnData.ApplySpawnData then
-    warn("[PATCH] ApplySpawnData function not found in module!")
-    return
-end
-
--- Wrap ApplySpawnData to patch weights at runtime
-local originalFunc = ModifyAnimalSpawnData.ApplySpawnData
-
-ModifyAnimalSpawnData.ApplySpawnData = function(animal, region, ...)
-    -- Call the original function to get the spawn table
-    local spawnData = originalFunc(animal, region, ...)
-
-    -- Patch the Blizzard Island weights if applicable
-    if region == "Blizzard Island" and type(spawnData) == "table" then
-        local patched = false
-        for _, entry in pairs(spawnData) do
-            if entry.value == "iceyPink" then
-                entry.weight = 999999
-                patched = true
-            end
-        end
-        if patched then
-            print("[PATCH] Boosted iceyPink weight for player:")
-        else
-            print("[PATCH] No iceyPink entry found to patch!")
+-- Patch coat table (tbl_7_upvr) if it exists
+local coatTable = ModifyAnimalSpawnData.tbl_7_upvr and ModifyAnimalSpawnData.tbl_7_upvr["Blizzard Island"]
+if coatTable then
+    for _, entry in pairs(coatTable) do
+        if entry.value == "iceyPink" then
+            entry.weight = 999999
+            print("[PATCH] Boosted iceyPink in coat table for")
         end
     end
-
-    return spawnData
+else
+    warn("[PATCH] Blizzard Island coat table not found!")
 end
 
-print("[PATCH] ModifyAnimalSpawnData successfully patched for player:")
+-- Patch hair/colour table (tbl_19_upvr) if it exists
+local hairTable = ModifyAnimalSpawnData.tbl_19_upvr and ModifyAnimalSpawnData.tbl_19_upvr["Blizzard Island"]
+if hairTable then
+    for _, entry in pairs(hairTable) do
+        if entry.value == "iceyPink" then
+            entry.weight = 999999
+            print("[PATCH] Boosted iceyPink in hair/colour table for")
+        end
+    end
+else
+    warn("[PATCH] Blizzard Island hair/colour table not found!")
+end
+
+print("[PATCH] Blizzard Island patch complete”)
