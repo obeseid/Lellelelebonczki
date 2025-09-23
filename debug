@@ -1,44 +1,32 @@
--- LocalScript: Patch ModifyAnimalSpawnData for testing
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
--- Replace with your own player check if needed
 local localPlayer = Players.LocalPlayer
-
--- Require the module (even if already loaded)
 local ModifyAnimalSpawnData = require(
     ReplicatedStorage.References.Utilities.Server.Functions.ModifyAnimalSpawnData
 )
 
--- Safety check
-if not ModifyAnimalSpawnData then
-    warn("[PATCH] ModifyAnimalSpawnData module not found!")
-    return
-end
-
--- Access the Blizzard Island table directly
--- Adjust this path if the table is stored under a different name in the module
-local blizzardTable = ModifyAnimalSpawnData.tbl_2_upvr and ModifyAnimalSpawnData.tbl_2_upvr["Blizzard Island"]
-
-if blizzardTable then
-    for _, entry in pairs(blizzardTable) do
-        if entry.value == "iceyPink" then
-            entry.weight = 999999
-            print("Success")
-        end
-    end
-else
-    warn("[PATCH] Blizzard Island table not found in module!")
-end
-
--- Optional: Wrap ApplySpawnData to log every call
 if ModifyAnimalSpawnData.ApplySpawnData then
     local originalFunc = ModifyAnimalSpawnData.ApplySpawnData
-    ModifyAnimalSpawnData.ApplySpawnData = function(animal, region)
-        print("[PATCH] ApplySpawnData called for:", animal, region)
-        return originalFunc(animal, region)
-    end
-end
 
-print("[PATCH] ModifyAnimalSpawnData patch complete")
+    ModifyAnimalSpawnData.ApplySpawnData = function(animal, region)
+        -- Call original function first
+        local spawnData = originalFunc(animal, region)
+
+        -- Only patch Blizzard Island if the table exists
+        if region == "Blizzard Island" and type(spawnData) == "table" then
+            for _, entry in pairs(spawnData) do
+                if entry.value == "iceyPink" then
+                    entry.weight = 999999
+                    print("[PATCH] Boosted iceyPink weight for")
+                end
+            end
+        end
+
+        return spawnData
+    end
+
+    print("[PATCH] Wrapped ApplySpawnData for player:")
+else
+    warn("[PATCH] ApplySpawnData function not found in module!")
+end
