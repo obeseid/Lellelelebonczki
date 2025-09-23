@@ -1,12 +1,12 @@
--- LocalScript: Patch Blizzard Island for testing
+-- LocalScript: Patch Blizzard Island weights
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
 
--- Require the module
-local ModifyAnimalSpawnData = require(
-    ReplicatedStorage.References.Utilities.Server.Functions.ModifyAnimalSpawnData
-)
+-- Navigate the module path safely with WaitForChild
+local References = ReplicatedStorage:WaitForChild("References")
+local Utilities = References:WaitForChild("Utilities")
+local ServerFolder = Utilities:WaitForChild("Server")
+local FunctionsFolder = ServerFolder:WaitForChild("Functions")
+local ModifyAnimalSpawnData = require(FunctionsFolder:WaitForChild("ModifyAnimalSpawnData"))
 
 -- Patch coat table (tbl_7_upvr) if it exists
 local coatTable = ModifyAnimalSpawnData.tbl_7_upvr and ModifyAnimalSpawnData.tbl_7_upvr["Blizzard Island"]
@@ -14,7 +14,7 @@ if coatTable then
     for _, entry in pairs(coatTable) do
         if entry.value == "iceyPink" then
             entry.weight = 999999
-            print("[PATCH] Boosted iceyPink in coat table for")
+            print("[PATCH] Boosted iceyPink in coat table")
         end
     end
 else
@@ -27,11 +27,11 @@ if hairTable then
     for _, entry in pairs(hairTable) do
         if entry.value == "iceyPink" then
             entry.weight = 999999
-            print("[PATCH] Boosted iceyPink in hair/colour table for")
+            print("[PATCH] Boosted iceyPink in hair/colour table")
         end
     end
 else
     warn("[PATCH] Blizzard Island hair/colour table not found!")
 end
 
-print("[PATCH] Blizzard Island patch complete”)
+print("[PATCH] Blizzard Island patch complete")
