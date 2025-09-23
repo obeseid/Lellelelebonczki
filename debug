@@ -1,24 +1,27 @@
--- LocalScript: Patch all hair/colour tables for testing
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Navigate safely to the module
 local References = ReplicatedStorage:WaitForChild("References")
 local Utilities = References:WaitForChild("Utilities")
 local ServerFolder = Utilities:WaitForChild("Server")
 local FunctionsFolder = ServerFolder:WaitForChild("Functions")
 local ModifyAnimalSpawnData = require(FunctionsFolder:WaitForChild("ModifyAnimalSpawnData"))
+local WeightedTable = require(ReplicatedStorage.References.Utilities.Shared.WeightedTable)
 
--- Patch every entry in every island table
-local hairTables = ModifyAnimalSpawnData.tbl_19_upvr
-if hairTables then
-    for islandName, entries in pairs(hairTables) do
-        for _, entry in pairs(entries) do
-            entry.weight = 999999
+-- Save the original constructor
+local OriginalWeightedTableNew = WeightedTable.New
+
+-- Override WeightedTable.New
+WeightedTable.New = function(tbl)
+    -- Boost all weights for testing
+    if tbl and type(tbl) == "table" then
+        for _, entry in pairs(tbl) do
+            if entry.weight then
+                entry.weight = 999999
+            end
         end
-        print("[PATCH] Boosted all weights in", islandName)
     end
-else
-    warn("[PATCH] Hair/colour table (tbl_19_upvr) not found!")
+    -- Call the original constructor
+    return OriginalWeightedTableNew(tbl)
 end
 
-print("[PATCH] All hair/colour tables patched")
+print("[PATCH] WeightedTable.New patched to boost all weights")
