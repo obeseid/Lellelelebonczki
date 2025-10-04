@@ -1,47 +1,39 @@
--- LocalScript: Clone ItemFrame 120x for testing
--- Works from anywhere client side
+-- LocalScript: Clone ItemFrame 120x directly into Backpack GUI
+-- Works anywhere client-side
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local playerScripts = player:WaitForChild("PlayerScripts")
 
--- Find and require the module
-local secondary = playerScripts:WaitForChild("Secondary")
-local invModuleScript = secondary:WaitForChild("InventoryMenu")
-local invModule = require(invModuleScript)
+-- Wait for the GUI to load
+local menus = player:WaitForChild("PlayerGui"):WaitForChild("Menus")
+local backpack = menus:WaitForChild("Backpack")
 
--- 🕐 Wait until the module finishes initializing its menus
-repeat
-	task.wait(0.1)
-until invModule.menus and invModule.menus.Backpack and invModule.menus.Backpack.frame
+-- Get the container that holds the items
+local contentFrame = backpack
+	:WaitForChild("Inventory")
+	:WaitForChild("Bottom")
+	:WaitForChild("Content")
+	:WaitForChild("Bottom")
+	:WaitForChild("Standard")
 
--- Locate the correct container inside the inventory UI
-local backpackMenu = invModule.menus.Backpack
-local contentFrame = backpackMenu.frame.Inventory.Bottom.Content.Bottom.Standard
+-- Grab the ItemFrame template from your InventoryMenu module
+local invModuleScript = player:WaitForChild("PlayerScripts")
+	:WaitForChild("Secondary")
+	:WaitForChild("InventoryMenu")
 
--- Get the ItemFrame template
 local itemTemplate = invModuleScript:WaitForChild("ItemFrame")
 
--- Add a layout so items don’t overlap
-local grid = contentFrame:FindFirstChildOfClass("UIGridLayout")
-if not grid then
-	grid = Instance.new("UIGridLayout")
-	grid.CellSize = UDim2.new(0, 120, 0, 40) -- adjust as needed
-	grid.CellPadding = UDim2.new(0, 6, 0, 6)
-	grid.SortOrder = Enum.SortOrder.LayoutOrder
-	grid.Parent = contentFrame
-end
-
--- Clone 120 ItemFrames
+-- Clone 120 ItemFrames into the inventory
 for i = 1, 120 do
 	local clone = itemTemplate:Clone()
 	clone.Name = "ItemFrame_" .. i
 	clone.Parent = contentFrame
 
+	-- Update the text label
 	local label = clone:FindFirstChild("NameLabel")
 	if label and label:IsA("TextLabel") then
 		label.Text = "Friesian Horse (v1)"
 	end
 end
 
-print("✅ Spawned 120 Friesian Horse (v1) test frames!")
+print("✅ Spawned 120 Friesian Horse (v1) test frames into Backpack GUI!")
