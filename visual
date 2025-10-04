@@ -35,7 +35,7 @@ for _, category in ipairs(mainList:GetChildren()) do
     if category:IsA("Frame") then
         local catList = category:FindFirstChild("List")
         if catList and catList:IsA("Frame") then
-            -- Check if it has at least one TextButton
+            -- Check if there is at least one TextButton
             local hasButton = false
             for _, child in ipairs(catList:GetChildren()) do
                 if child:IsA("TextButton") then
@@ -44,13 +44,13 @@ for _, category in ipairs(mainList:GetChildren()) do
                 end
             end
 
-            -- If eligible, update all TextButton's NameLabel
+            -- If eligible, update all TextButtons' inner NameLabel
             if hasButton then
                 for _, child in ipairs(catList:GetChildren()) do
                     if child:IsA("TextButton") then
-                        local nameLabel = child:FindFirstChild("NameLabel")
-                        if nameLabel and nameLabel:IsA("TextLabel") then
-                            nameLabel.Text = "Friesian Horse (v1)"
+                        local innerLabel = child:FindFirstChild("NameLabel")
+                        if innerLabel and innerLabel:IsA("TextLabel") then
+                            innerLabel.Text = "Friesian Horse (v1)"
                         end
                     end
                 end
@@ -59,4 +59,4 @@ for _, category in ipairs(mainList:GetChildren()) do
     end
 end
 
-print("✅ Updated NameLabel of all eligible TextButtons!")
+print("✅ Updated NameLabel text for all eligible TextButtons!")
