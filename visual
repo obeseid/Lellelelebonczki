@@ -1,47 +1,49 @@
--- LocalScript: Inventory cloning test
--- You can put this anywhere client-accessible (e.g. StarterPlayerScripts)
+-- LocalScript: Clone ItemFrame 120x for testing
+-- Works no matter where this script is placed (client side)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Wait for PlayerScripts to exist
+-- Wait for PlayerScripts to load
 local playerScripts = player:WaitForChild("PlayerScripts")
 
--- Find the InventoryMenu module (no matter where this script is)
-local invModule = playerScripts:WaitForChild("Secondary"):WaitForChild("InventoryMenu")
+-- Wait for Secondary folder and InventoryMenu module
+local secondary = playerScripts:WaitForChild("Secondary")
+local invModuleScript = secondary:WaitForChild("InventoryMenu")
 
--- Require it
-local inventory = require(invModule)
+-- Require the module
+local invModule = require(invModuleScript)
 
--- Give the module time to finish UI setup
+-- Give the module time to set up its menus/UI
 task.wait(1)
 
--- Locate the backpack inventory container (same as module uses)
-local backpackMenu = inventory.menus.Backpack
+-- Locate the inventory container (from module structure)
+local backpackMenu = invModule.menus.Backpack
 local contentFrame = backpackMenu.frame.Inventory.Bottom.Content.Bottom.Standard
 
--- Get the ItemFrame template inside the InventoryMenu module
-local itemTemplate = invModule:WaitForChild("ItemFrame")
+-- Get the ItemFrame template inside the module
+local itemTemplate = invModuleScript:WaitForChild("ItemFrame")
 
--- Add a grid layout so the items don’t overlap
+-- Ensure a UIGridLayout exists so items don't overlap
 local grid = contentFrame:FindFirstChildOfClass("UIGridLayout")
 if not grid then
-    grid = Instance.new("UIGridLayout")
-    grid.CellSize = UDim2.new(0, 120, 0, 40) -- each item frame size
-    grid.CellPadding = UDim2.new(0, 6, 0, 6) -- spacing
-    grid.SortOrder = Enum.SortOrder.LayoutOrder
-    grid.Parent = contentFrame
+	grid = Instance.new("UIGridLayout")
+	grid.CellSize = UDim2.new(0, 120, 0, 40) -- button size
+	grid.CellPadding = UDim2.new(0, 6, 0, 6) -- spacing
+	grid.SortOrder = Enum.SortOrder.LayoutOrder
+	grid.Parent = contentFrame
 end
 
--- Create 120 test clones
+-- Clone 120 ItemFrames
 for i = 1, 120 do
-    local clone = itemTemplate:Clone()
-    clone.Name = "ItemFrame_" .. i
-    clone.Parent = contentFrame
+	local clone = itemTemplate:Clone()
+	clone.Name = "ItemFrame_" .. i
+	clone.Parent = contentFrame
 
-    -- Update label text
-    local label = clone:FindFirstChild("NameLabel")
-    if label and label:IsA("TextLabel") then
-        label.Text = "Friesian Horse (v1)"
-    end
+	local label = clone:FindFirstChild("NameLabel")
+	if label and label:IsA("TextLabel") then
+		label.Text = "Friesian Horse (v1)"
+	end
 end
+
+print("✅ Spawned 120 Friesian Horse (v1) test frames!")
