@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Wait for main list
+-- Wait for main List
 local function waitForMainList()
     local menus
     repeat
@@ -34,27 +34,37 @@ end
 
 local mainList = waitForMainList()
 
--- Loop through all CategoryContainers
-for _, category in ipairs(mainList:GetChildren()) do
-    if category:IsA("Frame") then
-        local catList = category:FindFirstChild("List")
-        local hasButton = false
-
-        if catList and catList:IsA("Frame") then
-            for _, child in ipairs(catList:GetChildren()) do
-                if child:IsA("TextButton") then
-                    hasButton = true
-                    break
-                end
+-- Function to update all TextButtons inside a given frame
+local function updateTextButtons(listFrame)
+    for _, child in ipairs(listFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            local nameLabel = child:FindFirstChild("NameLabel")
+            if nameLabel and nameLabel:IsA("TextLabel") then
+                nameLabel.Text = "Friesian Horse (v1)"
             end
-        end
-
-        -- Delete the CategoryContainer if no TextButton exists
-        if not hasButton then
-            category:Destroy()
-            print("Deleted empty CategoryContainer")
         end
     end
 end
 
-print("✅ Removed all CategoryContainers without TextButtons")
+-- Loop through all CategoryContainers in the main list
+for _, category in ipairs(mainList:GetChildren()) do
+    if category:IsA("Frame") then
+        local childList = category:FindFirstChild("List")
+        if childList and childList:IsA("Frame") then
+            -- Only proceed if there is at least one TextButton
+            local hasButton = false
+            for _, c in ipairs(childList:GetChildren()) do
+                if c:IsA("TextButton") then
+                    hasButton = true
+                    break
+                end
+            end
+
+            if hasButton then
+                updateTextButtons(childList)
+            end
+        end
+    end
+end
+
+print("✅ Updated NameLabel text for all TextButtons in eligible lists!")
