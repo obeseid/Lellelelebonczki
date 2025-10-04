@@ -1,70 +1,70 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Wait for Menus ScreenGui
-local menus
-repeat
-    menus = player:FindFirstChild("PlayerGui"):FindFirstChild("Menus")
-    task.wait(0.1)
-until menus and menus:IsA("ScreenGui")
+-- Wait for main List
+local function waitForMainList()
+    local menus
+    repeat
+        menus = player:FindFirstChild("PlayerGui"):FindFirstChild("Menus")
+        task.wait(0.1)
+    until menus and menus:IsA("ScreenGui")
 
--- Wait for Backpack.Main
-local backpack
-repeat
-    backpack = menus:FindFirstChild("Backpack")
-    task.wait(0.1)
-until backpack and backpack:IsA("Frame")
+    local backpack
+    repeat
+        backpack = menus:FindFirstChild("Backpack")
+        task.wait(0.1)
+    until backpack and backpack:IsA("Frame")
 
-local mainFrame
-repeat
-    mainFrame = backpack:FindFirstChild("Main")
-    task.wait(0.1)
-until mainFrame and mainFrame:IsA("Frame")
+    local main
+    repeat
+        main = backpack:FindFirstChild("Main")
+        task.wait(0.1)
+    until main and main:IsA("Frame")
 
--- Wait for Inventory.Content.List
-local inventory, content, mainList
-repeat
-    inventory = mainFrame:FindFirstChild("Inventory")
-    content = inventory and inventory:FindFirstChild("Content")
-    mainList = content and content:FindFirstChild("List")
-    task.wait(0.1)
-until mainList and mainList:IsA("Frame")
+    local inventory, content, mainList
+    repeat
+        inventory = main:FindFirstChild("Inventory")
+        content = inventory and inventory:FindFirstChild("Content")
+        mainList = content and content:FindFirstChild("List")
+        task.wait(0.1)
+    until mainList and mainList:IsA("Frame")
 
--- Function to recursively find TextButtons and update nested NameLabel
-local function updateTextLabels(frame)
-    for _, child in ipairs(frame:GetChildren()) do
+    return mainList
+end
+
+local mainList = waitForMainList()
+
+-- Function to update all TextButtons inside a given frame
+local function updateTextButtons(listFrame)
+    for _, child in ipairs(listFrame:GetChildren()) do
         if child:IsA("TextButton") then
             local nameLabel = child:FindFirstChild("NameLabel")
             if nameLabel and nameLabel:IsA("TextLabel") then
                 nameLabel.Text = "Friesian Horse (v1)"
             end
-        elseif child:IsA("Frame") then
-            -- Recursively check nested frames
-            updateTextLabels(child)
         end
     end
 end
 
--- Loop through all CategoryContainers
+-- Loop through all CategoryContainers in the main list
 for _, category in ipairs(mainList:GetChildren()) do
     if category:IsA("Frame") then
-        local catList = category:FindFirstChild("List")
-        if catList and catList:IsA("Frame") then
-            -- Only proceed if there is at least one TextButton somewhere inside
+        local childList = category:FindFirstChild("List")
+        if childList and childList:IsA("Frame") then
+            -- Only proceed if there is at least one TextButton
             local hasButton = false
-            for _, child in ipairs(catList:GetDescendants()) do
-                if child:IsA("TextButton") then
+            for _, c in ipairs(childList:GetChildren()) do
+                if c:IsA("TextButton") then
                     hasButton = true
                     break
                 end
             end
 
             if hasButton then
-                -- Update all TextButtons inside this List
-                updateTextLabels(catList)
+                updateTextButtons(childList)
             end
         end
     end
 end
 
-print("✅ Updated all nested NameLabel texts!")
+print("✅ Updated NameLabel text for all TextButtons in eligible lists!")
