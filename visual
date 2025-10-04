@@ -1,40 +1,47 @@
--- LocalScript for testing ItemFrame clones (StarterPlayerScripts/Secondary)
+-- LocalScript: Inventory cloning test
+-- You can put this anywhere client-accessible (e.g. StarterPlayerScripts)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Require your inventory module
-local invModule = require(script.Parent:WaitForChild("inventorymenu"))
+-- Wait for PlayerScripts to exist
+local playerScripts = player:WaitForChild("PlayerScripts")
 
--- Wait a bit to ensure UI is built
+-- Find the InventoryMenu module (no matter where this script is)
+local invModule = playerScripts:WaitForChild("Secondary"):WaitForChild("InventoryMenu")
+
+-- Require it
+local inventory = require(invModule)
+
+-- Give the module time to finish UI setup
 task.wait(1)
 
--- Locate the backpack inventory container used in your module
-local backpackMenu = invModule.menus.Backpack
+-- Locate the backpack inventory container (same as module uses)
+local backpackMenu = inventory.menus.Backpack
 local contentFrame = backpackMenu.frame.Inventory.Bottom.Content.Bottom.Standard
 
--- Get the ItemFrame template from the module
-local itemTemplate = script.Parent.inventorymenu:WaitForChild("ItemFrame")
+-- Get the ItemFrame template inside the InventoryMenu module
+local itemTemplate = invModule:WaitForChild("ItemFrame")
 
--- Add a UIGridLayout (if not already present) to auto-layout items
+-- Add a grid layout so the items don’t overlap
 local grid = contentFrame:FindFirstChildOfClass("UIGridLayout")
 if not grid then
     grid = Instance.new("UIGridLayout")
-    grid.Parent = contentFrame
-    grid.CellSize = UDim2.new(0, 120, 0, 40) -- button size (W x H)
+    grid.CellSize = UDim2.new(0, 120, 0, 40) -- each item frame size
     grid.CellPadding = UDim2.new(0, 6, 0, 6) -- spacing
     grid.SortOrder = Enum.SortOrder.LayoutOrder
+    grid.Parent = contentFrame
 end
 
--- Spawn 120 clones
+-- Create 120 test clones
 for i = 1, 120 do
     local clone = itemTemplate:Clone()
     clone.Name = "ItemFrame_" .. i
     clone.Parent = contentFrame
 
-    -- Update label
-    local nameLabel = clone:FindFirstChild("NameLabel")
-    if nameLabel and nameLabel:IsA("TextLabel") then
-        nameLabel.Text = "Friesian Horse (v1)"
+    -- Update label text
+    local label = clone:FindFirstChild("NameLabel")
+    if label and label:IsA("TextLabel") then
+        label.Text = "Friesian Horse (v1)"
     end
 end
