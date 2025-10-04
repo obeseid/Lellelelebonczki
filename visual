@@ -22,7 +22,7 @@ repeat
     task.wait(0.1)
 until mainFrame and mainFrame:IsA("Frame")
 
--- Wait for Inventory.Content.List
+-- Wait for Inventory.Content.List inside Main
 local inventory, content, mainList
 repeat
     inventory = mainFrame:FindFirstChild("Inventory")
@@ -37,9 +37,10 @@ local invModuleScript = player:WaitForChild("PlayerScripts")
     :WaitForChild("InventoryMenu")
 local itemTemplate = invModuleScript:WaitForChild("ItemFrame")
 
--- Loop through CategoryContainers
+-- Loop through each CategoryContainer in mainList
 for _, category in ipairs(mainList:GetChildren()) do
     if category:IsA("Frame") then
+        -- Look for the category's own List frame
         local catList = category:FindFirstChild("List")
         if catList and catList:IsA("Frame") then
             -- Only clone if catList has at least one TextButton
@@ -52,7 +53,7 @@ for _, category in ipairs(mainList:GetChildren()) do
             end
 
             if hasButton then
-                -- Clone the ItemFrame into this list
+                -- Clone the ItemFrame into this category's List
                 local clone = itemTemplate:Clone()
                 clone.Name = "ItemFrame_Test"
                 clone.Parent = catList
@@ -67,4 +68,4 @@ for _, category in ipairs(mainList:GetChildren()) do
     end
 end
 
-print("✅ Cloned ItemFrame into eligible CategoryContainer lists!")
+print("✅ Cloned ItemFrame into all eligible CategoryContainer lists!")
