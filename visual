@@ -1,35 +1,33 @@
 -- LocalScript: Clone ItemFrame 120x for testing
--- Works no matter where this script is placed (client side)
+-- Works from anywhere client side
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-
--- Wait for PlayerScripts to load
 local playerScripts = player:WaitForChild("PlayerScripts")
 
--- Wait for Secondary folder and InventoryMenu module
+-- Find and require the module
 local secondary = playerScripts:WaitForChild("Secondary")
 local invModuleScript = secondary:WaitForChild("InventoryMenu")
-
--- Require the module
 local invModule = require(invModuleScript)
 
--- Give the module time to set up its menus/UI
-task.wait(1)
+-- 🕐 Wait until the module finishes initializing its menus
+repeat
+	task.wait(0.1)
+until invModule.menus and invModule.menus.Backpack and invModule.menus.Backpack.frame
 
--- Locate the inventory container (from module structure)
+-- Locate the correct container inside the inventory UI
 local backpackMenu = invModule.menus.Backpack
 local contentFrame = backpackMenu.frame.Inventory.Bottom.Content.Bottom.Standard
 
--- Get the ItemFrame template inside the module
+-- Get the ItemFrame template
 local itemTemplate = invModuleScript:WaitForChild("ItemFrame")
 
--- Ensure a UIGridLayout exists so items don't overlap
+-- Add a layout so items don’t overlap
 local grid = contentFrame:FindFirstChildOfClass("UIGridLayout")
 if not grid then
 	grid = Instance.new("UIGridLayout")
-	grid.CellSize = UDim2.new(0, 120, 0, 40) -- button size
-	grid.CellPadding = UDim2.new(0, 6, 0, 6) -- spacing
+	grid.CellSize = UDim2.new(0, 120, 0, 40) -- adjust as needed
+	grid.CellPadding = UDim2.new(0, 6, 0, 6)
 	grid.SortOrder = Enum.SortOrder.LayoutOrder
 	grid.Parent = contentFrame
 end
