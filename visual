@@ -1,30 +1,42 @@
--- LocalScript: Clone ItemFrame into CategoryContainer lists
--- Works anywhere client-side
+-- LocalScript: Clone ItemFrame into each eligible CategoryContainer list
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Wait for Backpack GUI
+-- Wait for Menus ScreenGui
 local menus = player:WaitForChild("PlayerGui"):WaitForChild("Menus")
-local backpack = menus:WaitForChild("Backpack")
-local contentList = backpack:WaitForChild("Inventory")
-	:WaitForChild("Content")
-	:WaitForChild("List")
+if not menus:IsA("ScreenGui") then
+	warn("Menus is not a ScreenGui!")
+	return
+end
 
--- Grab the ItemFrame template from your module
+-- Wait for Backpack frame
+local backpack = menus:WaitForChild("Backpack")
+if not backpack:IsA("Frame") then
+	warn("Backpack is not a Frame!")
+	return
+end
+
+-- Wait for Inventory.Content.List
+local inventory = backpack:WaitForChild("Inventory")
+local content = inventory:WaitForChild("Content")
+local mainList = content:WaitForChild("List")
+
+-- Grab ItemFrame template from InventoryMenu module
 local invModuleScript = player:WaitForChild("PlayerScripts")
 	:WaitForChild("Secondary")
 	:WaitForChild("InventoryMenu")
 local itemTemplate = invModuleScript:WaitForChild("ItemFrame")
 
--- Loop through each CategoryContainer
-for _, category in ipairs(contentList:GetChildren()) do
+-- Loop through all CategoryContainers
+for _, category in ipairs(mainList:GetChildren()) do
 	if category:IsA("Frame") then
-		local listFrame = category:FindFirstChild("List")
-		if listFrame and listFrame:IsA("Frame") then
-			-- Check if list has at least one TextButton
+		-- Check if the category has its own List frame
+		local catList = category:FindFirstChild("List")
+		if catList and catList:IsA("Frame") then
+			-- Only clone if catList has at least one TextButton
 			local hasButton = false
-			for _, child in ipairs(listFrame:GetChildren()) do
+			for _, child in ipairs(catList:GetChildren()) do
 				if child:IsA("TextButton") then
 					hasButton = true
 					break
@@ -32,19 +44,19 @@ for _, category in ipairs(contentList:GetChildren()) do
 			end
 
 			if hasButton then
-				-- Clone ItemFrame into this list
+				-- Clone the ItemFrame into this list
 				local clone = itemTemplate:Clone()
 				clone.Name = "ItemFrame_Test"
-				clone.Parent = listFrame
+				clone.Parent = catList
 
 				-- Update NameLabel
-				local label = clone:FindFirstChild("NameLabel")
-				if label and label:IsA("TextLabel") then
-					label.Text = "Friesian Horse (v1)"
+				local nameLabel = clone:FindFirstChild("NameLabel")
+				if nameLabel and nameLabel:IsA("TextLabel") then
+					nameLabel.Text = "Friesian Horse (v1)"
 				end
 			end
 		end
 	end
 end
 
-print("✅ Cloned ItemFrame into all eligible CategoryContainer lists!")
+print("✅ Cloned ItemFrame into eligible CategoryContainer lists!")
