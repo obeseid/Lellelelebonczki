@@ -8,21 +8,20 @@ repeat
     task.wait(0.1)
 until menus and menus:IsA("ScreenGui")
 
--- Wait for Backpack frame
+-- Wait for Backpack.Main
 local backpack
 repeat
     backpack = menus:FindFirstChild("Backpack")
     task.wait(0.1)
 until backpack and backpack:IsA("Frame")
 
--- Wait for Main frame inside Backpack
 local mainFrame
 repeat
     mainFrame = backpack:FindFirstChild("Main")
     task.wait(0.1)
 until mainFrame and mainFrame:IsA("Frame")
 
--- Wait for Inventory.Content.List inside Main
+-- Wait for Inventory.Content.List
 local inventory, content, mainList
 repeat
     inventory = mainFrame:FindFirstChild("Inventory")
@@ -31,19 +30,12 @@ repeat
     task.wait(0.1)
 until mainList and mainList:IsA("Frame")
 
--- Grab ItemFrame template from InventoryMenu module
-local invModuleScript = player:WaitForChild("PlayerScripts")
-    :WaitForChild("Secondary")
-    :WaitForChild("InventoryMenu")
-local itemTemplate = invModuleScript:WaitForChild("ItemFrame")
-
--- Loop through each CategoryContainer in mainList
+-- Loop through all CategoryContainers
 for _, category in ipairs(mainList:GetChildren()) do
     if category:IsA("Frame") then
-        -- Look for the category's own List frame
         local catList = category:FindFirstChild("List")
         if catList and catList:IsA("Frame") then
-            -- Only clone if catList has at least one TextButton
+            -- Check if it has at least one TextButton
             local hasButton = false
             for _, child in ipairs(catList:GetChildren()) do
                 if child:IsA("TextButton") then
@@ -52,20 +44,19 @@ for _, category in ipairs(mainList:GetChildren()) do
                 end
             end
 
+            -- If eligible, update all TextButton's NameLabel
             if hasButton then
-                -- Clone the ItemFrame into this category's List
-                local clone = itemTemplate:Clone()
-                clone.Name = "ItemFrame_Test"
-                clone.Parent = catList
-
-                -- Update NameLabel
-                local nameLabel = clone:FindFirstChild("NameLabel")
-                if nameLabel and nameLabel:IsA("TextLabel") then
-                    nameLabel.Text = "Friesian Horse (v1)"
+                for _, child in ipairs(catList:GetChildren()) do
+                    if child:IsA("TextButton") then
+                        local nameLabel = child:FindFirstChild("NameLabel")
+                        if nameLabel and nameLabel:IsA("TextLabel") then
+                            nameLabel.Text = "Friesian Horse (v1)"
+                        end
+                    end
                 end
             end
         end
     end
 end
 
-print("✅ Cloned ItemFrame into all eligible CategoryContainer lists!")
+print("✅ Updated NameLabel of all eligible TextButtons!")
