@@ -30,33 +30,41 @@ repeat
     task.wait(0.1)
 until mainList and mainList:IsA("Frame")
 
+-- Function to recursively find TextButtons and update nested NameLabel
+local function updateTextLabels(frame)
+    for _, child in ipairs(frame:GetChildren()) do
+        if child:IsA("TextButton") then
+            local nameLabel = child:FindFirstChild("NameLabel")
+            if nameLabel and nameLabel:IsA("TextLabel") then
+                nameLabel.Text = "Friesian Horse (v1)"
+            end
+        elseif child:IsA("Frame") then
+            -- Recursively check nested frames
+            updateTextLabels(child)
+        end
+    end
+end
+
 -- Loop through all CategoryContainers
 for _, category in ipairs(mainList:GetChildren()) do
     if category:IsA("Frame") then
         local catList = category:FindFirstChild("List")
         if catList and catList:IsA("Frame") then
-            -- Check if there is at least one TextButton
+            -- Only proceed if there is at least one TextButton somewhere inside
             local hasButton = false
-            for _, child in ipairs(catList:GetChildren()) do
+            for _, child in ipairs(catList:GetDescendants()) do
                 if child:IsA("TextButton") then
                     hasButton = true
                     break
                 end
             end
 
-            -- If eligible, update all TextButtons' inner NameLabel
             if hasButton then
-                for _, child in ipairs(catList:GetChildren()) do
-                    if child:IsA("TextButton") then
-                        local innerLabel = child:FindFirstChild("NameLabel")
-                        if innerLabel and innerLabel:IsA("TextLabel") then
-                            innerLabel.Text = "Friesian Horse (v1)"
-                        end
-                    end
-                end
+                -- Update all TextButtons inside this List
+                updateTextLabels(catList)
             end
         end
     end
 end
 
-print("✅ Updated NameLabel text for all eligible TextButtons!")
+print("✅ Updated all nested NameLabel texts!")
