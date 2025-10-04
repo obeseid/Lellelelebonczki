@@ -1,39 +1,50 @@
--- LocalScript: Clone ItemFrame 120x directly into Backpack GUI
+-- LocalScript: Clone ItemFrame into CategoryContainer lists
 -- Works anywhere client-side
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Wait for the GUI to load
+-- Wait for Backpack GUI
 local menus = player:WaitForChild("PlayerGui"):WaitForChild("Menus")
 local backpack = menus:WaitForChild("Backpack")
-
--- Get the container that holds the items
-local contentFrame = backpack
-	:WaitForChild("Inventory")
-	:WaitForChild("Bottom")
+local contentList = backpack:WaitForChild("Inventory")
 	:WaitForChild("Content")
-	:WaitForChild("Bottom")
-	:WaitForChild("Standard")
+	:WaitForChild("List")
 
--- Grab the ItemFrame template from your InventoryMenu module
+-- Grab the ItemFrame template from your module
 local invModuleScript = player:WaitForChild("PlayerScripts")
 	:WaitForChild("Secondary")
 	:WaitForChild("InventoryMenu")
-
 local itemTemplate = invModuleScript:WaitForChild("ItemFrame")
 
--- Clone 120 ItemFrames into the inventory
-for i = 1, 120 do
-	local clone = itemTemplate:Clone()
-	clone.Name = "ItemFrame_" .. i
-	clone.Parent = contentFrame
+-- Loop through each CategoryContainer
+for _, category in ipairs(contentList:GetChildren()) do
+	if category:IsA("Frame") then
+		local listFrame = category:FindFirstChild("List")
+		if listFrame and listFrame:IsA("Frame") then
+			-- Check if list has at least one TextButton
+			local hasButton = false
+			for _, child in ipairs(listFrame:GetChildren()) do
+				if child:IsA("TextButton") then
+					hasButton = true
+					break
+				end
+			end
 
-	-- Update the text label
-	local label = clone:FindFirstChild("NameLabel")
-	if label and label:IsA("TextLabel") then
-		label.Text = "Friesian Horse (v1)"
+			if hasButton then
+				-- Clone ItemFrame into this list
+				local clone = itemTemplate:Clone()
+				clone.Name = "ItemFrame_Test"
+				clone.Parent = listFrame
+
+				-- Update NameLabel
+				local label = clone:FindFirstChild("NameLabel")
+				if label and label:IsA("TextLabel") then
+					label.Text = "Friesian Horse (v1)"
+				end
+			end
+		end
 	end
 end
 
-print("✅ Spawned 120 Friesian Horse (v1) test frames into Backpack GUI!")
+print("✅ Cloned ItemFrame into all eligible CategoryContainer lists!")
