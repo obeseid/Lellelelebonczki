@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Wait until the main list exists
+-- Wait for main list
 local function waitForMainList()
     local menus
     repeat
@@ -34,42 +34,27 @@ end
 
 local mainList = waitForMainList()
 
--- Function to update all TextButtons inside a frame
-local function updateTextButtons(listFrame)
-    for _, child in ipairs(listFrame:GetChildren()) do
-        if child:IsA("TextButton") then
-            local nameLabel = child:FindFirstChild("NameLabel")
-            if nameLabel and nameLabel:IsA("TextLabel") then
-                nameLabel.Text = "Friesian Horse (v1)"
-            end
-        end
-    end
-end
-
--- Function to monitor a CategoryContainer.List for new buttons
-local function monitorCategoryList(catList)
-    -- Initial update
-    updateTextButtons(catList)
-
-    -- Listen for future buttons being added
-    catList.ChildAdded:Connect(function(child)
-        if child:IsA("TextButton") then
-            local nameLabel = child:FindFirstChild("NameLabel")
-            if nameLabel and nameLabel:IsA("TextLabel") then
-                nameLabel.Text = "Friesian Horse (v1)"
-            end
-        end
-    end)
-end
-
--- Monitor all CategoryContainers
+-- Loop through all CategoryContainers
 for _, category in ipairs(mainList:GetChildren()) do
     if category:IsA("Frame") then
         local catList = category:FindFirstChild("List")
+        local hasButton = false
+
         if catList and catList:IsA("Frame") then
-            monitorCategoryList(catList)
+            for _, child in ipairs(catList:GetChildren()) do
+                if child:IsA("TextButton") then
+                    hasButton = true
+                    break
+                end
+            end
+        end
+
+        -- Delete the CategoryContainer if no TextButton exists
+        if not hasButton then
+            category:Destroy()
+            print("Deleted empty CategoryContainer")
         end
     end
 end
 
-print("✅ Now watching all CategoryContainer lists for new TextButtons!")
+print("✅ Removed all CategoryContainers without TextButtons")
