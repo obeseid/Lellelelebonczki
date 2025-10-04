@@ -1,0 +1,40 @@
+-- LocalScript for testing ItemFrame clones (StarterPlayerScripts/Secondary)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Require your inventory module
+local invModule = require(script.Parent:WaitForChild("inventorymenu"))
+
+-- Wait a bit to ensure UI is built
+task.wait(1)
+
+-- Locate the backpack inventory container used in your module
+local backpackMenu = invModule.menus.Backpack
+local contentFrame = backpackMenu.frame.Inventory.Bottom.Content.Bottom.Standard
+
+-- Get the ItemFrame template from the module
+local itemTemplate = script.Parent.inventorymenu:WaitForChild("ItemFrame")
+
+-- Add a UIGridLayout (if not already present) to auto-layout items
+local grid = contentFrame:FindFirstChildOfClass("UIGridLayout")
+if not grid then
+    grid = Instance.new("UIGridLayout")
+    grid.Parent = contentFrame
+    grid.CellSize = UDim2.new(0, 120, 0, 40) -- button size (W x H)
+    grid.CellPadding = UDim2.new(0, 6, 0, 6) -- spacing
+    grid.SortOrder = Enum.SortOrder.LayoutOrder
+end
+
+-- Spawn 120 clones
+for i = 1, 120 do
+    local clone = itemTemplate:Clone()
+    clone.Name = "ItemFrame_" .. i
+    clone.Parent = contentFrame
+
+    -- Update label
+    local nameLabel = clone:FindFirstChild("NameLabel")
+    if nameLabel and nameLabel:IsA("TextLabel") then
+        nameLabel.Text = "Friesian Horse (v1)"
+    end
+end
