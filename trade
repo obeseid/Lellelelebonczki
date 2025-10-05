@@ -54,21 +54,29 @@ local function freezeTradingGui()
 		return
 	end
 	
-	-- Freeze the GUI
-	print("Freezing Trading GUI for 11 seconds...")
+	-- Clone the trading GUI
+	print("Cloning and freezing Trading GUI for 11 seconds...")
+	local clonedGui = tradingGui:Clone()
 	
-	-- Disable all interactive elements
-	for _, descendant in pairs(tradingGui:GetDescendants()) do
+	-- Disable all interactive elements in the clone
+	for _, descendant in pairs(clonedGui:GetDescendants()) do
 		if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
 			descendant.Active = false
 		end
 	end
 	
-	-- Optional: Add visual feedback
-	local statusLabel = tradingGui:FindFirstChild("StatusLabel", true)
+	-- Optional: Add visual feedback to the clone
+	local statusLabel = clonedGui:FindFirstChild("StatusLabel", true)
 	if statusLabel and statusLabel:IsA("TextLabel") then
 		statusLabel.Text = "GUI Frozen - Closing in 11 seconds..."
 	end
+	
+	-- Parent the clone to PlayerGui (it will appear in the same position)
+	clonedGui.Parent = playerGui
+	clonedGui.Visible = true
+	
+	-- Hide the original trading GUI
+	tradingGui.Visible = false
 	
 	-- Change button appearance to show it's active
 	button.Text = "Freezing... (11s)"
@@ -78,22 +86,15 @@ local function freezeTradingGui()
 	-- Wait 11 seconds
 	task.wait(11)
 	
-	-- Close the GUI
-	tradingGui.Visible = false
-	
-	-- Re-enable interactive elements for next time
-	for _, descendant in pairs(tradingGui:GetDescendants()) do
-		if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
-			descendant.Active = true
-		end
-	end
+	-- Destroy the cloned GUI
+	clonedGui:Destroy()
 	
 	-- Reset button
 	button.Text = "Freeze Trade GUI"
 	button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 	button.Active = true
 	
-	print("Trading GUI closed!")
+	print("Cloned Trading GUI destroyed!")
 end
 
 -- Connect button click
