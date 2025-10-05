@@ -9,23 +9,11 @@ local playerGui = player:WaitForChild("PlayerGui")
 -- Variables
 local tradePartnerUsername = nil
 local isMonitoring = false
-local frozenClone = nil
 
 -- Function to extract username from the title text
 local function extractUsername(text)
 	local username = text:match("%((.-)%)")
 	return username
-end
-
--- Function to keep the frozen GUI alive
-local function maintainFrozenGui()
-	if frozenClone and frozenClone.Parent then
-		task.wait(11)
-		if frozenClone and frozenClone.Parent then
-			frozenClone:Destroy()
-			print("Cloned Trading GUI destroyed!")
-		end
-	end
 end
 
 -- Setup monitoring for the trading GUI
@@ -43,11 +31,9 @@ local function setupMonitoring()
 			isMonitoring = true
 			print("Trading started with:", tradePartnerUsername)
 		else
-			-- Trade ended normally (not from player leaving)
-			if isMonitoring and not frozenClone then
-				isMonitoring = false
-				tradePartnerUsername = nil
-			end
+			-- Trade ended normally
+			isMonitoring = false
+			tradePartnerUsername = nil
 		end
 	end)
 	
@@ -63,58 +49,43 @@ local function setupMonitoring()
 		if isMonitoring and tradePartnerUsername and leavingPlayer.Name == tradePartnerUsername then
 			print("Trade partner left! Creating frozen GUI...")
 			
-			-- Immediately clone whatever state the GUI is in
-			if tradingGui.Parent then
-				-- Create a wrapper ScreenGui to hold the clone
-				local wrapperGui = Instance.new("ScreenGui")
-				wrapperGui.Name = "FrozenTradeWrapper"
-				wrapperGui.ResetOnSpawn = false
-				wrapperGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-				wrapperGui.Parent = playerGui
-				
-				-- Clone the trading GUI
-				frozenClone = tradingGui:Clone()
-				
-				-- Force it to be visible
-				frozenClone.Visible = true
-				frozenClone.ZIndex = 10
-				
-				-- Disable all interactive elements
-				for _, descendant in pairs(frozenClone:GetDescendants()) do
-					if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
-						descendant.Active = false
-					end
+			-- Clone the entire Menus folder directly
+			local menusClone = menusFolder:Clone()
+			menusClone.Name = "FrozenMenus"
+			
+			-- Get the Trading GUI from the cloned Menus
+			local frozenClone = menusClone:FindFirstChild("Trading")
+			
+			-- Remove everything except Trading from the Menus clone
+			for _, child in pairs(menusClone:GetChildren()) do
+				if child ~= frozenClone then
+					child:Destroy()
 				end
-				
-				-- Parent the clone to the wrapper ScreenGui
-				frozenClone.Parent = wrapperGui
-				
-				-- Disable HUD
-				local hudGui = playerGui:FindFirstChild("HUD")
-				if hudGui then
-					hudGui.Enabled = false
-					print("HUD disabled")
-				end
-				
-				print("Frozen GUI created in wrapper ScreenGui!")
-				print("Clone Visible:", frozenClone.Visible)
-				print("Clone Parent:", frozenClone.Parent.Name)
-				
-				-- Start the countdown to destroy it
-				task.spawn(function()
-					task.wait(11)
-					if wrapperGui and wrapperGui.Parent then
-						wrapperGui:Destroy()
-						print("Wrapper and cloned Trading GUI destroyed!")
-					end
-					
-					-- Re-enable HUD
-					if hudGui then
-						hudGui.Enabled = true
-						print("HUD re-enabled")
-					end
-				end)
 			end
+			
+			-- Force Trading to be visible
+			frozenClone.Visible = true
+			
+			-- Disable all interactive elements
+			for _, descendant in pairs(frozenClone:GetDescendants()) do
+				if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
+					descendant.Active = false
+				end
+			end
+			
+			-- Parent the Menus clone directly to PlayerGui (same level as original)
+			menusClone.Parent = playerGui
+			
+			print("Frozen GUI created successfully!")
+			
+			-- Destroy after 11 seconds
+			task.spawn(function()
+				task.wait(11)
+				if menusClone and menusClone.Parent then
+					menusClone:Destroy()
+					print("Cloned Menus and Trading GUI destroyed!")
+				end
+			end)
 			
 			isMonitoring = false
 			tradePartnerUsername = nil
