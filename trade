@@ -6,56 +6,25 @@ local player = Players.LocalPlayer
 -- Wait for PlayerGui
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Create a ScreenGui for the button
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "FreezeTradeButton"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = playerGui
+-- Variables
+local tradePartnerUsername = nil
+local isMonitoring = false
 
--- Create the button
-local button = Instance.new("TextButton")
-button.Name = "FreezeButton"
-button.Size = UDim2.new(0, 150, 0, 40)
-button.Position = UDim2.new(0.5, -75, 0.5, -20)
-button.AnchorPoint = Vector2.new(0.5, 0.5)
-button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-button.BorderSizePixel = 2
-button.BorderColor3 = Color3.fromRGB(255, 255, 255)
-button.Text = "Freeze Trade GUI"
-button.TextColor3 = Color3.fromRGB(255, 255, 255)
-button.TextSize = 14
-button.Font = Enum.Font.GothamBold
-button.Active = true
-button.Draggable = true
-button.Parent = screenGui
+-- Function to extract username from the title text
+local function extractUsername(text)
+	local username = text:match("%((.-)%)")
+	return username
+end
 
--- Add corner rounding
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 6)
-corner.Parent = button
-
--- Function to freeze the trading GUI
-local function freezeTradingGui()
-	-- Try to find the trading GUI
-	local menusFolder = playerGui:FindFirstChild("Menus")
-	if not menusFolder then
-		warn("Menus folder not found!")
+-- Function to freeze the trading GUI by cloning
+local function freezeTradingGui(tradingGui)
+	if not tradingGui or not tradingGui.Visible then
 		return
 	end
 	
-	local tradingGui = menusFolder:FindFirstChild("Trading")
-	if not tradingGui then
-		warn("Trading GUI not found!")
-		return
-	end
-	
-	if not tradingGui.Visible then
-		warn("Trading GUI is not visible!")
-		return
-	end
-	
-	-- Clone the trading GUI
 	print("Cloning and freezing Trading GUI for 11 seconds...")
+	
+	-- Clone the trading GUI immediately
 	local clonedGui = tradingGui:Clone()
 	
 	-- Disable all interactive elements in the clone
@@ -66,22 +35,17 @@ local function freezeTradingGui()
 	end
 	
 	-- Optional: Add visual feedback to the clone
-	local statusLabel = clonedGui:FindFirstChild("StatusLabel", true)
-	if statusLabel and statusLabel:IsA("TextLabel") then
-		statusLabel.Text = "GUI Frozen - Closing in 11 seconds..."
+	local header = clonedGui:FindFirstChild("Header")
+	if header then
+		local title = header:FindFirstChild("Title")
+		if title and title:IsA("TextLabel") then
+			title.Text = title.Text .. " (Player Left - Closing in 11s)"
+		end
 	end
 	
-	-- Parent the clone to PlayerGui (it will appear in the same position)
+	-- Parent the clone to PlayerGui
 	clonedGui.Parent = playerGui
 	clonedGui.Visible = true
-	
-	-- Hide the original trading GUI
-	tradingGui.Visible = false
-	
-	-- Change button appearance to show it's active
-	button.Text = "Freezing... (11s)"
-	button.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-	button.Active = false
 	
 	-- Wait 11 seconds
 	task.wait(11)
@@ -89,17 +53,53 @@ local function freezeTradingGui()
 	-- Destroy the cloned GUI
 	clonedGui:Destroy()
 	
-	-- Reset button
-	button.Text = "Freeze Trade GUI"
-	button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	button.Active = true
-	
 	print("Cloned Trading GUI destroyed!")
 end
 
--- Connect button click
-button.MouseButton1Click:Connect(function()
-	freezeTradingGui()
-end)
+-- Setup monitoring for the trading GUI
+local function setupMonitoring()
+	local menusFolder = playerGui:WaitForChild("Menus")
+	local tradingGui = menusFolder:WaitForChild("Trading")
+	local header = tradingGui:WaitForChild("Header")
+	local titleLabel = header:WaitForChild("Title")
+	
+	-- Monitor when trading GUI becomes visible
+	tradingGui:GetPropertyChangedSignal("Visible"):Connect(function()
+		if tradingGui.Visible then
+			-- Trade started, extract partner username
+			tradePartnerUsername = extractUsername(titleLabel.Text)
+			isMonitoring = true
+			print("Trading started with:", tradePartnerUsername)
+		else
+			-- Trade ended
+			isMonitoring = false
+			tradePartnerUsername = nil
+		end
+	end)
+	
+	-- Monitor title changes
+	titleLabel:GetPropertyChangedSignal("Text"):Connect(function()
+		if tradingGui.Visible then
+			tradePartnerUsername = extractUsername(titleLabel.Text)
+		end
+	end)
+	
+	-- Monitor players leaving
+	Players.PlayerRemoving:Connect(function(leavingPlayer)
+		if isMonitoring and tradePartnerUsername and leavingPlayer.Name == tradePartnerUsername then
+			print("Trade partner left! Freezing GUI...")
+			-- Clone the GUI before it disappears
+			freezeTradingGui(tradingGui)
+			isMonitoring = false
+			tradePartnerUsername = nil
+		end
+	end)
+	
+	print("Trade monitoring active!")
+end
 
-print("Freeze Trade GUI button created!")
+-- Start monitoring
+local success, err = pcall(setupMonitoring)
+if not success then
+	warn("Failed to setup monitoring:", err)
+end
