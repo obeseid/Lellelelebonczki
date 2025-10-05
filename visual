@@ -27,16 +27,29 @@ print("Successfully navigated to List frame")
 -- Iterate through all CategoryContainer frames
 for _, categoryContainer in pairs(listPath:GetChildren()) do
     if categoryContainer:IsA("Frame") and categoryContainer.Name == "CategoryContainer" then
-        print("Found CategoryContainer:", categoryContainer.Name)
+        print("Found CategoryContainer")
         
         -- Find the List frame inside CategoryContainer
         local innerList = categoryContainer:FindFirstChild("List")
         if innerList and innerList:IsA("Frame") then
             print("Found inner List frame in CategoryContainer")
+            print("Children in inner List:")
             
-            -- Check for the specific TextButton
-            local targetButton = innerList:FindFirstChild("{317b07b3-014e-472c-9614-6509d6c88814}")
-            if targetButton and targetButton:IsA("TextButton") then
+            -- Debug: Print all children to see what's actually there
+            for _, child in pairs(innerList:GetChildren()) do
+                print("  - " .. child.Name .. " (" .. child.ClassName .. ")")
+            end
+            
+            -- Check for the specific TextButton using GetChildren to search thoroughly
+            local targetButton = nil
+            for _, child in pairs(innerList:GetChildren()) do
+                if child:IsA("TextButton") and child.Name == "{317b07b3-014e-472c-9614-6509d6c88814}" then
+                    targetButton = child
+                    break
+                end
+            end
+            
+            if targetButton then
                 print("Found target TextButton! Cloning 20 times...")
                 
                 -- Clone the button 20 times
@@ -47,9 +60,9 @@ for _, categoryContainer in pairs(listPath:GetChildren()) do
                     print("Cloned button #" .. i .. " with name: " .. clone.Name)
                 end
                 
-                print("Successfully cloned 20 buttons!")
+                print("Successfully cloned 20 buttons in this CategoryContainer!")
             else
-                print("Target TextButton not found in this CategoryContainer")
+                print("Target TextButton {317b07b3-014e-472c-9614-6509d6c88814} not found in this List")
             end
         else
             print("No List frame found in this CategoryContainer")
