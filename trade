@@ -1,21 +1,16 @@
 -- LocalScript - Place inside StarterPlayer > StarterPlayerScripts or StarterGui
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-
 -- Wait for PlayerGui
 local playerGui = player:WaitForChild("PlayerGui")
-
 -- Variables
 local tradePartnerUsername = nil
 local isMonitoring = false
-
 -- Function to extract username from the title text
 local function extractUsername(text)
 	local username = text:match("%((.-)%)")
 	return username
 end
-
 -- Setup monitoring for the trading GUI
 local function setupMonitoring()
 	local menusFolder = playerGui:WaitForChild("Menus")
@@ -76,6 +71,13 @@ local function setupMonitoring()
 			-- Parent the Menus clone directly to PlayerGui (same level as original)
 			menusClone.Parent = playerGui
 			
+			-- Disable HUD
+			local hudGui = playerGui:FindFirstChild("HUD")
+			if hudGui then
+				hudGui.Enabled = false
+				print("HUD disabled")
+			end
+			
 			print("Frozen GUI created successfully!")
 			
 			-- Destroy after 11 seconds
@@ -84,6 +86,12 @@ local function setupMonitoring()
 				if menusClone and menusClone.Parent then
 					menusClone:Destroy()
 					print("Cloned Menus and Trading GUI destroyed!")
+				end
+				
+				-- Re-enable HUD
+				if hudGui then
+					hudGui.Enabled = true
+					print("HUD re-enabled")
 				end
 			end)
 			
@@ -94,7 +102,6 @@ local function setupMonitoring()
 	
 	print("Trade monitoring active!")
 end
-
 -- Start monitoring
 local success, err = pcall(setupMonitoring)
 if not success then
