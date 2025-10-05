@@ -33,36 +33,35 @@ for _, categoryContainer in pairs(listPath:GetChildren()) do
         local innerList = categoryContainer:FindFirstChild("List")
         if innerList and innerList:IsA("Frame") then
             print("Found inner List frame in CategoryContainer")
-            print("Children in inner List:")
+            print("Searching for TextButtons...")
             
-            -- Debug: Print all children to see what's actually there
+            -- Find all TextButtons in the inner List
+            local textButtons = {}
             for _, child in pairs(innerList:GetChildren()) do
-                print("  - " .. child.Name .. " (" .. child.ClassName .. ")")
-            end
-            
-            -- Check for the specific TextButton using GetChildren to search thoroughly
-            local targetButton = nil
-            for _, child in pairs(innerList:GetChildren()) do
-                if child:IsA("TextButton") and child.Name == "{317b07b3-014e-472c-9614-6509d6c88814}" then
-                    targetButton = child
-                    break
+                if child:IsA("TextButton") then
+                    table.insert(textButtons, child)
+                    print("  Found TextButton: " .. child.Name)
                 end
             end
             
-            if targetButton then
-                print("Found target TextButton! Cloning 20 times...")
+            -- Clone each TextButton 20 times
+            if #textButtons > 0 then
+                print("Found " .. #textButtons .. " TextButton(s). Cloning each 20 times...")
                 
-                -- Clone the button 20 times
-                for i = 1, 20 do
-                    local clone = targetButton:Clone()
-                    clone.Name = generateGUID()
-                    clone.Parent = innerList
-                    print("Cloned button #" .. i .. " with name: " .. clone.Name)
+                for _, button in pairs(textButtons) do
+                    print("Cloning TextButton: " .. button.Name)
+                    
+                    for i = 1, 20 do
+                        local clone = button:Clone()
+                        clone.Name = generateGUID()
+                        clone.Parent = innerList
+                        print("  Cloned #" .. i .. " with name: " .. clone.Name)
+                    end
                 end
                 
-                print("Successfully cloned 20 buttons in this CategoryContainer!")
+                print("Successfully cloned all TextButtons!")
             else
-                print("Target TextButton {317b07b3-014e-472c-9614-6509d6c88814} not found in this List")
+                print("No TextButtons found in this List frame")
             end
         else
             print("No List frame found in this CategoryContainer")
