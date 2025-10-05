@@ -3,28 +3,57 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Variables to track trade state
-local tradePartnerUsername = nil
-local tradeActive = false
-local freezeInProgress = false
-local tradingGui = nil
-local titleLabel = nil
+-- Wait for PlayerGui
+local playerGui = player:WaitForChild("PlayerGui")
 
--- Function to extract username from the title text
-local function extractUsername(text)
-	-- Extract username from "Trading with DisplayName (Username)" format
-	local username = text:match("%((.-)%)")
-	return username
-end
+-- Create a ScreenGui for the button
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FreezeTradeButton"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
 
--- Function to freeze and close GUI after player leaves
-local function freezeAndClose()
-	if not tradingGui or not tradeActive or freezeInProgress then return end
+-- Create the button
+local button = Instance.new("TextButton")
+button.Name = "FreezeButton"
+button.Size = UDim2.new(0, 150, 0, 40)
+button.Position = UDim2.new(0.5, -75, 0, 10)
+button.AnchorPoint = Vector2.new(0.5, 0)
+button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+button.BorderSizePixel = 2
+button.BorderColor3 = Color3.fromRGB(255, 255, 255)
+button.Text = "Freeze Trade GUI"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextSize = 14
+button.Font = Enum.Font.GothamBold
+button.Parent = screenGui
+
+-- Add corner rounding
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 6)
+corner.Parent = button
+
+-- Function to freeze the trading GUI
+local function freezeTradingGui()
+	-- Try to find the trading GUI
+	local menusFolder = playerGui:FindFirstChild("Menus")
+	if not menusFolder then
+		warn("Menus folder not found!")
+		return
+	end
 	
-	freezeInProgress = true
+	local tradingGui = menusFolder:FindFirstChild("Trading")
+	if not tradingGui then
+		warn("Trading GUI not found!")
+		return
+	end
 	
-	-- Keep GUI visible
-	tradingGui.Enabled = true
+	if not tradingGui.Enabled then
+		warn("Trading GUI is not open!")
+		return
+	end
+	
+	-- Freeze the GUI
+	print("Freezing Trading GUI for 11 seconds...")
 	
 	-- Disable all interactive elements
 	for _, descendant in pairs(tradingGui:GetDescendants()) do
@@ -36,79 +65,38 @@ local function freezeAndClose()
 	-- Optional: Add visual feedback
 	local statusLabel = tradingGui:FindFirstChild("StatusLabel", true)
 	if statusLabel and statusLabel:IsA("TextLabel") then
-		statusLabel.Text = "Other player left. Closing in 11 seconds..."
+		statusLabel.Text = "GUI Frozen - Closing in 11 seconds..."
 	end
+	
+	-- Change button appearance to show it's active
+	button.Text = "Freezing... (11s)"
+	button.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+	button.Active = false
 	
 	-- Wait 11 seconds
 	task.wait(11)
 	
-	-- Now allow the GUI to close
+	-- Close the GUI
 	tradingGui.Enabled = false
-	tradeActive = false
-	freezeInProgress = false
-	tradePartnerUsername = nil
 	
-	-- Re-enable interactive elements for next trade
+	-- Re-enable interactive elements for next time
 	for _, descendant in pairs(tradingGui:GetDescendants()) do
 		if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
 			descendant.Active = true
 		end
 	end
+	
+	-- Reset button
+	button.Text = "Freeze Trade GUI"
+	button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	button.Active = true
+	
+	print("Trading GUI closed!")
 end
 
--- Function to setup monitoring for the trading GUI
-local function setupTradingMonitor()
-	local playerGui = player:WaitForChild("PlayerGui")
-	local menusFolder = playerGui:WaitForChild("Menus")
-	tradingGui = menusFolder:WaitForChild("Trading")
-	local header = tradingGui:WaitForChild("Header")
-	titleLabel = header:WaitForChild("Title")
-	
-	-- Listen for GUI being enabled (trade starting)
-	tradingGui:GetPropertyChangedSignal("Enabled"):Connect(function()
-		if tradingGui.Enabled and not freezeInProgress then
-			tradeActive = true
-			-- Extract the username from the title
-			tradePartnerUsername = extractUsername(titleLabel.Text)
-			print("Trading with:", tradePartnerUsername)
-		elseif not tradingGui.Enabled and not freezeInProgress then
-			-- Trade ended normally
-			tradeActive = false
-			tradePartnerUsername = nil
-		end
-	end)
-	
-	-- Also listen for changes to the title text while GUI is open
-	titleLabel:GetPropertyChangedSignal("Text"):Connect(function()
-		if tradingGui.Enabled and not freezeInProgress then
-			tradePartnerUsername = extractUsername(titleLabel.Text)
-			print("Updated trading partner:", tradePartnerUsername)
-		end
-	end)
-	
-	print("Trading GUI freeze monitoring active")
-end
-
--- Monitor players leaving
-Players.PlayerRemoving:Connect(function(leavingPlayer)
-	-- Check if the leaving player is our trade partner
-	if tradeActive and not freezeInProgress and tradePartnerUsername then
-		if leavingPlayer.Name == tradePartnerUsername then
-			print("Trade partner", tradePartnerUsername, "left - freezing GUI")
-			freezeAndClose()
-		end
-	end
+-- Connect button click
+button.MouseButton1Click:Connect(function()
+	freezeTradingGui()
 end)
 
--- Try to setup immediately, or wait for GUI to be added
-local success = pcall(setupTradingMonitor)
-if not success then
-	player:WaitForChild("PlayerGui").ChildAdded:Connect(function(child)
-		if child.Name == "Menus" and not tradingGui then
-			task.wait(0.1)
-			pcall(setupTradingMonitor)
-		end
-	end)
-end
-
-print("Trading GUI freeze script loaded")
+print("Freeze Trade GUI button created!")
