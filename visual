@@ -1,4 +1,4 @@
--- Roblox Item Cloner GUI Script
+-- Roblox Item Cloner & Editor GUI Script
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -21,8 +21,8 @@ screenGui.Parent = playerGui
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 400, 0, 500)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -250)
+mainFrame.Size = UDim2.new(0, 450, 0, 550)
+mainFrame.Position = UDim2.new(0.5, -225, 0.5, -275)
 mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -37,7 +37,7 @@ title.Name = "Title"
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 title.BorderSizePixel = 0
-title.Text = "Item Cloner"
+title.Text = "Item Cloner & Editor"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextSize = 20
 title.Font = Enum.Font.GothamBold
@@ -86,7 +86,7 @@ scanCorner.Parent = scanButton
 -- ScrollingFrame for detected items
 local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Name = "ItemList"
-scrollFrame.Size = UDim2.new(1, -20, 0, 300)
+scrollFrame.Size = UDim2.new(1, -20, 0, 250)
 scrollFrame.Position = UDim2.new(0, 10, 0, 95)
 scrollFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 scrollFrame.BorderSizePixel = 0
@@ -102,39 +102,147 @@ listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Padding = UDim.new(0, 5)
 listLayout.Parent = scrollFrame
 
+-- Editor Section
+local editorFrame = Instance.new("Frame")
+editorFrame.Size = UDim2.new(1, -20, 0, 140)
+editorFrame.Position = UDim2.new(0, 10, 0, 355)
+editorFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+editorFrame.BorderSizePixel = 0
+editorFrame.Parent = mainFrame
+
+local editorCorner = Instance.new("UICorner")
+editorCorner.CornerRadius = UDim.new(0, 8)
+editorCorner.Parent = editorFrame
+
+-- NameLabel Input
+local nameLabel = Instance.new("TextLabel")
+nameLabel.Size = UDim2.new(0, 100, 0, 25)
+nameLabel.Position = UDim2.new(0, 10, 0, 10)
+nameLabel.BackgroundTransparency = 1
+nameLabel.Text = "NameLabel Text:"
+nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+nameLabel.TextSize = 13
+nameLabel.Font = Enum.Font.Gotham
+nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+nameLabel.Parent = editorFrame
+
+local nameInput = Instance.new("TextBox")
+nameInput.Name = "NameInput"
+nameInput.Size = UDim2.new(1, -120, 0, 25)
+nameInput.Position = UDim2.new(0, 110, 0, 10)
+nameInput.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+nameInput.Text = ""
+nameInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+nameInput.TextSize = 13
+nameInput.Font = Enum.Font.Gotham
+nameInput.PlaceholderText = "Enter new name..."
+nameInput.ClearTextOnFocus = false
+nameInput.Parent = editorFrame
+
+local nameCorner = Instance.new("UICorner")
+nameCorner.CornerRadius = UDim.new(0, 5)
+nameCorner.Parent = nameInput
+
+-- ImageID Input
+local imageLabel = Instance.new("TextLabel")
+imageLabel.Size = UDim2.new(0, 100, 0, 25)
+imageLabel.Position = UDim2.new(0, 10, 0, 45)
+imageLabel.BackgroundTransparency = 1
+imageLabel.Text = "Image ID:"
+imageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+imageLabel.TextSize = 13
+imageLabel.Font = Enum.Font.Gotham
+imageLabel.TextXAlignment = Enum.TextXAlignment.Left
+imageLabel.Parent = editorFrame
+
+local imageInput = Instance.new("TextBox")
+imageInput.Name = "ImageInput"
+imageInput.Size = UDim2.new(1, -120, 0, 25)
+imageInput.Position = UDim2.new(0, 110, 0, 45)
+imageInput.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+imageInput.Text = ""
+imageInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+imageInput.TextSize = 13
+imageInput.Font = Enum.Font.Gotham
+imageInput.PlaceholderText = "Enter image ID (rbxassetid://...)..."
+imageInput.ClearTextOnFocus = false
+imageInput.Parent = editorFrame
+
+local imageCorner = Instance.new("UICorner")
+imageCorner.CornerRadius = UDim.new(0, 5)
+imageCorner.Parent = imageInput
+
 -- Clone Amount Input
 local amountLabel = Instance.new("TextLabel")
-amountLabel.Size = UDim2.new(0, 120, 0, 30)
-amountLabel.Position = UDim2.new(0, 10, 0, 410)
+amountLabel.Size = UDim2.new(0, 100, 0, 25)
+amountLabel.Position = UDim2.new(0, 10, 0, 80)
 amountLabel.BackgroundTransparency = 1
 amountLabel.Text = "Clone Amount:"
 amountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-amountLabel.TextSize = 14
+amountLabel.TextSize = 13
 amountLabel.Font = Enum.Font.Gotham
 amountLabel.TextXAlignment = Enum.TextXAlignment.Left
-amountLabel.Parent = mainFrame
+amountLabel.Parent = editorFrame
 
 local amountInput = Instance.new("TextBox")
 amountInput.Name = "AmountInput"
-amountInput.Size = UDim2.new(0, 80, 0, 30)
-amountInput.Position = UDim2.new(0, 130, 0, 410)
+amountInput.Size = UDim2.new(0, 80, 0, 25)
+amountInput.Position = UDim2.new(0, 110, 0, 80)
 amountInput.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
 amountInput.Text = "20"
 amountInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-amountInput.TextSize = 16
+amountInput.TextSize = 13
 amountInput.Font = Enum.Font.Gotham
 amountInput.PlaceholderText = "Amount"
-amountInput.Parent = mainFrame
+amountInput.Parent = editorFrame
 
 local amountCorner = Instance.new("UICorner")
-amountCorner.CornerRadius = UDim.new(0, 6)
+amountCorner.CornerRadius = UDim.new(0, 5)
 amountCorner.Parent = amountInput
+
+-- Apply to All Checkbox
+local applyAllCheckbox = Instance.new("TextButton")
+applyAllCheckbox.Size = UDim2.new(0, 20, 0, 20)
+applyAllCheckbox.Position = UDim2.new(0, 10, 0, 112)
+applyAllCheckbox.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+applyAllCheckbox.Text = ""
+applyAllCheckbox.Parent = editorFrame
+
+local checkCorner = Instance.new("UICorner")
+checkCorner.CornerRadius = UDim.new(0, 4)
+checkCorner.Parent = applyAllCheckbox
+
+local checkmark = Instance.new("TextLabel")
+checkmark.Size = UDim2.new(1, 0, 1, 0)
+checkmark.BackgroundTransparency = 1
+checkmark.Text = ""
+checkmark.TextColor3 = Color3.fromRGB(100, 255, 100)
+checkmark.TextSize = 16
+checkmark.Font = Enum.Font.GothamBold
+checkmark.Parent = applyAllCheckbox
+
+local applyAllLabel = Instance.new("TextLabel")
+applyAllLabel.Size = UDim2.new(0, 200, 0, 20)
+applyAllLabel.Position = UDim2.new(0, 35, 0, 112)
+applyAllLabel.BackgroundTransparency = 1
+applyAllLabel.Text = "Apply edits to all clones"
+applyAllLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+applyAllLabel.TextSize = 12
+applyAllLabel.Font = Enum.Font.Gotham
+applyAllLabel.TextXAlignment = Enum.TextXAlignment.Left
+applyAllLabel.Parent = editorFrame
+
+local applyToAll = false
+applyAllCheckbox.MouseButton1Click:Connect(function()
+    applyToAll = not applyToAll
+    checkmark.Text = applyToAll and "✓" or ""
+end)
 
 -- Status Label
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Name = "StatusLabel"
 statusLabel.Size = UDim2.new(1, -20, 0, 40)
-statusLabel.Position = UDim2.new(0, 10, 0, 450)
+statusLabel.Position = UDim2.new(0, 10, 0, 500)
 statusLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 statusLabel.Text = "Ready to scan..."
 statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -157,7 +265,7 @@ local function createItemButton(buttonName, buttonRef, parentList)
     itemButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
     itemButton.Text = buttonName
     itemButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    itemButton.TextSize = 12
+    itemButton.TextSize = 11
     itemButton.Font = Enum.Font.Gotham
     itemButton.TextXAlignment = Enum.TextXAlignment.Left
     itemButton.TextTruncate = Enum.TextTruncate.AtEnd
@@ -171,6 +279,30 @@ local function createItemButton(buttonName, buttonRef, parentList)
     padding.PaddingLeft = UDim.new(0, 10)
     padding.Parent = itemButton
     
+    -- Select button to load values
+    itemButton.MouseButton1Click:Connect(function()
+        selectedButton = buttonRef
+        
+        -- Load current values
+        local nameL = buttonRef:FindFirstChild("NameLabel")
+        local displayImg = buttonRef:FindFirstChild("DisplayImage")
+        
+        if nameL and nameL:IsA("TextLabel") then
+            nameInput.Text = nameL.Text
+        else
+            nameInput.Text = ""
+        end
+        
+        if displayImg and displayImg:IsA("ImageLabel") then
+            imageInput.Text = displayImg.Image
+        else
+            imageInput.Text = ""
+        end
+        
+        statusLabel.Text = "Selected: " .. buttonName
+        statusLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+    end)
+    
     -- Clone button
     local cloneBtn = Instance.new("TextButton")
     cloneBtn.Size = UDim2.new(0, 60, 0, 30)
@@ -178,7 +310,7 @@ local function createItemButton(buttonName, buttonRef, parentList)
     cloneBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
     cloneBtn.Text = "Clone"
     cloneBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    cloneBtn.TextSize = 14
+    cloneBtn.TextSize = 13
     cloneBtn.Font = Enum.Font.GothamBold
     cloneBtn.Parent = itemButton
     
@@ -199,11 +331,28 @@ local function createItemButton(buttonName, buttonRef, parentList)
         statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
         
         local parentList = buttonRef.Parent
+        local newName = nameInput.Text
+        local newImageId = imageInput.Text
         
         for i = 1, amount do
             local clone = buttonRef:Clone()
             clone.Name = generateGUID()
             clone.Visible = true
+            
+            -- Apply edits if checkbox is enabled
+            if applyToAll then
+                local nameL = clone:FindFirstChild("NameLabel")
+                local displayImg = clone:FindFirstChild("DisplayImage")
+                
+                if nameL and nameL:IsA("TextLabel") and newName ~= "" then
+                    nameL.Text = newName
+                end
+                
+                if displayImg and displayImg:IsA("ImageLabel") and newImageId ~= "" then
+                    displayImg.Image = newImageId
+                end
+            end
+            
             clone.Parent = parentList
         end
         
@@ -230,6 +379,9 @@ scanButton.MouseButton1Click:Connect(function()
     end
     
     detectedItems = {}
+    selectedButton = nil
+    nameInput.Text = ""
+    imageInput.Text = ""
     statusLabel.Text = "Scanning..."
     statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
     
@@ -282,7 +434,7 @@ scanButton.MouseButton1Click:Connect(function()
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
     
     if foundCount > 0 then
-        statusLabel.Text = "Found " .. foundCount .. " items!"
+        statusLabel.Text = "Found " .. foundCount .. " items! Click to select and edit."
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
     else
         statusLabel.Text = "No items found"
@@ -290,4 +442,4 @@ scanButton.MouseButton1Click:Connect(function()
     end
 end)
 
-print("Item Cloner GUI loaded successfully!")
+print("Item Cloner & Editor GUI loaded successfully!")
