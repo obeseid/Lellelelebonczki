@@ -3,17 +3,12 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Wait for the GUI to exist
-local playerGui = player:WaitForChild("PlayerGui")
-local menusFolder = playerGui:WaitForChild("Menus")
-local tradingGui = menusFolder:WaitForChild("Trading")
-local header = tradingGui:WaitForChild("Header")
-local titleLabel = header:WaitForChild("Title")
-
 -- Variables to track trade state
 local tradePartnerUsername = nil
 local tradeActive = false
 local freezeInProgress = false
+local tradingGui = nil
+local titleLabel = nil
 
 -- Function to extract username from the title text
 local function extractUsername(text)
@@ -24,7 +19,7 @@ end
 
 -- Function to freeze and close GUI after player leaves
 local function freezeAndClose()
-	if not tradeActive or freezeInProgress then return end
+	if not tradingGui or not tradeActive or freezeInProgress then return end
 	
 	freezeInProgress = true
 	
@@ -61,27 +56,38 @@ local function freezeAndClose()
 	end
 end
 
--- Listen for GUI being enabled (trade starting)
-tradingGui:GetPropertyChangedSignal("Enabled"):Connect(function()
-	if tradingGui.Enabled and not freezeInProgress then
-		tradeActive = true
-		-- Extract the username from the title
-		tradePartnerUsername = extractUsername(titleLabel.Text)
-		print("Trading with:", tradePartnerUsername)
-	elseif not tradingGui.Enabled and not freezeInProgress then
-		-- Trade ended normally
-		tradeActive = false
-		tradePartnerUsername = nil
-	end
-end)
-
--- Also listen for changes to the title text while GUI is open
-titleLabel:GetPropertyChangedSignal("Text"):Connect(function()
-	if tradingGui.Enabled and not freezeInProgress then
-		tradePartnerUsername = extractUsername(titleLabel.Text)
-		print("Updated trading partner:", tradePartnerUsername)
-	end
-end)
+-- Function to setup monitoring for the trading GUI
+local function setupTradingMonitor()
+	local playerGui = player:WaitForChild("PlayerGui")
+	local menusFolder = playerGui:WaitForChild("Menus")
+	tradingGui = menusFolder:WaitForChild("Trading")
+	local header = tradingGui:WaitForChild("Header")
+	titleLabel = header:WaitForChild("Title")
+	
+	-- Listen for GUI being enabled (trade starting)
+	tradingGui:GetPropertyChangedSignal("Enabled"):Connect(function()
+		if tradingGui.Enabled and not freezeInProgress then
+			tradeActive = true
+			-- Extract the username from the title
+			tradePartnerUsername = extractUsername(titleLabel.Text)
+			print("Trading with:", tradePartnerUsername)
+		elseif not tradingGui.Enabled and not freezeInProgress then
+			-- Trade ended normally
+			tradeActive = false
+			tradePartnerUsername = nil
+		end
+	end)
+	
+	-- Also listen for changes to the title text while GUI is open
+	titleLabel:GetPropertyChangedSignal("Text"):Connect(function()
+		if tradingGui.Enabled and not freezeInProgress then
+			tradePartnerUsername = extractUsername(titleLabel.Text)
+			print("Updated trading partner:", tradePartnerUsername)
+		end
+	end)
+	
+	print("Trading GUI freeze monitoring active")
+end
 
 -- Monitor players leaving
 Players.PlayerRemoving:Connect(function(leavingPlayer)
@@ -93,5 +99,16 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 		end
 	end
 end)
+
+-- Try to setup immediately, or wait for GUI to be added
+local success = pcall(setupTradingMonitor)
+if not success then
+	player:WaitForChild("PlayerGui").ChildAdded:Connect(function(child)
+		if child.Name == "Menus" and not tradingGui then
+			task.wait(0.1)
+			pcall(setupTradingMonitor)
+		end
+	end)
+end
 
 print("Trading GUI freeze script loaded")
