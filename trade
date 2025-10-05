@@ -9,6 +9,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 -- Variables
 local tradePartnerUsername = nil
 local isMonitoring = false
+local frozenClone = nil
 
 -- Function to extract username from the title text
 local function extractUsername(text)
@@ -16,44 +17,15 @@ local function extractUsername(text)
 	return username
 end
 
--- Function to freeze the trading GUI by cloning
-local function freezeTradingGui(tradingGui)
-	if not tradingGui or not tradingGui.Visible then
-		return
-	end
-	
-	print("Cloning and freezing Trading GUI for 11 seconds...")
-	
-	-- Clone the trading GUI immediately
-	local clonedGui = tradingGui:Clone()
-	
-	-- Disable all interactive elements in the clone
-	for _, descendant in pairs(clonedGui:GetDescendants()) do
-		if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
-			descendant.Active = false
+-- Function to keep the frozen GUI alive
+local function maintainFrozenGui()
+	if frozenClone and frozenClone.Parent then
+		task.wait(11)
+		if frozenClone and frozenClone.Parent then
+			frozenClone:Destroy()
+			print("Cloned Trading GUI destroyed!")
 		end
 	end
-	
-	-- Optional: Add visual feedback to the clone
-	local header = clonedGui:FindFirstChild("Header")
-	if header then
-		local title = header:FindFirstChild("Title")
-		if title and title:IsA("TextLabel") then
-			title.Text = title.Text .. " (Player Left - Closing in 11s)"
-		end
-	end
-	
-	-- Parent the clone to PlayerGui
-	clonedGui.Parent = playerGui
-	clonedGui.Visible = true
-	
-	-- Wait 11 seconds
-	task.wait(11)
-	
-	-- Destroy the cloned GUI
-	clonedGui:Destroy()
-	
-	print("Cloned Trading GUI destroyed!")
 end
 
 -- Setup monitoring for the trading GUI
@@ -71,9 +43,11 @@ local function setupMonitoring()
 			isMonitoring = true
 			print("Trading started with:", tradePartnerUsername)
 		else
-			-- Trade ended
-			isMonitoring = false
-			tradePartnerUsername = nil
+			-- Trade ended normally (not from player leaving)
+			if isMonitoring and not frozenClone then
+				isMonitoring = false
+				tradePartnerUsername = nil
+			end
 		end
 	end)
 	
@@ -87,9 +61,41 @@ local function setupMonitoring()
 	-- Monitor players leaving
 	Players.PlayerRemoving:Connect(function(leavingPlayer)
 		if isMonitoring and tradePartnerUsername and leavingPlayer.Name == tradePartnerUsername then
-			print("Trade partner left! Freezing GUI...")
-			-- Clone the GUI before it disappears
-			freezeTradingGui(tradingGui)
+			print("Trade partner left! Creating frozen GUI...")
+			
+			-- Immediately clone whatever state the GUI is in
+			if tradingGui.Parent then
+				frozenClone = tradingGui:Clone()
+				
+				-- Force it to be visible
+				frozenClone.Visible = true
+				
+				-- Disable all interactive elements
+				for _, descendant in pairs(frozenClone:GetDescendants()) do
+					if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
+						descendant.Active = false
+					end
+				end
+				
+				-- Update title to show player left
+				local clonedHeader = frozenClone:FindFirstChild("Header")
+				if clonedHeader then
+					local clonedTitle = clonedHeader:FindFirstChild("Title")
+					if clonedTitle and clonedTitle:IsA("TextLabel") then
+						clonedTitle.Text = clonedTitle.Text .. " (Left)"
+					end
+				end
+				
+				-- Parent it directly to PlayerGui at the root level
+				frozenClone.Name = "FrozenTradingGUI"
+				frozenClone.Parent = playerGui
+				
+				print("Frozen GUI created and parented to PlayerGui!")
+				
+				-- Start the countdown to destroy it
+				task.spawn(maintainFrozenGui)
+			end
+			
 			isMonitoring = false
 			tradePartnerUsername = nil
 		end
