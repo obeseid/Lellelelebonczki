@@ -35,6 +35,12 @@ for _, categoryContainer in pairs(listPath:GetChildren()) do
             print("Found inner List frame in CategoryContainer")
             print("Searching for TextButtons...")
             
+            -- Check for UIListLayout or other layout objects
+            local layout = innerList:FindFirstChildOfClass("UIListLayout") or innerList:FindFirstChildOfClass("UIGridLayout")
+            if layout then
+                print("Found layout object: " .. layout.ClassName)
+            end
+            
             -- Find all TextButtons in the inner List
             local textButtons = {}
             for _, child in pairs(innerList:GetChildren()) do
@@ -54,17 +60,26 @@ for _, categoryContainer in pairs(listPath:GetChildren()) do
                     for i = 1, 20 do
                         local clone = button:Clone()
                         clone.Name = generateGUID()
-                        clone.Parent = innerList
-                        
-                        -- Force visibility and layout update
                         clone.Visible = true
-                        clone.LayoutOrder = button.LayoutOrder + i
-                        
-                        -- Small delay to ensure proper rendering
-                        task.wait(0.01)
+                        clone.Parent = innerList
                         
                         print("  Cloned #" .. i .. " with name: " .. clone.Name)
                     end
+                end
+                
+                -- Force layout refresh
+                if layout then
+                    layout.Parent = nil
+                    task.wait()
+                    layout.Parent = innerList
+                    print("Layout refreshed")
+                end
+                
+                -- Also try updating canvas size if it's in a ScrollingFrame
+                local scrollingFrame = innerList.Parent
+                if scrollingFrame and scrollingFrame:IsA("ScrollingFrame") then
+                    scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, layout and layout.AbsoluteContentSize.Y or 0)
+                    print("ScrollingFrame canvas updated")
                 end
                 
                 print("Successfully cloned all TextButtons!")
