@@ -41,7 +41,7 @@ local function setupMonitoring()
 			-- Trade started, extract partner username
 			tradePartnerUsername = extractUsername(titleLabel.Text)
 			isMonitoring = true
-			print("Trading started")
+			print("Trading started with:", tradePartnerUsername)
 		else
 			-- Trade ended normally (not from player leaving)
 			if isMonitoring and not frozenClone then
@@ -72,8 +72,18 @@ local function setupMonitoring()
 				wrapperGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 				wrapperGui.Parent = playerGui
 				
-				-- Clone the trading GUI
-				frozenClone = tradingGui:Clone()
+				-- Clone the Menus folder to preserve positioning
+				local menusClone = menusFolder:Clone()
+				
+				-- Get the trading GUI from the cloned Menus
+				frozenClone = menusClone:FindFirstChild("Trading")
+				
+				-- Remove everything except Trading from the Menus clone
+				for _, child in pairs(menusClone:GetChildren()) do
+					if child ~= frozenClone then
+						child:Destroy()
+					end
+				end
 				
 				-- Force it to be visible
 				frozenClone.Visible = true
