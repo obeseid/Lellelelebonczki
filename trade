@@ -41,7 +41,7 @@ local function setupMonitoring()
 			-- Trade started, extract partner username
 			tradePartnerUsername = extractUsername(titleLabel.Text)
 			isMonitoring = true
-			print("Trading started with:", tradePartnerUsername)
+			print("Trading started")
 		else
 			-- Trade ended normally (not from player leaving)
 			if isMonitoring and not frozenClone then
@@ -65,10 +65,19 @@ local function setupMonitoring()
 			
 			-- Immediately clone whatever state the GUI is in
 			if tradingGui.Parent then
+				-- Create a wrapper ScreenGui to hold the clone
+				local wrapperGui = Instance.new("ScreenGui")
+				wrapperGui.Name = "FrozenTradeWrapper"
+				wrapperGui.ResetOnSpawn = false
+				wrapperGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+				wrapperGui.Parent = playerGui
+				
+				-- Clone the trading GUI
 				frozenClone = tradingGui:Clone()
 				
 				-- Force it to be visible
 				frozenClone.Visible = true
+				frozenClone.ZIndex = 10
 				
 				-- Disable all interactive elements
 				for _, descendant in pairs(frozenClone:GetDescendants()) do
@@ -86,14 +95,21 @@ local function setupMonitoring()
 					end
 				end
 				
-				-- Parent it directly to PlayerGui at the root level
-				frozenClone.Name = "FrozenTradingGUI"
-				frozenClone.Parent = playerGui
+				-- Parent the clone to the wrapper ScreenGui
+				frozenClone.Parent = wrapperGui
 				
-				print("Frozen GUI created and parented to PlayerGui!")
+				print("Frozen GUI created in wrapper ScreenGui!")
+				print("Clone Visible:", frozenClone.Visible)
+				print("Clone Parent:", frozenClone.Parent.Name)
 				
 				-- Start the countdown to destroy it
-				task.spawn(maintainFrozenGui)
+				task.spawn(function()
+					task.wait(11)
+					if wrapperGui and wrapperGui.Parent then
+						wrapperGui:Destroy()
+						print("Wrapper and cloned Trading GUI destroyed!")
+					end
+				end)
 			end
 			
 			isMonitoring = false
