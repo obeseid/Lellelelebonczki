@@ -49,8 +49,8 @@ local function freezeTradingGui()
 		return
 	end
 	
-	if not tradingGui.Enabled then
-		warn("Trading GUI is not open!")
+	if not tradingGui.Visible then
+		warn("Trading GUI is not visible!")
 		return
 	end
 	
@@ -79,7 +79,7 @@ local function freezeTradingGui()
 	task.wait(11)
 	
 	-- Close the GUI
-	tradingGui.Enabled = false
+	tradingGui.Visible = false
 	
 	-- Re-enable interactive elements for next time
 	for _, descendant in pairs(tradingGui:GetDescendants()) do
