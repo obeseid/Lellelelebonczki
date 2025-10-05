@@ -55,6 +55,14 @@ for _, categoryContainer in pairs(listPath:GetChildren()) do
                         local clone = button:Clone()
                         clone.Name = generateGUID()
                         clone.Parent = innerList
+                        
+                        -- Force visibility and layout update
+                        clone.Visible = true
+                        clone.LayoutOrder = button.LayoutOrder + i
+                        
+                        -- Small delay to ensure proper rendering
+                        task.wait(0.01)
+                        
                         print("  Cloned #" .. i .. " with name: " .. clone.Name)
                     end
                 end
