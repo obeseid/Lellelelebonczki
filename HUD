@@ -1,0 +1,107 @@
+-- HUD Toggle Button Script
+-- Place this in StarterGui or StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create the toggle button ScreenGui
+local toggleGui = Instance.new("ScreenGui")
+toggleGui.Name = "HUDToggle"
+toggleGui.ResetOnSpawn = false
+toggleGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+toggleGui.Parent = playerGui
+
+-- Create the button frame
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 120, 0, 40)
+toggleButton.Position = UDim2.new(0.5, -60, 0, 10)
+toggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+toggleButton.BorderSizePixel = 2
+toggleButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Text = "HUD: ON"
+toggleButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.TextSize = 16
+toggleButton.Parent = toggleGui
+
+-- Add UICorner for rounded edges
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = toggleButton
+
+-- Variables for dragging
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+-- Toggle functionality
+local hudEnabled = true
+
+local function toggleHUD()
+	local hud = playerGui:FindFirstChild("HUD")
+	
+	if hud then
+		hudEnabled = not hudEnabled
+		hud.Enabled = hudEnabled
+		
+		if hudEnabled then
+			toggleButton.Text = "HUD: ON"
+			toggleButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+		else
+			toggleButton.Text = "HUD: OFF"
+			toggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+		end
+	else
+		toggleButton.Text = "HUD: Missing"
+		toggleButton.TextColor3 = Color3.fromRGB(255, 165, 0)
+		warn("HUD ScreenGui not found in PlayerGui!")
+	end
+end
+
+-- Drag functionality
+local function update(input)
+	local delta = input.Position - dragStart
+	toggleButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+toggleButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = toggleButton.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
+-- Click to toggle
+toggleButton.MouseButton1Click:Connect(toggleHUD)
+
+-- Initial check
+wait(0.5)
+local hud = playerGui:FindFirstChild("HUD")
+if not hud then
+	toggleButton.Text = "HUD: Missing"
+	toggleButton.TextColor3 = Color3.fromRGB(255, 165, 0)
+	warn("HUD ScreenGui not found in PlayerGui!")
+end
