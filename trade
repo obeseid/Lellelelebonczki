@@ -16,8 +16,8 @@ screenGui.Parent = playerGui
 local button = Instance.new("TextButton")
 button.Name = "FreezeButton"
 button.Size = UDim2.new(0, 150, 0, 40)
-button.Position = UDim2.new(0.5, -75, 0, 10)
-button.AnchorPoint = Vector2.new(0.5, 0)
+button.Position = UDim2.new(0.5, -75, 0.5, -20)
+button.AnchorPoint = Vector2.new(0.5, 0.5)
 button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 button.BorderSizePixel = 2
 button.BorderColor3 = Color3.fromRGB(255, 255, 255)
@@ -25,6 +25,8 @@ button.Text = "Freeze Trade GUI"
 button.TextColor3 = Color3.fromRGB(255, 255, 255)
 button.TextSize = 14
 button.Font = Enum.Font.GothamBold
+button.Active = true
+button.Draggable = true
 button.Parent = screenGui
 
 -- Add corner rounding
