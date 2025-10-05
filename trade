@@ -1,0 +1,97 @@
+-- LocalScript - Place inside StarterPlayer > StarterPlayerScripts or StarterGui
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Wait for the GUI to exist
+local playerGui = player:WaitForChild("PlayerGui")
+local menusFolder = playerGui:WaitForChild("Menus")
+local tradingGui = menusFolder:WaitForChild("Trading")
+local header = tradingGui:WaitForChild("Header")
+local titleLabel = header:WaitForChild("Title")
+
+-- Variables to track trade state
+local tradePartnerUsername = nil
+local tradeActive = false
+local freezeInProgress = false
+
+-- Function to extract username from the title text
+local function extractUsername(text)
+	-- Extract username from "Trading with DisplayName (Username)" format
+	local username = text:match("%((.-)%)")
+	return username
+end
+
+-- Function to freeze and close GUI after player leaves
+local function freezeAndClose()
+	if not tradeActive or freezeInProgress then return end
+	
+	freezeInProgress = true
+	
+	-- Keep GUI visible
+	tradingGui.Enabled = true
+	
+	-- Disable all interactive elements
+	for _, descendant in pairs(tradingGui:GetDescendants()) do
+		if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
+			descendant.Active = false
+		end
+	end
+	
+	-- Optional: Add visual feedback
+	local statusLabel = tradingGui:FindFirstChild("StatusLabel", true)
+	if statusLabel and statusLabel:IsA("TextLabel") then
+		statusLabel.Text = "Other player left. Closing in 11 seconds..."
+	end
+	
+	-- Wait 11 seconds
+	task.wait(11)
+	
+	-- Now allow the GUI to close
+	tradingGui.Enabled = false
+	tradeActive = false
+	freezeInProgress = false
+	tradePartnerUsername = nil
+	
+	-- Re-enable interactive elements for next trade
+	for _, descendant in pairs(tradingGui:GetDescendants()) do
+		if descendant:IsA("GuiButton") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
+			descendant.Active = true
+		end
+	end
+end
+
+-- Listen for GUI being enabled (trade starting)
+tradingGui:GetPropertyChangedSignal("Enabled"):Connect(function()
+	if tradingGui.Enabled and not freezeInProgress then
+		tradeActive = true
+		-- Extract the username from the title
+		tradePartnerUsername = extractUsername(titleLabel.Text)
+		print("Trading with:", tradePartnerUsername)
+	elseif not tradingGui.Enabled and not freezeInProgress then
+		-- Trade ended normally
+		tradeActive = false
+		tradePartnerUsername = nil
+	end
+end)
+
+-- Also listen for changes to the title text while GUI is open
+titleLabel:GetPropertyChangedSignal("Text"):Connect(function()
+	if tradingGui.Enabled and not freezeInProgress then
+		tradePartnerUsername = extractUsername(titleLabel.Text)
+		print("Updated trading partner:", tradePartnerUsername)
+	end
+end)
+
+-- Monitor players leaving
+Players.PlayerRemoving:Connect(function(leavingPlayer)
+	-- Check if the leaving player is our trade partner
+	if tradeActive and not freezeInProgress and tradePartnerUsername then
+		if leavingPlayer.Name == tradePartnerUsername then
+			print("Trade partner", tradePartnerUsername, "left - freezing GUI")
+			freezeAndClose()
+		end
+	end
+end)
+
+print("Trading GUI freeze script loaded")
