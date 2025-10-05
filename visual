@@ -31,6 +31,42 @@ local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 10)
 mainCorner.Parent = mainFrame
 
+-- Make GUI draggable
+local dragging = false
+local dragInput, mousePos, framePos
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        mousePos = input.Position
+        framePos = mainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - mousePos
+        mainFrame.Position = UDim2.new(
+            framePos.X.Scale,
+            framePos.X.Offset + delta.X,
+            framePos.Y.Scale,
+            framePos.Y.Offset + delta.Y
+        )
+    end
+end)
+
 -- Title
 local title = Instance.new("TextLabel")
 title.Name = "Title"
@@ -293,8 +329,12 @@ local function createItemButton(buttonName, buttonRef, parentList)
             nameInput.Text = ""
         end
         
-        if displayImg and displayImg:IsA("ImageLabel") then
-            imageInput.Text = displayImg.Image
+        if displayImg then
+            if displayImg:IsA("ImageLabel") then
+                imageInput.Text = displayImg.Image
+            elseif displayImg:IsA("ImageButton") then
+                imageInput.Text = displayImg.Image
+            end
         else
             imageInput.Text = ""
         end
@@ -348,8 +388,12 @@ local function createItemButton(buttonName, buttonRef, parentList)
                     nameL.Text = newName
                 end
                 
-                if displayImg and displayImg:IsA("ImageLabel") and newImageId ~= "" then
-                    displayImg.Image = newImageId
+                if displayImg and newImageId ~= "" then
+                    if displayImg:IsA("ImageLabel") then
+                        displayImg.Image = newImageId
+                    elseif displayImg:IsA("ImageButton") then
+                        displayImg.Image = newImageId
+                    end
                 end
             end
             
