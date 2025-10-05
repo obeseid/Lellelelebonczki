@@ -1,6 +1,4 @@
--- Roblox Client-Sided Item Cloner Script
--- Path: Players.username.PlayerGui.Menus.Backpack.Main.Inventory.Content.List
-
+-- Roblox Item Cloner GUI Script
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -14,82 +12,282 @@ local function generateGUID()
     return "{" .. guid .. "}"
 end
 
--- Navigate to the List frame
-local menusPath = playerGui:WaitForChild("Menus")
-local backpackPath = menusPath:WaitForChild("Backpack")
-local mainPath = backpackPath:WaitForChild("Main")
-local inventoryPath = mainPath:WaitForChild("Inventory")
-local contentPath = inventoryPath:WaitForChild("Content")
-local listPath = contentPath:WaitForChild("List")
+-- Create main GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ItemClonerGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
 
-print("Successfully navigated to List frame")
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 400, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -250)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
 
--- Iterate through all CategoryContainer frames
-for _, categoryContainer in pairs(listPath:GetChildren()) do
-    if categoryContainer:IsA("Frame") and categoryContainer.Name == "CategoryContainer" then
-        print("Found CategoryContainer")
-        
-        -- Find the List frame inside CategoryContainer
-        local innerList = categoryContainer:FindFirstChild("List")
-        if innerList and innerList:IsA("Frame") then
-            print("Found inner List frame in CategoryContainer")
-            print("Searching for TextButtons...")
-            
-            -- Check for UIListLayout or other layout objects
-            local layout = innerList:FindFirstChildOfClass("UIListLayout") or innerList:FindFirstChildOfClass("UIGridLayout")
-            if layout then
-                print("Found layout object: " .. layout.ClassName)
-            end
-            
-            -- Find all TextButtons in the inner List
-            local textButtons = {}
-            for _, child in pairs(innerList:GetChildren()) do
-                if child:IsA("TextButton") then
-                    table.insert(textButtons, child)
-                    print("  Found TextButton: " .. child.Name)
-                end
-            end
-            
-            -- Clone each TextButton 20 times
-            if #textButtons > 0 then
-                print("Found " .. #textButtons .. " TextButton(s). Cloning each 20 times...")
-                
-                for _, button in pairs(textButtons) do
-                    print("Cloning TextButton: " .. button.Name)
-                    
-                    for i = 1, 20 do
-                        local clone = button:Clone()
-                        clone.Name = generateGUID()
-                        clone.Visible = true
-                        clone.Parent = innerList
-                        
-                        print("  Cloned #" .. i .. " with name: " .. clone.Name)
-                    end
-                end
-                
-                -- Force layout refresh
-                if layout then
-                    layout.Parent = nil
-                    task.wait()
-                    layout.Parent = innerList
-                    print("Layout refreshed")
-                end
-                
-                -- Also try updating canvas size if it's in a ScrollingFrame
-                local scrollingFrame = innerList.Parent
-                if scrollingFrame and scrollingFrame:IsA("ScrollingFrame") then
-                    scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, layout and layout.AbsoluteContentSize.Y or 0)
-                    print("ScrollingFrame canvas updated")
-                end
-                
-                print("Successfully cloned all TextButtons!")
-            else
-                print("No TextButtons found in this List frame")
-            end
-        else
-            print("No List frame found in this CategoryContainer")
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = mainFrame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+title.BorderSizePixel = 0
+title.Text = "Item Cloner"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 20
+title.Font = Enum.Font.GothamBold
+title.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 10)
+titleCorner.Parent = title
+
+-- Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 18
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Parent = title
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 5)
+closeCorner.Parent = closeButton
+
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Scan Button
+local scanButton = Instance.new("TextButton")
+scanButton.Name = "ScanButton"
+scanButton.Size = UDim2.new(0, 150, 0, 35)
+scanButton.Position = UDim2.new(0.5, -75, 0, 50)
+scanButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+scanButton.Text = "Scan for Items"
+scanButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+scanButton.TextSize = 16
+scanButton.Font = Enum.Font.GothamBold
+scanButton.Parent = mainFrame
+
+local scanCorner = Instance.new("UICorner")
+scanCorner.CornerRadius = UDim.new(0, 8)
+scanCorner.Parent = scanButton
+
+-- ScrollingFrame for detected items
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Name = "ItemList"
+scrollFrame.Size = UDim2.new(1, -20, 0, 300)
+scrollFrame.Position = UDim2.new(0, 10, 0, 95)
+scrollFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+scrollFrame.BorderSizePixel = 0
+scrollFrame.ScrollBarThickness = 6
+scrollFrame.Parent = mainFrame
+
+local scrollCorner = Instance.new("UICorner")
+scrollCorner.CornerRadius = UDim.new(0, 8)
+scrollCorner.Parent = scrollFrame
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 5)
+listLayout.Parent = scrollFrame
+
+-- Clone Amount Input
+local amountLabel = Instance.new("TextLabel")
+amountLabel.Size = UDim2.new(0, 120, 0, 30)
+amountLabel.Position = UDim2.new(0, 10, 0, 410)
+amountLabel.BackgroundTransparency = 1
+amountLabel.Text = "Clone Amount:"
+amountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+amountLabel.TextSize = 14
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+amountLabel.Parent = mainFrame
+
+local amountInput = Instance.new("TextBox")
+amountInput.Name = "AmountInput"
+amountInput.Size = UDim2.new(0, 80, 0, 30)
+amountInput.Position = UDim2.new(0, 130, 0, 410)
+amountInput.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+amountInput.Text = "20"
+amountInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+amountInput.TextSize = 16
+amountInput.Font = Enum.Font.Gotham
+amountInput.PlaceholderText = "Amount"
+amountInput.Parent = mainFrame
+
+local amountCorner = Instance.new("UICorner")
+amountCorner.CornerRadius = UDim.new(0, 6)
+amountCorner.Parent = amountInput
+
+-- Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "StatusLabel"
+statusLabel.Size = UDim2.new(1, -20, 0, 40)
+statusLabel.Position = UDim2.new(0, 10, 0, 450)
+statusLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+statusLabel.Text = "Ready to scan..."
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.TextSize = 12
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.Parent = mainFrame
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 6)
+statusCorner.Parent = statusLabel
+
+-- Variables to store detected items
+local detectedItems = {}
+local selectedButton = nil
+
+-- Function to create item button in list
+local function createItemButton(buttonName, buttonRef, parentList)
+    local itemButton = Instance.new("TextButton")
+    itemButton.Size = UDim2.new(1, -10, 0, 40)
+    itemButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    itemButton.Text = buttonName
+    itemButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    itemButton.TextSize = 12
+    itemButton.Font = Enum.Font.Gotham
+    itemButton.TextXAlignment = Enum.TextXAlignment.Left
+    itemButton.TextTruncate = Enum.TextTruncate.AtEnd
+    itemButton.Parent = scrollFrame
+    
+    local itemCorner = Instance.new("UICorner")
+    itemCorner.CornerRadius = UDim.new(0, 6)
+    itemCorner.Parent = itemButton
+    
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 10)
+    padding.Parent = itemButton
+    
+    -- Clone button
+    local cloneBtn = Instance.new("TextButton")
+    cloneBtn.Size = UDim2.new(0, 60, 0, 30)
+    cloneBtn.Position = UDim2.new(1, -70, 0.5, -15)
+    cloneBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+    cloneBtn.Text = "Clone"
+    cloneBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    cloneBtn.TextSize = 14
+    cloneBtn.Font = Enum.Font.GothamBold
+    cloneBtn.Parent = itemButton
+    
+    local cloneCorner = Instance.new("UICorner")
+    cloneCorner.CornerRadius = UDim.new(0, 5)
+    cloneCorner.Parent = cloneBtn
+    
+    -- Clone functionality
+    cloneBtn.MouseButton1Click:Connect(function()
+        local amount = tonumber(amountInput.Text) or 20
+        if amount <= 0 then
+            statusLabel.Text = "Error: Amount must be greater than 0"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            return
         end
-    end
+        
+        statusLabel.Text = "Cloning " .. amount .. " copies..."
+        statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+        
+        local parentList = buttonRef.Parent
+        
+        for i = 1, amount do
+            local clone = buttonRef:Clone()
+            clone.Name = generateGUID()
+            clone.Visible = true
+            clone.Parent = parentList
+        end
+        
+        -- Refresh layout
+        local layout = parentList:FindFirstChildOfClass("UIListLayout") or parentList:FindFirstChildOfClass("UIGridLayout")
+        if layout then
+            layout.Parent = nil
+            task.wait()
+            layout.Parent = parentList
+        end
+        
+        statusLabel.Text = "Successfully cloned " .. amount .. " items!"
+        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    end)
 end
 
-print("Script execution completed!")
+-- Scan function
+scanButton.MouseButton1Click:Connect(function()
+    -- Clear previous items
+    for _, child in pairs(scrollFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    detectedItems = {}
+    statusLabel.Text = "Scanning..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    
+    -- Navigate to the path
+    local success, menusPath = pcall(function()
+        return playerGui:WaitForChild("Menus", 1)
+    end)
+    
+    if not success then
+        statusLabel.Text = "Error: Could not find Menus"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
+    end
+    
+    local backpackPath = menusPath:FindFirstChild("Backpack")
+    if not backpackPath then
+        statusLabel.Text = "Error: Could not find Backpack"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
+    end
+    
+    local mainPath = backpackPath:FindFirstChild("Main")
+    local inventoryPath = mainPath and mainPath:FindFirstChild("Inventory")
+    local contentPath = inventoryPath and inventoryPath:FindFirstChild("Content")
+    local listPath = contentPath and contentPath:FindFirstChild("List")
+    
+    if not listPath then
+        statusLabel.Text = "Error: Could not find List path"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
+    end
+    
+    -- Search for TextButtons
+    local foundCount = 0
+    for _, categoryContainer in pairs(listPath:GetChildren()) do
+        if categoryContainer:IsA("Frame") and categoryContainer.Name == "CategoryContainer" then
+            local innerList = categoryContainer:FindFirstChild("List")
+            if innerList and innerList:IsA("Frame") then
+                for _, child in pairs(innerList:GetChildren()) do
+                    if child:IsA("TextButton") then
+                        table.insert(detectedItems, child)
+                        createItemButton(child.Name, child, innerList)
+                        foundCount = foundCount + 1
+                    end
+                end
+            end
+        end
+    end
+    
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
+    
+    if foundCount > 0 then
+        statusLabel.Text = "Found " .. foundCount .. " items!"
+        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    else
+        statusLabel.Text = "No items found"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
+    end
+end)
+
+print("Item Cloner GUI loaded successfully!")
