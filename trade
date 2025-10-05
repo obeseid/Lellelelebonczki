@@ -49,15 +49,9 @@ local function setupMonitoring()
 		if isMonitoring and tradePartnerUsername and leavingPlayer.Name == tradePartnerUsername then
 			print("Trade partner left! Creating frozen GUI...")
 			
-			-- Create a wrapper ScreenGui to hold the clone
-			local wrapperGui = Instance.new("ScreenGui")
-			wrapperGui.Name = "FrozenTradeWrapper"
-			wrapperGui.ResetOnSpawn = false
-			wrapperGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-			wrapperGui.Parent = playerGui
-			
-			-- Clone the entire Menus folder to preserve positioning
+			-- Clone the entire Menus folder directly
 			local menusClone = menusFolder:Clone()
+			menusClone.Name = "FrozenMenus"
 			
 			-- Get the Trading GUI from the cloned Menus
 			local frozenClone = menusClone:FindFirstChild("Trading")
@@ -79,17 +73,17 @@ local function setupMonitoring()
 				end
 			end
 			
-			-- Parent the Menus clone to the wrapper ScreenGui
-			menusClone.Parent = wrapperGui
+			-- Parent the Menus clone directly to PlayerGui (same level as original)
+			menusClone.Parent = playerGui
 			
 			print("Frozen GUI created successfully!")
 			
 			-- Destroy after 11 seconds
 			task.spawn(function()
 				task.wait(11)
-				if wrapperGui and wrapperGui.Parent then
-					wrapperGui:Destroy()
-					print("Wrapper and cloned Trading GUI destroyed!")
+				if menusClone and menusClone.Parent then
+					menusClone:Destroy()
+					print("Cloned Menus and Trading GUI destroyed!")
 				end
 			end)
 			
