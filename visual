@@ -1,57 +1,60 @@
+-- Roblox Client-Sided Item Cloner Script
+-- Path: Players.username.PlayerGui.Menus.Backpack.Main.Inventory.Content.List
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
--- Wait for main list
-local function waitForMainList()
-    local menus
-    repeat
-        menus = player:FindFirstChild("PlayerGui"):FindFirstChild("Menus")
-        task.wait(0.1)
-    until menus and menus:IsA("ScreenGui")
-
-    local backpack
-    repeat
-        backpack = menus:FindFirstChild("Backpack")
-        task.wait(0.1)
-    until backpack and backpack:IsA("Frame")
-
-    local main
-    repeat
-        main = backpack:FindFirstChild("Main")
-        task.wait(0.1)
-    until main and main:IsA("Frame")
-
-    local inventory, content, mainList
-    repeat
-        inventory = main:FindFirstChild("Inventory")
-        content = inventory and inventory:FindFirstChild("Content")
-        mainList = content and content:FindFirstChild("List")
-        task.wait(0.1)
-    until mainList and mainList:IsA("Frame")
-
-    return mainList
+-- Function to generate a random GUID format string
+local function generateGUID()
+    local template = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    local guid = string.gsub(template, "x", function()
+        return string.format("%x", math.random(0, 15))
+    end)
+    return "{" .. guid .. "}"
 end
 
-local mainList = waitForMainList()
+-- Navigate to the List frame
+local menusPath = playerGui:WaitForChild("Menus")
+local backpackPath = menusPath:WaitForChild("Backpack")
+local mainPath = backpackPath:WaitForChild("Main")
+local inventoryPath = mainPath:WaitForChild("Inventory")
+local contentPath = inventoryPath:WaitForChild("Content")
+local listPath = contentPath:WaitForChild("List")
 
--- Loop through all CategoryContainers
-for _, category in ipairs(mainList:GetChildren()) do
-    if category:IsA("Frame") then
-        local catList = category:FindFirstChild("List")
-        if catList and catList:IsA("Frame") then
-            -- Look for the target TextButton
-            local targetButton = catList:FindFirstChild("{31760763-014-472-9624-6509888814}")
+print("Successfully navigated to List frame")
+
+-- Iterate through all CategoryContainer frames
+for _, categoryContainer in pairs(listPath:GetChildren()) do
+    if categoryContainer:IsA("Frame") and categoryContainer.Name == "CategoryContainer" then
+        print("Found CategoryContainer:", categoryContainer.Name)
+        
+        -- Find the List frame inside CategoryContainer
+        local innerList = categoryContainer:FindFirstChild("List")
+        if innerList and innerList:IsA("Frame") then
+            print("Found inner List frame in CategoryContainer")
+            
+            -- Check for the specific TextButton
+            local targetButton = innerList:FindFirstChild("{317b07b3-014e-472c-9614-6509d6c88814}")
             if targetButton and targetButton:IsA("TextButton") then
-                -- Clone 130 times
-                for i = 1, 130 do
+                print("Found target TextButton! Cloning 20 times...")
+                
+                -- Clone the button 20 times
+                for i = 1, 20 do
                     local clone = targetButton:Clone()
-                    clone.Name = targetButton.Name .. "_Clone_" .. i
-                    clone.Parent = catList
+                    clone.Name = generateGUID()
+                    clone.Parent = innerList
+                    print("Cloned button #" .. i .. " with name: " .. clone.Name)
                 end
-                print("Cloned target TextButton 130 times in category:", category.Name)
+                
+                print("Successfully cloned 20 buttons!")
+            else
+                print("Target TextButton not found in this CategoryContainer")
             end
+        else
+            print("No List frame found in this CategoryContainer")
         end
     end
 end
 
-print("✅ Done cloning target TextButtons!")
+print("Script execution completed!")
