@@ -336,8 +336,6 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 imageInput.Text = displayImg.Image
             elseif displayImg:IsA("ImageButton") then
                 imageInput.Text = displayImg.Image
-            elseif displayImg:IsA("ViewportFrame") then
-                imageInput.Text = "ViewportFrame (3D Model)"
             end
         else
             imageInput.Text = ""
@@ -390,104 +388,29 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 
                 if nameL and nameL:IsA("TextLabel") and newName ~= "" then
                     nameL.Text = newName
-                    
-                    -- Change the 3D model based on NameLabel text
-                    if newName == "Friesian Horse (v1)" then
-                        local displayViewport = clone:FindFirstChild("DisplayViewport")
-                        if displayViewport and displayViewport:IsA("ViewportFrame") then
-                            local displayInstance = displayViewport:FindFirstChild("DISPLAY_INSTANCE")
-                            if displayInstance then
-                                displayInstance:Destroy()
-                            end
-                            
-                            -- Clone the new model from ReplicatedStorage
-                            local ReplicatedStorage = game:GetService("ReplicatedStorage")
-                            local newModel = ReplicatedStorage:FindFirstChild("Instances")
-                            if newModel then
-                                newModel = newModel:FindFirstChild("Animals")
-                                if newModel then
-                                    newModel = newModel:FindFirstChild("FriesianHorse (v1)")
-                                    if newModel then
-                                        local modelClone = newModel:Clone()
-                                        modelClone.Name = "DISPLAY_INSTANCE"
-                                        modelClone.Parent = displayViewport
-                                        print("Changed model to Friesian Horse (v1)")
-                                    else
-                                        warn("FriesianHorse (v1) not found in ReplicatedStorage")
-                                    end
-                                end
-                            end
-                        end
-                    elseif newName == "Clydesdale Horse (v1)" then
-                        local displayViewport = clone:FindFirstChild("DisplayViewport")
-                        if displayViewport and displayViewport:IsA("ViewportFrame") then
-                            local displayInstance = displayViewport:FindFirstChild("DISPLAY_INSTANCE")
-                            if displayInstance then
-                                displayInstance:Destroy()
-                            end
-                            
-                            -- Clone the new model from ReplicatedStorage
-                            local ReplicatedStorage = game:GetService("ReplicatedStorage")
-                            local newModel = ReplicatedStorage:FindFirstChild("Instances")
-                            if newModel then
-                                newModel = newModel:FindFirstChild("Animals")
-                                if newModel then
-                                    newModel = newModel:FindFirstChild("DraftHorse")
-                                    if newModel then
-                                        local modelClone = newModel:Clone()
-                                        modelClone.Name = "DISPLAY_INSTANCE"
-                                        modelClone.Parent = displayViewport
-                                        print("Changed model to Clydesdale Horse (v1) / DraftHorse")
-                                    else
-                                        warn("DraftHorse not found in ReplicatedStorage")
-                                    end
-                                end
-                            end
-                        end
-                    end
                 end
                 
                 if displayImg and newImageId ~= "" then
-                    print("Attempting to change image...")
-                    print("New Image ID: " .. newImageId)
+                    -- Create an ImageLabel overlay
+                    local overlayImg = Instance.new("ImageLabel")
+                    overlayImg.Name = "OverlayImage"
+                    overlayImg.Image = newImageId
+                    overlayImg.Size = displayImg.Size
+                    overlayImg.Position = displayImg.Position
+                    overlayImg.AnchorPoint = displayImg.AnchorPoint
+                    overlayImg.BackgroundTransparency = 1
+                    overlayImg.ZIndex = displayImg.ZIndex + 1
+                    overlayImg.ScaleType = displayImg.ScaleType or Enum.ScaleType.Stretch
                     
-                    -- Delete the DisplayViewport if it exists
-                    local displayViewport = clone:FindFirstChild("DisplayViewport")
-                    if displayViewport then
-                        print("Deleting DisplayViewport")
-                        displayViewport:Destroy()
+                    -- Copy other properties if they exist
+                    if displayImg.ImageColor3 then
+                        overlayImg.ImageColor3 = displayImg.ImageColor3
+                    end
+                    if displayImg.ImageTransparency then
+                        overlayImg.ImageTransparency = displayImg.ImageTransparency
                     end
                     
-                    -- Find DisplayImage in the clone
-                    local cloneDisplayImg = clone:FindFirstChild("DisplayImage")
-                    if cloneDisplayImg then
-                        print("Found DisplayImage in clone, type: " .. cloneDisplayImg.ClassName)
-                        
-                        -- If it's a ViewportFrame, clear it and add an ImageLabel inside
-                        if cloneDisplayImg:IsA("ViewportFrame") then
-                            print("DisplayImage is ViewportFrame, clearing and adding ImageLabel")
-                            -- Clear all children from the ViewportFrame
-                            cloneDisplayImg:ClearAllChildren()
-                            
-                            -- Create ImageLabel inside ViewportFrame
-                            local newImg = Instance.new("ImageLabel")
-                            newImg.Name = "CustomImage"
-                            newImg.Image = newImageId
-                            newImg.Size = UDim2.new(1, 0, 1, 0)
-                            newImg.Position = UDim2.new(0, 0, 0, 0)
-                            newImg.BackgroundTransparency = 1
-                            newImg.ScaleType = Enum.ScaleType.Fit
-                            newImg.Parent = cloneDisplayImg
-                            print("ImageLabel created with ID: " .. newImg.Image)
-                        else
-                            print("DisplayImage is " .. cloneDisplayImg.ClassName .. ", changing Image property")
-                            -- For regular ImageLabel/ImageButton, just change the image
-                            cloneDisplayImg.Image = newImageId
-                            print("Image changed to: " .. cloneDisplayImg.Image)
-                        end
-                    else
-                        print("ERROR: DisplayImage not found in clone!")
-                    end
+                    overlayImg.Parent = displayImg.Parent
                 end
             end
             
