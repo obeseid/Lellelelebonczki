@@ -399,38 +399,27 @@ local function createItemButton(buttonName, buttonRef, parentList)
                         displayViewport:Destroy()
                     end
                     
-                    -- Check if it's a ViewportFrame (3D model display)
-                    if displayImg:IsA("ViewportFrame") then
-                        -- Create an ImageLabel overlay to cover the ViewportFrame
-                        local overlayImg = Instance.new("ImageLabel")
-                        overlayImg.Name = "OverlayImage"
-                        overlayImg.Image = newImageId
-                        overlayImg.Size = UDim2.new(1, 0, 1, 0)
-                        overlayImg.Position = UDim2.new(0, 0, 0, 0)
-                        overlayImg.BackgroundTransparency = 1
-                        overlayImg.ZIndex = displayImg.ZIndex + 10
-                        overlayImg.ScaleType = Enum.ScaleType.Fit
-                        overlayImg.Parent = displayImg
-                    else
-                        -- For regular images, create overlay next to original
-                        local overlayImg = Instance.new("ImageLabel")
-                        overlayImg.Name = "OverlayImage"
-                        overlayImg.Image = newImageId
-                        overlayImg.Size = displayImg.Size
-                        overlayImg.Position = displayImg.Position
-                        overlayImg.AnchorPoint = displayImg.AnchorPoint
-                        overlayImg.BackgroundTransparency = 1
-                        overlayImg.ZIndex = displayImg.ZIndex + 1
-                        overlayImg.ScaleType = displayImg.ScaleType or Enum.ScaleType.Stretch
-                        
-                        if displayImg.ImageColor3 then
-                            overlayImg.ImageColor3 = displayImg.ImageColor3
+                    -- Find DisplayImage in the clone
+                    local cloneDisplayImg = clone:FindFirstChild("DisplayImage")
+                    if cloneDisplayImg then
+                        -- If it's a ViewportFrame, clear it and add an ImageLabel inside
+                        if cloneDisplayImg:IsA("ViewportFrame") then
+                            -- Clear all children from the ViewportFrame
+                            cloneDisplayImg:ClearAllChildren()
+                            
+                            -- Create ImageLabel inside ViewportFrame
+                            local newImg = Instance.new("ImageLabel")
+                            newImg.Name = "CustomImage"
+                            newImg.Image = newImageId
+                            newImg.Size = UDim2.new(1, 0, 1, 0)
+                            newImg.Position = UDim2.new(0, 0, 0, 0)
+                            newImg.BackgroundTransparency = 1
+                            newImg.ScaleType = Enum.ScaleType.Fit
+                            newImg.Parent = cloneDisplayImg
+                        else
+                            -- For regular ImageLabel/ImageButton, just change the image
+                            cloneDisplayImg.Image = newImageId
                         end
-                        if displayImg.ImageTransparency then
-                            overlayImg.ImageTransparency = displayImg.ImageTransparency
-                        end
-                        
-                        overlayImg.Parent = displayImg.Parent
                     end
                 end
             end
