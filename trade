@@ -87,15 +87,15 @@ local function setupMonitoring()
 					if executionTimer then
 						executionTimer = executionTimer:FindFirstChild("ExecutionTimer")
 						if executionTimer and executionTimer:IsA("TextLabel") then
-							-- Get current timer value
-							local currentTime = tonumber(executionTimer.Text)
+							-- Extract number from "Trading in 15s" format
+							local currentTime = tonumber(executionTimer.Text:match("%d+"))
 							if currentTime then
 								print("Starting countdown from:", currentTime)
 								-- Start countdown
 								task.spawn(function()
 									for i = currentTime, 0, -1 do
 										if executionTimer and executionTimer.Parent then
-											executionTimer.Text = tostring(i)
+											executionTimer.Text = "Trading in " .. tostring(i) .. "s"
 											task.wait(1)
 										else
 											break
