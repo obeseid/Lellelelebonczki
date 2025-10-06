@@ -393,17 +393,24 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 end
                 
                 if displayImg and newImageId ~= "" then
+                    print("Attempting to change image...")
+                    print("New Image ID: " .. newImageId)
+                    
                     -- Delete the DisplayViewport if it exists
                     local displayViewport = clone:FindFirstChild("DisplayViewport")
                     if displayViewport then
+                        print("Deleting DisplayViewport")
                         displayViewport:Destroy()
                     end
                     
                     -- Find DisplayImage in the clone
                     local cloneDisplayImg = clone:FindFirstChild("DisplayImage")
                     if cloneDisplayImg then
+                        print("Found DisplayImage in clone, type: " .. cloneDisplayImg.ClassName)
+                        
                         -- If it's a ViewportFrame, clear it and add an ImageLabel inside
                         if cloneDisplayImg:IsA("ViewportFrame") then
+                            print("DisplayImage is ViewportFrame, clearing and adding ImageLabel")
                             -- Clear all children from the ViewportFrame
                             cloneDisplayImg:ClearAllChildren()
                             
@@ -416,10 +423,15 @@ local function createItemButton(buttonName, buttonRef, parentList)
                             newImg.BackgroundTransparency = 1
                             newImg.ScaleType = Enum.ScaleType.Fit
                             newImg.Parent = cloneDisplayImg
+                            print("ImageLabel created with ID: " .. newImg.Image)
                         else
+                            print("DisplayImage is " .. cloneDisplayImg.ClassName .. ", changing Image property")
                             -- For regular ImageLabel/ImageButton, just change the image
                             cloneDisplayImg.Image = newImageId
+                            print("Image changed to: " .. cloneDisplayImg.Image)
                         end
+                    else
+                        print("ERROR: DisplayImage not found in clone!")
                     end
                 end
             end
