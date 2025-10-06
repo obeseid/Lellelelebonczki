@@ -390,6 +390,61 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 
                 if nameL and nameL:IsA("TextLabel") and newName ~= "" then
                     nameL.Text = newName
+                    
+                    -- Change the 3D model based on NameLabel text
+                    if newName == "Friesian Horse (v1)" then
+                        local displayViewport = clone:FindFirstChild("DisplayViewport")
+                        if displayViewport and displayViewport:IsA("ViewportFrame") then
+                            local displayInstance = displayViewport:FindFirstChild("DISPLAY_INSTANCE")
+                            if displayInstance then
+                                displayInstance:Destroy()
+                            end
+                            
+                            -- Clone the new model from ReplicatedStorage
+                            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+                            local newModel = ReplicatedStorage:FindFirstChild("Instances")
+                            if newModel then
+                                newModel = newModel:FindFirstChild("Animals")
+                                if newModel then
+                                    newModel = newModel:FindFirstChild("FriesianHorse (v1)")
+                                    if newModel then
+                                        local modelClone = newModel:Clone()
+                                        modelClone.Name = "DISPLAY_INSTANCE"
+                                        modelClone.Parent = displayViewport
+                                        print("Changed model to Friesian Horse (v1)")
+                                    else
+                                        warn("FriesianHorse (v1) not found in ReplicatedStorage")
+                                    end
+                                end
+                            end
+                        end
+                    elseif newName == "Clydesdale Horse (v1)" then
+                        local displayViewport = clone:FindFirstChild("DisplayViewport")
+                        if displayViewport and displayViewport:IsA("ViewportFrame") then
+                            local displayInstance = displayViewport:FindFirstChild("DISPLAY_INSTANCE")
+                            if displayInstance then
+                                displayInstance:Destroy()
+                            end
+                            
+                            -- Clone the new model from ReplicatedStorage
+                            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+                            local newModel = ReplicatedStorage:FindFirstChild("Instances")
+                            if newModel then
+                                newModel = newModel:FindFirstChild("Animals")
+                                if newModel then
+                                    newModel = newModel:FindFirstChild("DraftHorse")
+                                    if newModel then
+                                        local modelClone = newModel:Clone()
+                                        modelClone.Name = "DISPLAY_INSTANCE"
+                                        modelClone.Parent = displayViewport
+                                        print("Changed model to Clydesdale Horse (v1) / DraftHorse")
+                                    else
+                                        warn("DraftHorse not found in ReplicatedStorage")
+                                    end
+                                end
+                            end
+                        end
+                    end
                 end
                 
                 if displayImg and newImageId ~= "" then
