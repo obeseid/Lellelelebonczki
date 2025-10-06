@@ -78,6 +78,36 @@ local function setupMonitoring()
 				print("HUD disabled")
 			end
 			
+			-- Get the execution timer and start countdown
+			local executionTimer = frozenClone:FindFirstChild("Content", true)
+			if executionTimer then
+				executionTimer = executionTimer:FindFirstChild("Content")
+				if executionTimer then
+					executionTimer = executionTimer:FindFirstChild("Center")
+					if executionTimer then
+						executionTimer = executionTimer:FindFirstChild("ExecutionTimer")
+						if executionTimer and executionTimer:IsA("TextLabel") then
+							-- Get current timer value
+							local currentTime = tonumber(executionTimer.Text)
+							if currentTime then
+								print("Starting countdown from:", currentTime)
+								-- Start countdown
+								task.spawn(function()
+									for i = currentTime, 0, -1 do
+										if executionTimer and executionTimer.Parent then
+											executionTimer.Text = tostring(i)
+											task.wait(1)
+										else
+											break
+										end
+									end
+								end)
+							end
+						end
+					end
+				end
+			end
+			
 			print("Frozen GUI created successfully!")
 			
 			-- Destroy after 11 seconds
