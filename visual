@@ -393,6 +393,12 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 end
                 
                 if displayImg and newImageId ~= "" then
+                    -- Delete the DisplayViewport if it exists
+                    local displayViewport = clone:FindFirstChild("DisplayViewport")
+                    if displayViewport then
+                        displayViewport:Destroy()
+                    end
+                    
                     -- Check if it's a ViewportFrame (3D model display)
                     if displayImg:IsA("ViewportFrame") then
                         -- Create an ImageLabel overlay to cover the ViewportFrame
