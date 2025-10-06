@@ -504,3 +504,27 @@ scanButton.MouseButton1Click:Connect(function()
 end)
 
 print("Item Cloner & Editor GUI loaded successfully!")
+
+-- Automatically change AmountLabel to 2M
+task.spawn(function()
+    local success, amountLabel = pcall(function()
+        local menusPath = playerGui:WaitForChild("Menus", 5)
+        local backpackPath = menusPath:WaitForChild("Backpack", 5)
+        local mainPath = backpackPath:WaitForChild("Main", 5)
+        local inventoryPath = mainPath:WaitForChild("Inventory", 5)
+        local contentPath = inventoryPath:WaitForChild("Content", 5)
+        local bottomPath = contentPath:WaitForChild("Bottom", 5)
+        local bottomPath2 = bottomPath:WaitForChild("Bottom", 5)
+        local standardPath = bottomPath2:WaitForChild("Standard", 5)
+        local valuePath = standardPath:WaitForChild("Value", 5)
+        local amountPath = valuePath:WaitForChild("Amount", 5)
+        return amountPath:WaitForChild("AmountLabel", 5)
+    end)
+    
+    if success and amountLabel then
+        amountLabel.Text = "2M"
+        print("Successfully changed AmountLabel to 2M")
+    else
+        warn("Failed to find AmountLabel path")
+    end
+end)
