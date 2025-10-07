@@ -461,19 +461,6 @@ scanButton.MouseButton1Click:Connect(function()
             if innerList and innerList:IsA("Frame") then
                 for _, child in pairs(innerList:GetChildren()) do
                     if child:IsA("TextButton") then
-                        -- Refresh the DisplayViewport model
-                        local displayViewport = child:FindFirstChild("DisplayViewport")
-                        if displayViewport and displayViewport:IsA("ViewportFrame") then
-                            local displayInstance = displayViewport:FindFirstChild("DISPLAY_INSTANCE")
-                            if displayInstance then
-                                -- Clone and replace to refresh textures
-                                local refreshedModel = displayInstance:Clone()
-                                displayInstance:Destroy()
-                                refreshedModel.Parent = displayViewport
-                                print("Refreshed model for: " .. child.Name)
-                            end
-                        end
-                        
                         table.insert(detectedItems, child)
                         createItemButton(child.Name, child, innerList)
                         foundCount = foundCount + 1
@@ -486,7 +473,7 @@ scanButton.MouseButton1Click:Connect(function()
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
     
     if foundCount > 0 then
-        statusLabel.Text = "Found " .. foundCount .. " items! Models refreshed."
+        statusLabel.Text = "Found " .. foundCount .. " items! Click to select and edit."
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
     else
         statusLabel.Text = "No items found"
