@@ -336,6 +336,8 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 imageInput.Text = displayImg.Image
             elseif displayImg:IsA("ImageButton") then
                 imageInput.Text = displayImg.Image
+            elseif displayImg:IsA("ViewportFrame") then
+                imageInput.Text = "ViewportFrame (3D Model)"
             end
         else
             imageInput.Text = ""
@@ -384,33 +386,9 @@ local function createItemButton(buttonName, buttonRef, parentList)
             -- Apply edits if checkbox is enabled
             if applyToAll then
                 local nameL = clone:FindFirstChild("NameLabel")
-                local displayImg = clone:FindFirstChild("DisplayImage")
                 
                 if nameL and nameL:IsA("TextLabel") and newName ~= "" then
                     nameL.Text = newName
-                end
-                
-                if displayImg and newImageId ~= "" then
-                    -- Create an ImageLabel overlay
-                    local overlayImg = Instance.new("ImageLabel")
-                    overlayImg.Name = "OverlayImage"
-                    overlayImg.Image = newImageId
-                    overlayImg.Size = displayImg.Size
-                    overlayImg.Position = displayImg.Position
-                    overlayImg.AnchorPoint = displayImg.AnchorPoint
-                    overlayImg.BackgroundTransparency = 1
-                    overlayImg.ZIndex = displayImg.ZIndex + 1
-                    overlayImg.ScaleType = displayImg.ScaleType or Enum.ScaleType.Stretch
-                    
-                    -- Copy other properties if they exist
-                    if displayImg.ImageColor3 then
-                        overlayImg.ImageColor3 = displayImg.ImageColor3
-                    end
-                    if displayImg.ImageTransparency then
-                        overlayImg.ImageTransparency = displayImg.ImageTransparency
-                    end
-                    
-                    overlayImg.Parent = displayImg.Parent
                 end
             end
             
@@ -443,7 +421,7 @@ scanButton.MouseButton1Click:Connect(function()
     selectedButton = nil
     nameInput.Text = ""
     imageInput.Text = ""
-    statusLabel.Text = "Scanning..."
+    statusLabel.Text = "Scanning and refreshing models..."
     statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
     
     -- Navigate to the path
@@ -475,7 +453,7 @@ scanButton.MouseButton1Click:Connect(function()
         return
     end
     
-    -- Search for TextButtons
+    -- Search for TextButtons and refresh their ViewportFrames
     local foundCount = 0
     for _, categoryContainer in pairs(listPath:GetChildren()) do
         if categoryContainer:IsA("Frame") and categoryContainer.Name == "CategoryContainer" then
@@ -483,6 +461,19 @@ scanButton.MouseButton1Click:Connect(function()
             if innerList and innerList:IsA("Frame") then
                 for _, child in pairs(innerList:GetChildren()) do
                     if child:IsA("TextButton") then
+                        -- Refresh the DisplayViewport model
+                        local displayViewport = child:FindFirstChild("DisplayViewport")
+                        if displayViewport and displayViewport:IsA("ViewportFrame") then
+                            local displayInstance = displayViewport:FindFirstChild("DISPLAY_INSTANCE")
+                            if displayInstance then
+                                -- Clone and replace to refresh textures
+                                local refreshedModel = displayInstance:Clone()
+                                displayInstance:Destroy()
+                                refreshedModel.Parent = displayViewport
+                                print("Refreshed model for: " .. child.Name)
+                            end
+                        end
+                        
                         table.insert(detectedItems, child)
                         createItemButton(child.Name, child, innerList)
                         foundCount = foundCount + 1
@@ -495,7 +486,7 @@ scanButton.MouseButton1Click:Connect(function()
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
     
     if foundCount > 0 then
-        statusLabel.Text = "Found " .. foundCount .. " items! Click to select and edit."
+        statusLabel.Text = "Found " .. foundCount .. " items! Models refreshed."
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
     else
         statusLabel.Text = "No items found"
