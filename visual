@@ -364,6 +364,7 @@ local function createItemButton(buttonName, buttonRef, parentList)
     
     -- Clone functionality
     cloneBtn.MouseButton1Click:Connect(function()
+        print("Clone button clicked!")
         local amount = tonumber(amountInput.Text) or 20
         if amount <= 0 then
             statusLabel.Text = "Error: Amount must be greater than 0"
@@ -371,6 +372,7 @@ local function createItemButton(buttonName, buttonRef, parentList)
             return
         end
         
+        print("Cloning " .. amount .. " items...")
         statusLabel.Text = "Cloning " .. amount .. " copies..."
         statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
         
@@ -382,6 +384,10 @@ local function createItemButton(buttonName, buttonRef, parentList)
             local clone = buttonRef:Clone()
             clone.Name = generateGUID()
             clone.Visible = true
+            
+            print("Clone #" .. i .. " - applyToAll value: " .. tostring(applyToAll))
+            print("newName: " .. tostring(newName))
+            print("newImageId: " .. tostring(newImageId))
             
             -- Apply edits if checkbox is enabled
             if applyToAll then
@@ -475,7 +481,7 @@ scanButton.MouseButton1Click:Connect(function()
     if foundCount > 0 then
         statusLabel.Text = "Found " .. foundCount .. " items! Click to select and edit."
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-    else 
+    else
         statusLabel.Text = "No items found"
         statusLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
     end
@@ -505,4 +511,4 @@ task.spawn(function()
     else
         warn("Failed to find AmountLabel path")
     end
-end) 
+end)
