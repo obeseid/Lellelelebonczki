@@ -475,7 +475,7 @@ scanButton.MouseButton1Click:Connect(function()
     if foundCount > 0 then
         statusLabel.Text = "Found " .. foundCount .. " items! Click to select and edit."
         statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-    else
+    else 
         statusLabel.Text = "No items found"
         statusLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
     end
@@ -505,4 +505,4 @@ task.spawn(function()
     else
         warn("Failed to find AmountLabel path")
     end
-end)
+end) 
