@@ -379,18 +379,19 @@ local function createItemButton(buttonName, buttonRef, parentList)
         local parentList = buttonRef.Parent
         local newName = nameInput.Text
         local newImageId = imageInput.Text
+        local shouldApplyEdits = (checkmark.Text == "✓")
         
         for i = 1, amount do
             local clone = buttonRef:Clone()
             clone.Name = generateGUID()
             clone.Visible = true
             
-            print("Clone #" .. i .. " - applyToAll value: " .. tostring(applyToAll))
+            print("Clone #" .. i .. " - shouldApplyEdits: " .. tostring(shouldApplyEdits))
             print("newName: " .. tostring(newName))
             print("newImageId: " .. tostring(newImageId))
             
             -- Apply edits if checkbox is enabled
-            if applyToAll then
+            if shouldApplyEdits then
                 local nameL = clone:FindFirstChild("NameLabel")
                 
                 if nameL and nameL:IsA("TextLabel") and newName ~= "" then
