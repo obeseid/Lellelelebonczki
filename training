@@ -11,17 +11,16 @@ screenGui.Parent = playerGui
 --// Create Button
 local button = Instance.new("TextButton")
 button.Size = UDim2.new(0, 180, 0, 60)
-button.Position = UDim2.new(0.5, -90, 0.5, -30) -- Centered
+button.Position = UDim2.new(0.5, -90, 0.5, -30) -- Center
 button.BackgroundColor3 = Color3.fromRGB(95, 242, 27)
 button.TextColor3 = Color3.new(0, 0, 0)
 button.Font = Enum.Font.SourceSansBold
 button.TextSize = 24
 button.Text = "Start Teleport"
-button.Parent = screenGui
 button.Active = true
-button.Draggable = true -- ✅ make it moveable
+button.Draggable = true
+button.Parent = screenGui
 
--- Optional: Add rounded corners for nice look
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 12)
 corner.Parent = button
@@ -46,7 +45,7 @@ local function teleportLoop()
 		:WaitForChild("Routes")
 		:WaitForChild("Checkpoints")
 
-	local checkpointNames = {"1", "2", "3", "4"} -- Add more if needed
+	local checkpointNames = {"1", "2", "3", "4"} -- Edit as needed
 
 	while teleporting do
 		for _, name in ipairs(checkpointNames) do
@@ -55,27 +54,51 @@ local function teleportLoop()
 			local checkpoint = checkpointsFolder:FindFirstChild(name)
 			if checkpoint and checkpoint:IsA("BasePart") then
 
-				-- Detect if player is mounted or seated
 				local seatPart = humanoid.SeatPart
 				if seatPart and seatPart:IsDescendantOf(workspace) then
-					-- Player is on a mount or vehicle
+					-- Player is on a horse or vehicle
 					local mountModel = seatPart:FindFirstAncestorWhichIsA("Model")
 
-					if mountModel and mountModel.PrimaryPart then
-						mountModel:SetPrimaryPartCFrame(checkpoint.CFrame)
+					if mountModel then
+						-- Temporarily anchor all parts to avoid physics glitch
+						for _, part in ipairs(mountModel:GetDescendants()) do
+							if part:IsA("BasePart") then
+								part.Anchored = true
+							end
+						end
+
+						local targetCFrame = checkpoint.CFrame
+
+						if mountModel.PrimaryPart then
+							mountModel:SetPrimaryPartCFrame(targetCFrame)
+						else
+							seatPart.CFrame = targetCFrame
+						end
+
+						task.wait(0.1)
+
+						-- Unanchor after moving
+						for _, part in ipairs(mountModel:GetDescendants()) do
+							if part:IsA("BasePart") then
+								part.Anchored = false
+							end
+						end
 					else
+						-- Fallback: seat only
+						seatPart.Anchored = true
 						seatPart.CFrame = checkpoint.CFrame
+						task.wait(0.1)
+						seatPart.Anchored = false
 					end
 				else
-					-- Player is on foot
+					-- On foot: just move player
 					hrp.CFrame = checkpoint.CFrame
 				end
-
 			else
 				warn("Checkpoint named " .. name .. " not found or is not a part")
 			end
 
-			task.wait(2) -- Wait 2 seconds before next teleport
+			task.wait(2)
 		end
 	end
 end
