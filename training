@@ -1,29 +1,7 @@
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
--- Create ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "TeleportGui"
-screenGui.Parent = playerGui
-
--- Create TextButton
-local button = Instance.new("TextButton")
-button.Size = UDim2.new(0, 150, 0, 50)
-button.Position = UDim2.new(0, 20, 0, 20)
-button.BackgroundColor3 = Color3.fromRGB(95, 242, 27)
-button.TextColor3 = Color3.new(0, 0, 0)
-button.Font = Enum.Font.SourceSansBold
-button.TextSize = 24
-button.Text = "Start okay?"
-button.Parent = screenGui
-
--- Teleport variables
-local teleporting = false
-local teleportCoroutine
-
 local function teleportLoop()
 	local character = player.Character or player.CharacterAdded:Wait()
 	local hrp = character:WaitForChild("HumanoidRootPart")
+	local humanoid = character:WaitForChild("Humanoid")
 
 	local checkpointsFolder = workspace:WaitForChild("Islands")
 		:WaitForChild("Training Island")
@@ -41,23 +19,25 @@ local function teleportLoop()
 			if not teleporting then return end
 			local checkpoint = checkpointsFolder:FindFirstChild(name)
 			if checkpoint and checkpoint:IsA("BasePart") then
-				hrp.CFrame = checkpoint.CFrame
+				
+				-- Detect if player is mounted or seated
+				local seatPart = humanoid.SeatPart
+				if seatPart and seatPart:IsDescendantOf(workspace) then
+					-- Teleport the whole horse or vehicle
+					local mountModel = seatPart:FindFirstAncestorWhichIsA("Model")
+					if mountModel and mountModel:FindFirstChild("PrimaryPart") then
+						mountModel:SetPrimaryPartCFrame(checkpoint.CFrame)
+					else
+						seatPart.CFrame = checkpoint.CFrame
+					end
+				else
+					-- Teleport normal player
+					hrp.CFrame = checkpoint.CFrame
+				end
 			else
 				warn("Checkpoint named "..name.." not found or is not a part")
 			end
-			wait(2)
+			task.wait(2)
 		end
 	end
 end
-
-button.MouseButton1Click:Connect(function()
-	if not teleporting then
-		teleporting = true
-		button.Text = "okpa"
-		teleportCoroutine = coroutine.create(teleportLoop)
-		coroutine.resume(teleportCoroutine)
-	else
-		teleporting = false
-		button.Text = "Start Teleport"
-	end
-end)
