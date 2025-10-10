@@ -10,14 +10,21 @@ screenGui.Parent = playerGui
 
 --// Create Button
 local button = Instance.new("TextButton")
-button.Size = UDim2.new(0, 150, 0, 50)
-button.Position = UDim2.new(0, 20, 0, 20)
+button.Size = UDim2.new(0, 180, 0, 60)
+button.Position = UDim2.new(0.5, -90, 0.5, -30) -- Centered
 button.BackgroundColor3 = Color3.fromRGB(95, 242, 27)
 button.TextColor3 = Color3.new(0, 0, 0)
 button.Font = Enum.Font.SourceSansBold
 button.TextSize = 24
 button.Text = "Start Teleport"
 button.Parent = screenGui
+button.Active = true
+button.Draggable = true -- ✅ make it moveable
+
+-- Optional: Add rounded corners for nice look
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = button
 
 --// Teleport Variables
 local teleporting = false
@@ -54,12 +61,11 @@ local function teleportLoop()
 					-- Player is on a mount or vehicle
 					local mountModel = seatPart:FindFirstAncestorWhichIsA("Model")
 
-					if mountModel and mountModel:FindFirstChild("PrimaryPart") then
+					if mountModel and mountModel.PrimaryPart then
 						mountModel:SetPrimaryPartCFrame(checkpoint.CFrame)
 					else
 						seatPart.CFrame = checkpoint.CFrame
 					end
-
 				else
 					-- Player is on foot
 					hrp.CFrame = checkpoint.CFrame
@@ -69,7 +75,7 @@ local function teleportLoop()
 				warn("Checkpoint named " .. name .. " not found or is not a part")
 			end
 
-			task.wait(2) -- Wait 2 seconds before teleporting again
+			task.wait(2) -- Wait 2 seconds before next teleport
 		end
 	end
 end
