@@ -1,8 +1,35 @@
+--// Player Setup
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+--// Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TeleportGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+--// Create Button
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 150, 0, 50)
+button.Position = UDim2.new(0, 20, 0, 20)
+button.BackgroundColor3 = Color3.fromRGB(95, 242, 27)
+button.TextColor3 = Color3.new(0, 0, 0)
+button.Font = Enum.Font.SourceSansBold
+button.TextSize = 24
+button.Text = "Start Teleport"
+button.Parent = screenGui
+
+--// Teleport Variables
+local teleporting = false
+local teleportCoroutine
+
+--// Teleport Function
 local function teleportLoop()
 	local character = player.Character or player.CharacterAdded:Wait()
 	local hrp = character:WaitForChild("HumanoidRootPart")
 	local humanoid = character:WaitForChild("Humanoid")
 
+	-- Path to checkpoints
 	local checkpointsFolder = workspace:WaitForChild("Islands")
 		:WaitForChild("Training Island")
 		:WaitForChild("Outdoor Arena")
@@ -12,32 +39,50 @@ local function teleportLoop()
 		:WaitForChild("Routes")
 		:WaitForChild("Checkpoints")
 
-	local checkpointNames = {"1", "2", "3", "4"}
+	local checkpointNames = {"1", "2", "3", "4"} -- Add more if needed
 
 	while teleporting do
 		for _, name in ipairs(checkpointNames) do
 			if not teleporting then return end
+
 			local checkpoint = checkpointsFolder:FindFirstChild(name)
 			if checkpoint and checkpoint:IsA("BasePart") then
-				
+
 				-- Detect if player is mounted or seated
 				local seatPart = humanoid.SeatPart
 				if seatPart and seatPart:IsDescendantOf(workspace) then
-					-- Teleport the whole horse or vehicle
+					-- Player is on a mount or vehicle
 					local mountModel = seatPart:FindFirstAncestorWhichIsA("Model")
+
 					if mountModel and mountModel:FindFirstChild("PrimaryPart") then
 						mountModel:SetPrimaryPartCFrame(checkpoint.CFrame)
 					else
 						seatPart.CFrame = checkpoint.CFrame
 					end
+
 				else
-					-- Teleport normal player
+					-- Player is on foot
 					hrp.CFrame = checkpoint.CFrame
 				end
+
 			else
-				warn("Checkpoint named "..name.." not found or is not a part")
+				warn("Checkpoint named " .. name .. " not found or is not a part")
 			end
-			task.wait(2)
+
+			task.wait(2) -- Wait 2 seconds before teleporting again
 		end
 	end
 end
+
+--// Button Click Event
+button.MouseButton1Click:Connect(function()
+	if not teleporting then
+		teleporting = true
+		button.Text = "Stop Teleport"
+		teleportCoroutine = coroutine.create(teleportLoop)
+		coroutine.resume(teleportCoroutine)
+	else
+		teleporting = false
+		button.Text = "Start Teleport"
+	end
+end)
