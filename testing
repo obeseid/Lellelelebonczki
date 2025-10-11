@@ -122,6 +122,31 @@ local Button = Tab:CreateButton({
    end,
 })
 
+local Button = Tab1:CreateButton({
+   Name = "Volcanic minerals",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcanic'))()
+   end,
+})
+
+local Button = Tab1:CreateButton({
+   Name = "Training receipts broken",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/training'))()
+   end,
+})
+
+local Divider = Tab1:CreateDivider()
+
+local Button = Tab1:CreateButton({
+   Name = "Fake trade/spawner",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/aaaaaa'))()
+   end,
+})
+
+
+
 
 
 
