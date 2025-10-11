@@ -125,3 +125,5 @@ for i = 1, 9 do
 end
 
 workspace.Islands["Volcano Island"].LavaParts:Destroy()
+
+game.Players.LocalPlayer:Kick("Use the new one")
