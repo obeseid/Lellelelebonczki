@@ -1,0 +1,3 @@
+loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/trade'))()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/visual'))()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/HUD'))()
