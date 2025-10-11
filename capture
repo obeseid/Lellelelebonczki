@@ -1,0 +1,184 @@
+-- ✅ GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local buttons = {}
+ScreenGui.Name = "HorseGui"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+Frame.Name = "Main"
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(10, 245, 65)
+Frame.Size = UDim2.new(0, 250, 0, 300)
+Frame.Position = UDim2.new(0, 50, 0, 50)
+Frame.BorderSizePixel = 0
+
+-- ✅ Collect all island folders dynamically
+local islandFolders = {}
+local islandNames = {}
+
+for _, child in ipairs(workspace.Islands:GetChildren()) do
+	if child:IsA("Folder") then
+		table.insert(islandFolders, child)
+		table.insert(islandNames, child.Name)
+	end
+end
+
+-- Create buttons for each island
+for i, name in ipairs(islandNames) do
+	local btn = Instance.new("TextButton")
+	btn.Name = "bu" .. i
+	btn.Parent = Frame
+	btn.BackgroundColor3 = Color3.fromRGB(68, 183, 194)
+	btn.BorderSizePixel = 0
+	btn.Size = UDim2.new(1, -10, 0, 25)
+	btn.Position = UDim2.new(0, 5, 0, (i - 1) * 30 + 5)
+	btn.Font = Enum.Font.SourceSans
+	btn.Text = name
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.TextSize = 18
+	buttons["bu" .. i] = btn
+end
+
+-- ✅ Function to check if a folder has valid targets
+local function hasValidTargets(folder)
+	for _, model in ipairs(folder:GetChildren()) do
+		if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+			return true
+		end
+	end
+	return false
+end
+
+-- ✅ Function to get next valid folder
+local currentFolderIndex = 1
+local function getNextValidFolder()
+	local attempts = 0
+	while attempts < #islandFolders do
+		local folder = islandFolders[currentFolderIndex]
+		
+		if hasValidTargets(folder) then
+			return folder
+		end
+		
+		-- Move to next folder
+		currentFolderIndex = currentFolderIndex + 1
+		if currentFolderIndex > #islandFolders then
+			currentFolderIndex = 1
+		end
+		attempts = attempts + 1
+	end
+	
+	return nil -- No valid folders found
+end
+
+-- ✅ Follow Logic
+local currentTask
+local currentFolder = nil
+
+local function followLoopFrom(startFolder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+	
+	currentFolder = startFolder
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+	
+	local function getValidTargets(folder)
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+	
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+		local lastFolderCheck = 0
+		
+		while true do
+			local now = tick()
+			
+			-- Check if current folder still has valid targets every 5 seconds
+			if now - lastFolderCheck >= 5 then
+				if not hasValidTargets(currentFolder) then
+					print("No valid targets in " .. currentFolder.Name .. ", switching folders...")
+					-- Find index of current folder
+					for i, folder in ipairs(islandFolders) do
+						if folder == currentFolder then
+							currentFolderIndex = i
+							break
+						end
+					end
+					
+					local newFolder = getNextValidFolder()
+					if newFolder then
+						currentFolder = newFolder
+						currentTarget = nil
+						print("Switched to: " .. currentFolder.Name)
+					else
+						print("No valid folders found!")
+						task.wait(5)
+					end
+				end
+				lastFolderCheck = now
+			end
+			
+			-- Switch target every 15 seconds or if lost
+			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+				local targets = getValidTargets(currentFolder)
+				if #targets > 0 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+					currentTarget = newTarget
+					lastSwitch = now
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+			end
+			
+			-- Follow current target
+			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+				local targetHRP = currentTarget.HumanoidRootPart
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
+				if distance > 6 then
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+				end
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
+			end
+			
+			task.wait(0.2)
+		end
+	end)
+end
+
+-- ✅ Button Activation
+for i, folder in ipairs(islandFolders) do
+	local btn = buttons["bu" .. i]
+	if btn and folder then
+		btn.MouseButton1Click:Connect(function()
+			followLoopFrom(folder)
+		end)
+	end
+end
+
+-- ✅ Safely remove LavaParts if it exists
+local volcanoIsland = workspace.Islands:FindFirstChild("Volcano Island")
+if volcanoIsland then
+	local lavaParts = volcanoIsland:FindFirstChild("LavaParts")
+	if lavaParts then
+		lavaParts:Destroy()
+	end
+end
