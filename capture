@@ -11,10 +11,8 @@ Frame.Name = "Main"
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(10, 245, 65)
 Frame.Size = UDim2.new(0, 250, 0, 80)
-Frame.Position = UDim2.new(0.5, -125, 0.5, -40)
+Frame.Position = UDim2.new(0, 50, 0, 50)
 Frame.BorderSizePixel = 0
-Frame.Active = true
-Frame.Draggable = true
 
 StartButton.Name = "StartButton"
 StartButton.Parent = Frame
@@ -89,8 +87,8 @@ local function startFollowing()
 	local char = lp.Character or lp.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
 	
-	-- Find first valid folder (this will move player to load islands)
-	currentFolder = getNextValidFolder(char, hrp)
+	-- Find first valid folder (this will teleport player to load islands)
+	currentFolder = getNextValidFolder(hrp)
 	if not currentFolder then
 		warn("No valid folders found!")
 		return
@@ -126,7 +124,7 @@ local function startFollowing()
 						end
 					end
 					
-					local newFolder = getNextValidFolder(char, hrp)
+					local newFolder = getNextValidFolder(hrp)
 					if newFolder then
 						currentFolder = newFolder
 						currentTarget = nil
