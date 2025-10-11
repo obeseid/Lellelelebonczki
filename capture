@@ -121,7 +121,19 @@ local function followLoopFrom(startFolder)
 					if newFolder then
 						currentFolder = newFolder
 						currentTarget = nil
+						lastSwitch = 0 -- Force immediate target selection
 						print("Switched to: " .. currentFolder.Name)
+						
+						-- Teleport to new island's first valid target
+						local newTargets = getValidTargets(currentFolder)
+						if #newTargets > 0 then
+							local firstTarget = newTargets[1]
+							local targetHRP = firstTarget:FindFirstChild("HumanoidRootPart")
+							if targetHRP then
+								hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+								print("Teleported to new island!")
+							end
+						end
 					else
 						print("No valid folders found!")
 						task.wait(5)
