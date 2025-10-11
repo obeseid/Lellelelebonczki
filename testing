@@ -38,8 +38,9 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("Autofarma", 4483362458) -- Title, Image
-local Tab1 = Window:CreateTab("Other farmy", 4483362458) -- Title, Image
+local Tab1 = Window:CreateTab("Misc", 4483362458) -- Title, Image
 local Section = Tab:CreateSection("Island Autofarm")
+local Section = Tab1:CreateSection("Inne farmy ok")
 
 local Button = Tab:CreateButton({
    Name = "Mainland",
@@ -141,7 +142,7 @@ local Divider = Tab1:CreateDivider()
 local Button = Tab1:CreateButton({
    Name = "Fake trade/spawner",
    Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/aaaaaa'))()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/faketrade'))()
    end,
 })
 
