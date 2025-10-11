@@ -38,6 +38,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("Autofarma", 4483362458) -- Title, Image
+local Tab1 = Window:CreateTab("Other farmy", 4483362458) -- Title, Image
 local Section = Tab:CreateSection("Island Autofarm")
 
 local Button = Tab:CreateButton({
@@ -120,6 +121,8 @@ local Button = Tab:CreateButton({
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcano'))()
    end,
 })
+
+
 
 
 Rayfield:LoadConfiguration()
