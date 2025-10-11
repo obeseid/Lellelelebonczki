@@ -36,20 +36,34 @@ end
 
 -- ✅ Function to check if a folder has valid targets
 local function hasValidTargets(folder)
+	local lp = game.Players.LocalPlayer
 	for _, model in ipairs(folder:GetChildren()) do
-		if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+		if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") and model ~= lp.Character then
 			return true
 		end
 	end
 	return false
 end
 
--- ✅ Function to get next valid folder
+-- ✅ Function to get next valid folder (with teleport to load island)
 local currentFolderIndex = 1
-local function getNextValidFolder()
+local function getNextValidFolder(hrp)
 	local attempts = 0
 	while attempts < #islandFolders do
 		local folder = islandFolders[currentFolderIndex]
+		
+		-- Teleport player to the island to load it
+		if folder.PrimaryPart then
+			hrp.CFrame = folder.PrimaryPart.CFrame * CFrame.new(0, 10, 0)
+		elseif #folder:GetChildren() > 0 then
+			local firstPart = folder:FindFirstChildWhichIsA("BasePart", true)
+			if firstPart then
+				hrp.CFrame = firstPart.CFrame * CFrame.new(0, 10, 0)
+			end
+		end
+		
+		-- Wait for island to load
+		task.wait(0.5)
 		
 		if hasValidTargets(folder) then
 			return folder
@@ -75,22 +89,22 @@ local function startFollowing()
 		task.cancel(currentTask)
 	end
 	
-	-- Find first valid folder
-	currentFolder = getNextValidFolder()
-	if not currentFolder then
-		warn("No valid folders found!")
-		return
-	end
-	
 	local players = game:GetService("Players")
 	local lp = players.LocalPlayer
 	local char = lp.Character or lp.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
 	
+	-- Find first valid folder (this will teleport player to load islands)
+	currentFolder = getNextValidFolder(hrp)
+	if not currentFolder then
+		warn("No valid folders found!")
+		return
+	end
+	
 	local function getValidTargets(folder)
 		local targets = {}
 		for _, model in ipairs(folder:GetChildren()) do
-			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") and model ~= char then
 				table.insert(targets, model)
 			end
 		end
@@ -117,7 +131,7 @@ local function startFollowing()
 						end
 					end
 					
-					local newFolder = getNextValidFolder()
+					local newFolder = getNextValidFolder(hrp)
 					if newFolder then
 						currentFolder = newFolder
 						currentTarget = nil
@@ -164,7 +178,7 @@ local function startFollowing()
 				local targetHRP = currentTarget.HumanoidRootPart
 				local distance = (hrp.Position - targetHRP.Position).Magnitude
 				if distance > 6 then
-					char:PivotTo(CFrame.new(targetHRP.Position + Vector3.new(0, 0, -4)))
+					hrp.CFrame = CFrame.new(targetHRP.Position + Vector3.new(0, 0, -4))
 				end
 				if distance > 30 then
 					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
