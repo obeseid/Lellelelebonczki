@@ -11,8 +11,10 @@ Frame.Name = "Main"
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(10, 245, 65)
 Frame.Size = UDim2.new(0, 250, 0, 80)
-Frame.Position = UDim2.new(0, 50, 0, 50)
+Frame.Position = UDim2.new(0.5, -125, 0.5, -40)
 Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
 
 StartButton.Name = "StartButton"
 StartButton.Parent = Frame
@@ -47,23 +49,16 @@ end
 
 -- ✅ Function to get next valid folder (with teleport to load island)
 local currentFolderIndex = 1
-local function getNextValidFolder(hrp)
+local function getNextValidFolder(char, hrp)
 	local attempts = 0
 	while attempts < #islandFolders do
 		local folder = islandFolders[currentFolderIndex]
 		
-		-- Teleport player to the island to load it
-		if folder.PrimaryPart then
-			hrp.CFrame = folder.PrimaryPart.CFrame * CFrame.new(0, 10, 0)
-		elseif #folder:GetChildren() > 0 then
-			local firstPart = folder:FindFirstChildWhichIsA("BasePart", true)
-			if firstPart then
-				hrp.CFrame = firstPart.CFrame * CFrame.new(0, 10, 0)
-			end
-		end
+		-- Move player model to the island folder to trigger loading
+		char.Parent = folder
 		
 		-- Wait for island to load
-		task.wait(0.5)
+		task.wait(1)
 		
 		if hasValidTargets(folder) then
 			return folder
@@ -94,8 +89,8 @@ local function startFollowing()
 	local char = lp.Character or lp.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
 	
-	-- Find first valid folder (this will teleport player to load islands)
-	currentFolder = getNextValidFolder(hrp)
+	-- Find first valid folder (this will move player to load islands)
+	currentFolder = getNextValidFolder(char, hrp)
 	if not currentFolder then
 		warn("No valid folders found!")
 		return
@@ -131,7 +126,7 @@ local function startFollowing()
 						end
 					end
 					
-					local newFolder = getNextValidFolder(hrp)
+					local newFolder = getNextValidFolder(char, hrp)
 					if newFolder then
 						currentFolder = newFolder
 						currentTarget = nil
