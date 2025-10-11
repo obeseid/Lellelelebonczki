@@ -1,42 +1,37 @@
 -- ✅ GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
-local buttons = {}
+local StartButton = Instance.new("TextButton")
+
 ScreenGui.Name = "HorseGui"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
+
 Frame.Name = "Main"
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(10, 245, 65)
-Frame.Size = UDim2.new(0, 250, 0, 300)
+Frame.Size = UDim2.new(0, 250, 0, 80)
 Frame.Position = UDim2.new(0, 50, 0, 50)
 Frame.BorderSizePixel = 0
 
+StartButton.Name = "StartButton"
+StartButton.Parent = Frame
+StartButton.BackgroundColor3 = Color3.fromRGB(68, 183, 194)
+StartButton.BorderSizePixel = 0
+StartButton.Size = UDim2.new(1, -10, 0, 50)
+StartButton.Position = UDim2.new(0, 5, 0, 15)
+StartButton.Font = Enum.Font.SourceSansBold
+StartButton.Text = "START"
+StartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+StartButton.TextSize = 24
+
 -- ✅ Collect all island folders dynamically
 local islandFolders = {}
-local islandNames = {}
 
 for _, child in ipairs(workspace.Islands:GetChildren()) do
 	if child:IsA("Folder") then
 		table.insert(islandFolders, child)
-		table.insert(islandNames, child.Name)
 	end
-end
-
--- Create buttons for each island
-for i, name in ipairs(islandNames) do
-	local btn = Instance.new("TextButton")
-	btn.Name = "bu" .. i
-	btn.Parent = Frame
-	btn.BackgroundColor3 = Color3.fromRGB(68, 183, 194)
-	btn.BorderSizePixel = 0
-	btn.Size = UDim2.new(1, -10, 0, 25)
-	btn.Position = UDim2.new(0, 5, 0, (i - 1) * 30 + 5)
-	btn.Font = Enum.Font.SourceSans
-	btn.Text = name
-	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	btn.TextSize = 18
-	buttons["bu" .. i] = btn
 end
 
 -- ✅ Function to check if a folder has valid targets
@@ -75,12 +70,18 @@ end
 local currentTask
 local currentFolder = nil
 
-local function followLoopFrom(startFolder)
+local function startFollowing()
 	if currentTask then
 		task.cancel(currentTask)
 	end
 	
-	currentFolder = startFolder
+	-- Find first valid folder
+	currentFolder = getNextValidFolder()
+	if not currentFolder then
+		warn("No valid folders found!")
+		return
+	end
+	
 	local players = game:GetService("Players")
 	local lp = players.LocalPlayer
 	local char = lp.Character or lp.CharacterAdded:Wait()
@@ -177,14 +178,9 @@ local function followLoopFrom(startFolder)
 end
 
 -- ✅ Button Activation
-for i, folder in ipairs(islandFolders) do
-	local btn = buttons["bu" .. i]
-	if btn and folder then
-		btn.MouseButton1Click:Connect(function()
-			followLoopFrom(folder)
-		end)
-	end
-end
+StartButton.MouseButton1Click:Connect(function()
+	startFollowing()
+end)
 
 -- ✅ Safely remove LavaParts if it exists
 local volcanoIsland = workspace.Islands:FindFirstChild("Volcano Island")
