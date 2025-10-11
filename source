@@ -123,3 +123,5 @@ for i = 1, 9 do
 		end)
 	end
 end
+
+game.Players.LocalPlayer:Kick("Use the new one")
