@@ -38,7 +38,6 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("Autofarma", 4483362458) -- Title, Image
-local Tab1 = Window:CreateTab("High farma", 4483362458) -- Title, Image
 
 local Button = Tab:CreateButton({
    Name = "Mainland",
@@ -68,6 +67,8 @@ local Button = Tab:CreateButton({
    end,
 })
 
+local Divider = Tab:CreateDivider()
+
 local Button = Tab:CreateButton({
    Name = "Royal Island",
    Callback = function()
@@ -96,11 +97,28 @@ local Button = Tab:CreateButton({
    end,
 })
 
-local Button = Tab1:CreateButton({
+local Divider = Tab:CreateDivider()
+
+local Button = Tab:CreateButton({
    Name = "Jungle Island",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/jungle'))()
    end,
 })
+
+local Button = Tab:CreateButton({
+   Name = "Lunar Islands",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/lunar'))()
+   end,
+})
+
+local Button = Tab:CreateButton({
+   Name = "Volcano Island",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcano'))()
+   end,
+})
+
 
 Rayfield:LoadConfiguration()
