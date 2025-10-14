@@ -12,6 +12,26 @@ local function generateGUID()
     return "{" .. guid .. "}"
 end
 
+-- Function to parse RGB string
+local function parseRGB(rgbString)
+    if not rgbString or rgbString == "" then
+        return nil
+    end
+    
+    -- Remove spaces and parse
+    local cleanString = string.gsub(rgbString, "%s+", "")
+    local r, g, b = string.match(cleanString, "(%d+),(%d+),(%d+)")
+    
+    if r and g and b then
+        local red = math.clamp(tonumber(r), 0, 255)
+        local green = math.clamp(tonumber(g), 0, 255)
+        local blue = math.clamp(tonumber(b), 0, 255)
+        return Color3.fromRGB(red, green, blue)
+    end
+    
+    return nil
+end
+
 -- Create main GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ItemClonerGUI"
@@ -21,8 +41,8 @@ screenGui.Parent = playerGui
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 450, 0, 550)
-mainFrame.Position = UDim2.new(0.5, -225, 0.5, -275)
+mainFrame.Size = UDim2.new(0, 450, 0, 650) -- Increased height for color picker
+mainFrame.Position = UDim2.new(0.5, -225, 0.5, -325)
 mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -142,7 +162,7 @@ listLayout.Parent = scrollFrame
 
 -- Editor Section
 local editorFrame = Instance.new("Frame")
-editorFrame.Size = UDim2.new(1, -20, 0, 140)
+editorFrame.Size = UDim2.new(1, -20, 0, 240) -- Increased height for color input
 editorFrame.Position = UDim2.new(0, 10, 0, 355)
 editorFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 editorFrame.BorderSizePixel = 0
@@ -210,10 +230,62 @@ local imageCorner = Instance.new("UICorner")
 imageCorner.CornerRadius = UDim.new(0, 5)
 imageCorner.Parent = imageInput
 
+-- SpecialIndicator Color Input
+local colorLabel = Instance.new("TextLabel")
+colorLabel.Size = UDim2.new(0, 100, 0, 25)
+colorLabel.Position = UDim2.new(0, 10, 0, 80)
+colorLabel.BackgroundTransparency = 1
+colorLabel.Text = "SpecialIndicator Color:"
+colorLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+colorLabel.TextSize = 13
+colorLabel.Font = Enum.Font.Gotham
+colorLabel.TextXAlignment = Enum.TextXAlignment.Left
+colorLabel.Parent = editorFrame
+
+local colorInput = Instance.new("TextBox")
+colorInput.Name = "ColorInput"
+colorInput.Size = UDim2.new(1, -120, 0, 25)
+colorInput.Position = UDim2.new(0, 110, 0, 80)
+colorInput.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+colorInput.Text = ""
+colorInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+colorInput.TextSize = 13
+colorInput.Font = Enum.Font.Gotham
+colorInput.PlaceholderText = "R,G,B (e.g., 255,0,0 for red)"
+colorInput.ClearTextOnFocus = false
+colorInput.Parent = editorFrame
+
+local colorCorner = Instance.new("UICorner")
+colorCorner.CornerRadius = UDim.new(0, 5)
+colorCorner.Parent = colorInput
+
+-- Color Preview
+local colorPreview = Instance.new("Frame")
+colorPreview.Size = UDim2.new(0, 40, 0, 25)
+colorPreview.Position = UDim2.new(1, -45, 0, 80)
+colorPreview.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+colorPreview.BorderSizePixel = 1
+colorPreview.BorderColor3 = Color3.fromRGB(100, 100, 100)
+colorPreview.Parent = editorFrame
+
+local colorPreviewCorner = Instance.new("UICorner")
+colorPreviewCorner.CornerRadius = UDim.new(0, 5)
+colorPreviewCorner.Parent = colorPreview
+
+-- Update color preview when text changes
+colorInput:GetPropertyChangedSignal("Text"):Connect(function()
+    local color = parseRGB(colorInput.Text)
+    if color then
+        colorPreview.BackgroundColor3 = color
+    else
+        colorPreview.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end)
+
 -- Clone Amount Input
 local amountLabel = Instance.new("TextLabel")
 amountLabel.Size = UDim2.new(0, 100, 0, 25)
-amountLabel.Position = UDim2.new(0, 10, 0, 80)
+amountLabel.Position = UDim2.new(0, 10, 0, 115)
 amountLabel.BackgroundTransparency = 1
 amountLabel.Text = "Clone Amount:"
 amountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -225,7 +297,7 @@ amountLabel.Parent = editorFrame
 local amountInput = Instance.new("TextBox")
 amountInput.Name = "AmountInput"
 amountInput.Size = UDim2.new(0, 80, 0, 25)
-amountInput.Position = UDim2.new(0, 110, 0, 80)
+amountInput.Position = UDim2.new(0, 110, 0, 115)
 amountInput.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
 amountInput.Text = "20"
 amountInput.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -241,7 +313,7 @@ amountCorner.Parent = amountInput
 -- Apply to All Checkbox
 local applyAllCheckbox = Instance.new("TextButton")
 applyAllCheckbox.Size = UDim2.new(0, 20, 0, 20)
-applyAllCheckbox.Position = UDim2.new(0, 10, 0, 112)
+applyAllCheckbox.Position = UDim2.new(0, 10, 0, 150)
 applyAllCheckbox.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
 applyAllCheckbox.Text = ""
 applyAllCheckbox.Parent = editorFrame
@@ -261,7 +333,7 @@ checkmark.Parent = applyAllCheckbox
 
 local applyAllLabel = Instance.new("TextLabel")
 applyAllLabel.Size = UDim2.new(0, 200, 0, 20)
-applyAllLabel.Position = UDim2.new(0, 35, 0, 112)
+applyAllLabel.Position = UDim2.new(0, 35, 0, 150)
 applyAllLabel.BackgroundTransparency = 1
 applyAllLabel.Text = "Apply edits to all clones"
 applyAllLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -280,7 +352,7 @@ end)
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Name = "StatusLabel"
 statusLabel.Size = UDim2.new(1, -20, 0, 40)
-statusLabel.Position = UDim2.new(0, 10, 0, 500)
+statusLabel.Position = UDim2.new(0, 10, 0, 600)
 statusLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 statusLabel.Text = "Ready to scan..."
 statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -322,6 +394,14 @@ local function replaceViewportWithImage(button, imageId)
     return imageLabel
 end
 
+-- Function to apply SpecialIndicator color
+local function applySpecialIndicatorColor(button, color)
+    local specialIndicator = button:FindFirstChild("SpecialIndicator")
+    if specialIndicator and specialIndicator:IsA("Frame") then
+        specialIndicator.BackgroundColor3 = color
+    end
+end
+
 -- Function to create item button in list
 local function createItemButton(buttonName, buttonRef, parentList)
     local itemButton = Instance.new("TextButton")
@@ -351,6 +431,7 @@ local function createItemButton(buttonName, buttonRef, parentList)
         local nameL = buttonRef:FindFirstChild("NameLabel")
         local displayImg = buttonRef:FindFirstChild("DisplayImage") or buttonRef:FindFirstChildOfClass("ImageLabel") or buttonRef:FindFirstChildOfClass("ImageButton")
         local viewportFrame = buttonRef:FindFirstChild("DisplayViewport") or buttonRef:FindFirstChildOfClass("ViewportFrame")
+        local specialIndicator = buttonRef:FindFirstChild("SpecialIndicator")
         
         if nameL and nameL:IsA("TextLabel") then
             nameInput.Text = nameL.Text
@@ -366,6 +447,14 @@ local function createItemButton(buttonName, buttonRef, parentList)
             imageInput.Text = "ViewportFrame (3D Model)"
         else
             imageInput.Text = ""
+        end
+        
+        -- Load SpecialIndicator color
+        if specialIndicator and specialIndicator:IsA("Frame") then
+            local color = specialIndicator.BackgroundColor3
+            colorInput.Text = math.floor(color.R * 255) .. "," .. math.floor(color.G * 255) .. "," .. math.floor(color.B * 255)
+        else
+            colorInput.Text = ""
         end
         
         statusLabel.Text = "Selected: " .. buttonName
@@ -406,11 +495,13 @@ local function createItemButton(buttonName, buttonRef, parentList)
         local parentList = buttonRef.Parent
         local newName = nameInput.Text
         local newImageId = imageInput.Text
+        local newColor = parseRGB(colorInput.Text)
         local shouldApplyEdits = (checkmark.Text == "✓")
         
         print("Parent list: " .. tostring(parentList))
         print("New name: " .. newName)
         print("New image ID: " .. newImageId)
+        print("New color: " .. tostring(newColor))
         print("Should apply edits: " .. tostring(shouldApplyEdits))
         print("Checkmark text: '" .. checkmark.Text .. "'")
         
@@ -420,8 +511,8 @@ local function createItemButton(buttonName, buttonRef, parentList)
             clone.Name = generateGUID()
             clone.Visible = true
             
-            -- Apply edits if checkbox is enabled OR if we have a valid image ID to apply
-            if shouldApplyEdits or (newImageId and newImageId ~= "" and newImageId ~= "ViewportFrame (3D Model)") then
+            -- Apply edits if checkbox is enabled OR if we have valid edits to apply
+            if shouldApplyEdits or (newName ~= "") or (newImageId and newImageId ~= "" and newImageId ~= "ViewportFrame (3D Model)") or newColor then
                 local nameL = clone:FindFirstChild("NameLabel")
                 
                 -- Apply name change
@@ -432,6 +523,11 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 -- Apply image change (replace ViewportFrame with ImageLabel if needed)
                 if newImageId and newImageId ~= "" and newImageId ~= "ViewportFrame (3D Model)" then
                     replaceViewportWithImage(clone, newImageId)
+                end
+                
+                -- Apply SpecialIndicator color
+                if newColor then
+                    applySpecialIndicatorColor(clone, newColor)
                 end
             end
             
@@ -472,6 +568,7 @@ scanButton.MouseButton1Click:Connect(function()
     selectedButton = nil
     nameInput.Text = ""
     imageInput.Text = ""
+    colorInput.Text = ""
     statusLabel.Text = "Scanning and refreshing models..."
     statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
     
