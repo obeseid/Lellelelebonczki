@@ -396,8 +396,13 @@ local function createItemButton(buttonName, buttonRef, parentList)
             clone.Visible = true
             clone.Parent = parentList
             
-            -- Wait a moment for the clone to fully initialize
-            task.wait(0.1)
+            -- Wait for the clone to be fully loaded
+            if clone:IsA("GuiObject") then
+                repeat
+                    task.wait()
+                until clone.AbsoluteSize.X > 0 and clone.AbsoluteSize.Y > 0
+                print("Clone #" .. i .. " is now loaded and visible on screen")
+            end
             
             print("Clone #" .. i .. " - shouldApplyEdits: " .. tostring(shouldApplyEdits))
             print("newName: " .. tostring(newName))
