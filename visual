@@ -296,6 +296,32 @@ statusCorner.Parent = statusLabel
 local detectedItems = {}
 local selectedButton = nil
 
+-- Function to replace ViewportFrame with ImageLabel
+local function replaceViewportWithImage(button, imageId)
+    -- Find and remove existing ViewportFrame
+    local viewportFrame = button:FindFirstChild("DisplayViewport") or button:FindFirstChildOfClass("ViewportFrame")
+    if viewportFrame then
+        viewportFrame:Destroy()
+    end
+    
+    -- Find and remove existing ImageLabel/ImageButton
+    local existingImage = button:FindFirstChild("DisplayImage") or button:FindFirstChildOfClass("ImageLabel") or button:FindFirstChildOfClass("ImageButton")
+    if existingImage then
+        existingImage:Destroy()
+    end
+    
+    -- Create new ImageLabel
+    local imageLabel = Instance.new("ImageLabel")
+    imageLabel.Name = "DisplayImage"
+    imageLabel.Size = UDim2.new(1, 0, 1, 0)
+    imageLabel.BackgroundTransparency = 1
+    imageLabel.Image = imageId
+    imageLabel.ScaleType = Enum.ScaleType.Fit
+    imageLabel.Parent = button
+    
+    return imageLabel
+end
+
 -- Function to create item button in list
 local function createItemButton(buttonName, buttonRef, parentList)
     local itemButton = Instance.new("TextButton")
@@ -323,7 +349,8 @@ local function createItemButton(buttonName, buttonRef, parentList)
         
         -- Load current values
         local nameL = buttonRef:FindFirstChild("NameLabel")
-        local displayImg = buttonRef:FindFirstChild("DisplayImage")
+        local displayImg = buttonRef:FindFirstChild("DisplayImage") or buttonRef:FindFirstChildOfClass("ImageLabel") or buttonRef:FindFirstChildOfClass("ImageButton")
+        local viewportFrame = buttonRef:FindFirstChild("DisplayViewport") or buttonRef:FindFirstChildOfClass("ViewportFrame")
         
         if nameL and nameL:IsA("TextLabel") then
             nameInput.Text = nameL.Text
@@ -332,13 +359,11 @@ local function createItemButton(buttonName, buttonRef, parentList)
         end
         
         if displayImg then
-            if displayImg:IsA("ImageLabel") then
+            if displayImg:IsA("ImageLabel") or displayImg:IsA("ImageButton") then
                 imageInput.Text = displayImg.Image
-            elseif displayImg:IsA("ImageButton") then
-                imageInput.Text = displayImg.Image
-            elseif displayImg:IsA("ViewportFrame") then
-                imageInput.Text = "ViewportFrame (3D Model)"
             end
+        elseif viewportFrame then
+            imageInput.Text = "ViewportFrame (3D Model)"
         else
             imageInput.Text = ""
         end
@@ -394,6 +419,22 @@ local function createItemButton(buttonName, buttonRef, parentList)
             local clone = buttonRef:Clone()
             clone.Name = generateGUID()
             clone.Visible = true
+            
+            -- Apply edits if checkbox is enabled OR if we have a valid image ID to apply
+            if shouldApplyEdits or (newImageId and newImageId ~= "" and newImageId ~= "ViewportFrame (3D Model)") then
+                local nameL = clone:FindFirstChild("NameLabel")
+                
+                -- Apply name change
+                if nameL and nameL:IsA("TextLabel") and newName ~= "" then
+                    nameL.Text = newName
+                end
+                
+                -- Apply image change (replace ViewportFrame with ImageLabel if needed)
+                if newImageId and newImageId ~= "" and newImageId ~= "ViewportFrame (3D Model)" then
+                    replaceViewportWithImage(clone, newImageId)
+                end
+            end
+            
             clone.Parent = parentList
             
             -- Wait for the clone to be fully loaded
@@ -403,21 +444,6 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 until clone.AbsoluteSize.X > 0 and clone.AbsoluteSize.Y > 0
                 print("Clone #" .. i .. " is now loaded and visible on screen")
             end
-            
-            print("Clone #" .. i .. " - shouldApplyEdits: " .. tostring(shouldApplyEdits))
-            print("newName: " .. tostring(newName))
-            print("newImageId: " .. tostring(newImageId))
-            
-            -- Apply edits if checkbox is enabled
-            if shouldApplyEdits then
-                local nameL = clone:FindFirstChild("NameLabel")
-                
-                if nameL and nameL:IsA("TextLabel") and newName ~= "" then
-                    nameL.Text = newName
-                end
-            end
-            
-            clone.Parent = parentList
         end
         
         -- Refresh layout
