@@ -364,8 +364,10 @@ local function createItemButton(buttonName, buttonRef, parentList)
     
     -- Clone functionality
     cloneBtn.MouseButton1Click:Connect(function()
-        print("Clone button clicked!")
+        print("=== CLONE BUTTON CLICKED ===")
         local amount = tonumber(amountInput.Text) or 20
+        print("Amount to clone: " .. amount)
+        
         if amount <= 0 then
             statusLabel.Text = "Error: Amount must be greater than 0"
             statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
@@ -381,10 +383,21 @@ local function createItemButton(buttonName, buttonRef, parentList)
         local newImageId = imageInput.Text
         local shouldApplyEdits = (checkmark.Text == "✓")
         
+        print("Parent list: " .. tostring(parentList))
+        print("New name: " .. newName)
+        print("New image ID: " .. newImageId)
+        print("Should apply edits: " .. tostring(shouldApplyEdits))
+        print("Checkmark text: '" .. checkmark.Text .. "'")
+        
         for i = 1, amount do
+            print("=== Starting clone #" .. i .. " ===")
             local clone = buttonRef:Clone()
             clone.Name = generateGUID()
             clone.Visible = true
+            clone.Parent = parentList
+            
+            -- Wait a moment for the clone to fully initialize
+            task.wait(0.1)
             
             print("Clone #" .. i .. " - shouldApplyEdits: " .. tostring(shouldApplyEdits))
             print("newName: " .. tostring(newName))
