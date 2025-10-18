@@ -12,6 +12,9 @@ if not hauntedIsland then
     return
 end
 
+-- Table to track already teleported models
+local teleportedModels = {}
+
 -- Function to check if a model has both Body and ForceField parts
 local function hasRequiredParts(model)
     local hasBody = false
@@ -37,8 +40,10 @@ end
 
 -- Function to scan and teleport to matching models
 local function scanAndTeleport()
+    local foundNew = false
+    
     for _, obj in pairs(hauntedIsland:GetDescendants()) do
-        if obj:IsA("Model") then
+        if obj:IsA("Model") and not teleportedModels[obj] then
             -- Check if model has both required parts
             if hasRequiredParts(obj) then
                 -- Find HumanoidRootPart in the model
@@ -49,6 +54,10 @@ local function scanAndTeleport()
                     hrp.CFrame = targetHRP.CFrame
                     print("Teleported to model:", obj.Name)
                     
+                    -- Mark as teleported
+                    teleportedModels[obj] = true
+                    foundNew = true
+                    
                     -- Wait 1 second before next teleport
                     task.wait(1)
                 else
@@ -57,13 +66,17 @@ local function scanAndTeleport()
             end
         end
     end
+    
+    return foundNew
 end
 
 -- Continuous scanning loop
 while true do
-    scanAndTeleport()
+    local found = scanAndTeleport()
     
-    -- Wait before scanning again for new models
-    print("Scan complete, waiting before next scan...")
-    task.wait(2)
+    if not found then
+        -- No new models found, wait a bit before scanning again
+        print("No new matching models found, continuing to scan...")
+        task.wait(2)
+    end
 end
