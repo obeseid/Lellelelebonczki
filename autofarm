@@ -148,7 +148,7 @@ local Button = Tab1:CreateButton({
    end,
 })
 
--- DELETE AFTER EVENT ENDED
+-- DELETE AFTER EVENT ENDED AND ITS SECTION
 
 local Button = Event:CreateButton({
    Name = "Haunted island horse farm",
