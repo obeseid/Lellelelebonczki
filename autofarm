@@ -38,9 +38,11 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("Autofarma", 4483362458) -- Title, Image
+local Event = Window:CreateTab("Event", 4483362458) -- Title, Image
 local Tab1 = Window:CreateTab("Misc", 4483362458) -- Title, Image
 local Section = Tab:CreateSection("Island Autofarm")
 local Section = Tab1:CreateSection("Inne farmy ok")
+local Section = Event:CreateSection("Event farmy")
 
 local Button = Tab:CreateButton({
    Name = "Mainland",
@@ -143,6 +145,29 @@ local Button = Tab1:CreateButton({
    Name = "Fake trade/spawner",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/faketrade'))()
+   end,
+})
+
+local Button = Event:CreateButton({
+   Name = "Haunted island horse farm",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/hauntedisland'))()
+   end,
+})
+
+local Button = Event:CreateButton({
+   Name = "Souls farm",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/soulfarm'))()
+   end,
+})
+
+local Divider = Event:CreateDivider()
+
+local Button = Event:CreateButton({
+   Name = "Henry's homestead horse farm",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/henryhomesteadfarm'))()
    end,
 })
 
