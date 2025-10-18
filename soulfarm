@@ -1,0 +1,69 @@
+-- Local Script: Haunted Island Continuous Scanner
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+-- Path to Haunted Island
+local hauntedIsland = workspace.Islands:FindFirstChild("Haunted Island")
+
+if not hauntedIsland then
+    warn("Haunted Island not found in workspace.Islands!")
+    return
+end
+
+-- Function to check if a model has both Body and ForceField parts
+local function hasRequiredParts(model)
+    local hasBody = false
+    local hasForceField = false
+    
+    for _, child in pairs(model:GetDescendants()) do
+        if child:IsA("BasePart") then
+            if child.Name == "Body" then
+                hasBody = true
+            elseif child.Name == "ForceField" then
+                hasForceField = true
+            end
+        end
+        
+        -- Early exit if both are found
+        if hasBody and hasForceField then
+            return true
+        end
+    end
+    
+    return false
+end
+
+-- Function to scan and teleport to matching models
+local function scanAndTeleport()
+    for _, obj in pairs(hauntedIsland:GetDescendants()) do
+        if obj:IsA("Model") then
+            -- Check if model has both required parts
+            if hasRequiredParts(obj) then
+                -- Find HumanoidRootPart in the model
+                local targetHRP = obj:FindFirstChild("HumanoidRootPart")
+                
+                if targetHRP and targetHRP:IsA("BasePart") then
+                    -- Teleport player to the HumanoidRootPart
+                    hrp.CFrame = targetHRP.CFrame
+                    print("Teleported to model:", obj.Name)
+                    
+                    -- Wait 1 second before next teleport
+                    task.wait(1)
+                else
+                    warn("Model has required parts but no HumanoidRootPart:", obj.Name)
+                end
+            end
+        end
+    end
+end
+
+-- Continuous scanning loop
+while true do
+    scanAndTeleport()
+    
+    -- Wait before scanning again for new models
+    print("Scan complete, waiting before next scan...")
+    task.wait(2)
+end
