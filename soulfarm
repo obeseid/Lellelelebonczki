@@ -41,22 +41,22 @@ local function scanAndTeleport()
         if obj:IsA("Model") then
             -- Check if model has both required parts
             if hasRequiredParts(obj) then
-                -- Find HumanoidRootPart in the model (fresh lookup each time)
-                local targetHRP = obj:FindFirstChild("HumanoidRootPart")
+                -- Find Body part in the model (fresh lookup each time)
+                local bodyPart = obj:FindFirstChild("Body", true)
                 
-                if targetHRP and targetHRP:IsA("BasePart") then
+                if bodyPart and bodyPart:IsA("BasePart") then
                     -- Update character and hrp reference in case of respawn
                     character = player.Character or player.CharacterAdded:Wait()
                     hrp = character:WaitForChild("HumanoidRootPart")
                     
-                    -- Teleport player to the CURRENT position of HumanoidRootPart
-                    hrp.CFrame = targetHRP.CFrame
-                    print("Teleported to model:", obj.Name, "at position:", targetHRP.Position)
+                    -- Teleport player to the CURRENT position of Body part
+                    hrp.CFrame = bodyPart.CFrame
+                    print("Teleported to model:", obj.Name, "at Body position:", bodyPart.Position)
                     
                     -- Wait 1 second before next teleport
                     task.wait(1)
                 else
-                    warn("Model has required parts but no HumanoidRootPart:", obj.Name)
+                    warn("Model has required parts but Body part not found:", obj.Name)
                 end
             end
         end
