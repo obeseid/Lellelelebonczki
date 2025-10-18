@@ -148,6 +148,8 @@ local Button = Tab1:CreateButton({
    end,
 })
 
+-- DELETE AFTER EVENT ENDED
+
 local Button = Event:CreateButton({
    Name = "Haunted island horse farm",
    Callback = function()
