@@ -21,7 +21,24 @@ local function movePlayerToIsland(islandName)
 	-- Move the character model into the island folder
 	char.Parent = islandFolder
 	print("Moved character model to:", islandName)
-	task.wait(2) -- Wait for targets to load in
+	
+	-- Fire the Travel RemoteEvent to trigger island loading
+	local travelRemote = game:GetService("ReplicatedStorage"):FindFirstChild("Communication")
+	if travelRemote then
+		travelRemote = travelRemote:FindFirstChild("Functions")
+		if travelRemote then
+			travelRemote = travelRemote:FindFirstChild("Travel")
+			if travelRemote and travelRemote:IsA("RemoteEvent") then
+				travelRemote:FireServer(islandName)
+				print("Fired Travel RemoteEvent for:", islandName)
+			elseif travelRemote and travelRemote:IsA("RemoteFunction") then
+				travelRemote:InvokeServer(islandName)
+				print("Invoked Travel RemoteFunction for:", islandName)
+			end
+		end
+	end
+	
+	task.wait(3) -- Wait longer for targets to load in
 	return true
 end
 
@@ -34,7 +51,6 @@ local function followLoopFrom(folder)
 	local lp = players.LocalPlayer
 	local char = lp.Character or lp.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
-	local humanoid = char:WaitForChild("Humanoid")
 	
 	local function getValidTargets()
 		local targets = {}
@@ -109,7 +125,7 @@ local function followLoopFrom(folder)
 					local distance = (hrp.Position - targetHRP.Position).Magnitude
 					
 					if distance > 6 then
-						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+						char:PivotTo(CFrame.new(targetHRP.Position + Vector3.new(0, 0, -4)))
 					end
 					
 					if distance > 30 then
@@ -124,4 +140,4 @@ local function followLoopFrom(folder)
 end
 
 -- ✅ Auto-start scanning Blizzard Island
-followLoopFrom(workspace.Islands["Blizzard Island"]) 
+followLoopFrom(workspace.Islands["Blizzard Island"])
