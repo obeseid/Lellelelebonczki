@@ -156,4 +156,4 @@ local function followLoopFrom(folder)
 end
 
 -- ✅ Auto-start scanning Mainland
-followLoopFrom(workspace.Islands["Mainland"])
+followLoopFrom(workspace.Islands["Blizzard Island"])
