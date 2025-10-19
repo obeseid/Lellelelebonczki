@@ -160,3 +160,5 @@ end
 
 -- ✅ Auto-start scanning Jungle Island
 followLoopFrom(workspace.Islands["Jungle Island"])
+
+workspace.Islands["Volcano Island"].LavaParts:Destroy()
