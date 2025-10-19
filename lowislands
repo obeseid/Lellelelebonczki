@@ -1,0 +1,138 @@
+-- ✅ Follow Logic with Island Switching
+local currentTask
+local currentIslandIndex = 1
+local islands = {
+	"Blizzard Island",
+	"Forest Island",
+	"The Magical Forest"
+}
+
+local function movePlayerToIsland(islandName)
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	
+	local islandFolder = workspace.Islands:FindFirstChild(islandName)
+	if not islandFolder then
+		warn("Island not found:", islandName)
+		return false
+	end
+	
+	-- Find player model in the island by matching username
+	for _, model in ipairs(islandFolder:GetChildren()) do
+		if model:IsA("Model") and model.Name == lp.Name then
+			local modelHRP = model:FindFirstChild("HumanoidRootPart")
+			if modelHRP then
+				hrp.CFrame = modelHRP.CFrame
+				print("Moved player to:", islandName)
+				task.wait(1) -- Wait for targets to load
+				return true
+			end
+		end
+	end
+	
+	warn("Player model not found in:", islandName)
+	return false
+end
+
+local function followLoopFrom(folder)
+	if currentTask then
+		task.cancel(currentTask)
+	end
+	
+	local players = game:GetService("Players")
+	local lp = players.LocalPlayer
+	local char = lp.Character or lp.CharCharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
+	
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
+				table.insert(targets, model)
+			end
+		end
+		return targets
+	end
+	
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+		local noTargetChecks = 0
+		
+		while true do
+			local now = tick()
+			local targets = getValidTargets()
+			
+			-- Check if no valid targets exist
+			if #targets == 0 then
+				noTargetChecks = noTargetChecks + 1
+				
+				if noTargetChecks >= 3 then -- Check 3 times to be sure
+					print("No valid targets found in:", islands[currentIslandIndex])
+					
+					-- Try next island
+					currentIslandIndex = currentIslandIndex + 1
+					if currentIslandIndex > #islands then
+						print("No more islands to check. Restarting from first island.")
+						currentIslandIndex = 1
+					end
+					
+					local nextIsland = islands[currentIslandIndex]
+					print("Switching to:", nextIsland)
+					
+					if movePlayerToIsland(nextIsland) then
+						local newFolder = workspace.Islands:FindFirstChild(nextIsland)
+						if newFolder then
+							followLoopFrom(newFolder)
+							return -- Exit current loop
+						end
+					end
+					
+					noTargetChecks = 0
+				end
+				
+				task.wait(1)
+			else
+				noTargetChecks = 0 -- Reset counter when targets are found
+				
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+					
+					currentTarget = newTarget
+					lastSwitch = now
+					
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
+				end
+				
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+					
+					if distance > 6 then
+						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
+					end
+					
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+				
+				task.wait(0.2)
+			end
+		end
+	end)
+end
+
+-- ✅ Auto-start scanning Blizzard Island
+followLoopFrom(workspace.Islands["Blizzard Island"])
