@@ -1,4 +1,4 @@
--- ✅ Follow Logic with Island Switching
+-- ✅ Follow Logic with Island Switching (Fixed)
 local currentTask
 local currentIslandIndex = 1
 local islands = {
@@ -11,7 +11,6 @@ local function movePlayerToIsland(islandName)
 	local players = game:GetService("Players")
 	local lp = players.LocalPlayer
 	local char = lp.Character or lp.CharacterAdded:Wait()
-	local hrp = char:WaitForChild("HumanoidRootPart")
 	
 	local islandFolder = workspace.Islands:FindFirstChild(islandName)
 	if not islandFolder then
@@ -19,21 +18,11 @@ local function movePlayerToIsland(islandName)
 		return false
 	end
 	
-	-- Find player model in the island by matching username
-	for _, model in ipairs(islandFolder:GetChildren()) do
-		if model:IsA("Model") and model.Name == lp.Name then
-			local modelHRP = model:FindFirstChild("HumanoidRootPart")
-			if modelHRP then
-				hrp.CFrame = modelHRP.CFrame
-				print("Moved player to:", islandName)
-				task.wait(1) -- Wait for targets to load
-				return true
-			end
-		end
-	end
-	
-	warn("Player model not found in:", islandName)
-	return false
+	-- Move the character model into the island folder
+	char.Parent = islandFolder
+	print("Moved character model to:", islandName)
+	task.wait(2) -- Wait for targets to load in
+	return true
 end
 
 local function followLoopFrom(folder)
@@ -43,7 +32,7 @@ local function followLoopFrom(folder)
 	
 	local players = game:GetService("Players")
 	local lp = players.LocalPlayer
-	local char = lp.Character or lp.CharCharacterAdded:Wait()
+	local char = lp.Character or lp.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
 	local humanoid = char:WaitForChild("Humanoid")
 	
@@ -135,4 +124,4 @@ local function followLoopFrom(folder)
 end
 
 -- ✅ Auto-start scanning Blizzard Island
-followLoopFrom(workspace.Islands["Blizzard Island"])
+followLoopFrom(workspace.Islands["Blizzard Island"]) 
