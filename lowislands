@@ -1,5 +1,6 @@
 -- ✅ Follow Logic with Island Switching (Fixed)
 local currentTask
+local shouldStop = false
 local currentIslandIndex = 1
 local islands = {
 	"Blizzard Island",
@@ -48,9 +49,10 @@ local function movePlayerToIsland(islandName)
 end
 
 local function followLoopFrom(folder)
-	if currentTask then
-		task.cancel(currentTask)
-	end
+	-- Signal the old task to stop
+	shouldStop = true
+	task.wait(0.3) -- Give it time to stop
+	shouldStop = false
 	
 	local players = game:GetService("Players")
 	local lp = players.LocalPlayer
@@ -70,7 +72,7 @@ local function followLoopFrom(folder)
 		local lastSwitch = 0
 		local noTargetChecks = 0
 		
-		while true do
+		while not shouldStop do
 			-- Refresh character and hrp references each loop
 			local char = lp.Character
 			if not char then
