@@ -38,11 +38,15 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("Autofarma", 4483362458) -- Title, Image
+local Tab2 = Window:CreateTab("Multi Island", 4483362458) -- Title, Image
 local Event = Window:CreateTab("Event", 4483362458) -- Title, Image
 local Tab1 = Window:CreateTab("Misc", 4483362458) -- Title, Image
 local Section = Tab:CreateSection("Island Autofarm")
 local Section = Tab1:CreateSection("Inne farmy ok")
+local Section = Tab2:CreateSection("Multipl islands farmy")
 local Section = Event:CreateSection("Event farmy")
+
+-- MAIN FARMS
 
 local Button = Tab:CreateButton({
    Name = "Mainland",
@@ -125,6 +129,8 @@ local Button = Tab:CreateButton({
    end,
 })
 
+-- OTHER FARMS
+
 local Button = Tab1:CreateButton({
    Name = "Volcanic minerals",
    Callback = function()
@@ -145,6 +151,29 @@ local Button = Tab1:CreateButton({
    Name = "Fake trade/spawner",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/faketrade'))()
+   end,
+})
+
+-- MULTI ISLANDS FARM
+
+local Button = Tab2:CreateButton({
+   Name = "Low islands START ON BLIZZARD",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/lowislands'))()
+   end,
+})
+
+local Button = Tab2:CreateButton({
+   Name = "Mid islands START ON ROYAL",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/midislands'))()
+   end,
+})
+
+local Button = Tab2:CreateButton({
+   Name = "High islands START ON JUGNLE",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/highislands'))()
    end,
 })
 
