@@ -70,32 +70,53 @@ local function getFullPath(instance)
 	return "game." .. path
 end
 
--- Get the metatable of RemoteEvent
-local mt = getrawmetatable(game)
-local oldNamecall = mt.__namecall
-local oldIndex = mt.__index
-
-setreadonly(mt, false)
-
--- Hook __namecall to intercept FireServer calls
-mt.__namecall = newcclosure(function(self, ...)
-	local method = getnamecallmethod()
-	
-	if method == "FireServer" and typeof(self) == "Instance" and self:IsA("RemoteEvent") then
-		local eventName = self.Name
-		local eventPath = getFullPath(self)
-		
-		displayLabel.Text = string.format(
-			"RemoteEvent Fired!\n\nName: %s\n\nFull Path:\n%s\n\nTime: %s",
-			eventName,
-			eventPath,
-			os.date("%H:%M:%S")
-		)
-	end
-	
-	return oldNamecall(self, ...)
+-- Safe metatable hooking with proper error handling
+local success, mt = pcall(function()
+	return getrawmetatable(game)
 end)
 
-setreadonly(mt, true)
-
-print("RemoteEvent Monitor initialized!")
+if success and mt then
+	local oldNamecall = mt.__namecall
+	
+	pcall(function()
+		setreadonly(mt, false)
+	end)
+	
+	mt.__namecall = newcclosure(function(self, ...)
+		local args = {...}
+		local method = getnamecallmethod()
+		
+		-- Only intercept FireServer on RemoteEvents
+		if method == "FireServer" then
+			local isRemote = pcall(function()
+				return self:IsA("RemoteEvent")
+			end)
+			
+			if isRemote and self:IsA("RemoteEvent") then
+				pcall(function()
+					local eventName = self.Name
+					local eventPath = getFullPath(self)
+					
+					displayLabel.Text = string.format(
+						"RemoteEvent Fired!\n\nName: %s\n\nFull Path:\n%s\n\nTime: %s",
+						eventName,
+						eventPath,
+						os.date("%H:%M:%S")
+					)
+				end)
+			end
+		end
+		
+		-- Always call the original function
+		return oldNamecall(self, ...)
+	end)
+	
+	pcall(function()
+		setreadonly(mt, true)
+	end)
+	
+	print("RemoteEvent Monitor initialized with metatable hook!")
+else
+	warn("RemoteEvent Monitor: Metatable hooking not available (requires executor)")
+	displayLabel.Text = "Metatable hooking not available!\n\nThis script requires an executor with:\n- getrawmetatable\n- setreadonly\n- newcclosure\n- getnamecallmethod"
+end
