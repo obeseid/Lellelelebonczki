@@ -70,39 +70,20 @@ local function getFullPath(instance)
 	return "game." .. path
 end
 
--- Function to hook RemoteEvent.FireServer
-local originalFireServer = nil
-local remoteEventMT = getmetatable(game:GetService("ReplicatedStorage"):FindFirstChildOfClass("RemoteEvent") or Instance.new("RemoteEvent"))
+-- Store original FireServer references
+local originalFireServers = {}
 
-if remoteEventMT then
-	originalFireServer = remoteEventMT.__index.FireServer
-	
-	remoteEventMT.__index.FireServer = function(self, ...)
-		-- Display the event info
-		local eventName = self.Name
-		local eventPath = getFullPath(self)
-		
-		displayLabel.Text = string.format(
-			"RemoteEvent Fired!\n\nName: %s\n\nFull Path:\n%s\n\nTime: %s",
-			eventName,
-			eventPath,
-			os.date("%H:%M:%S")
-		)
-		
-		-- Call the original function
-		return originalFireServer(self, ...)
-	end
-end
-
--- Alternative method: Monitor all RemoteEvents in game
+-- Function to monitor a RemoteEvent
 local function monitorRemoteEvent(remoteEvent)
 	if not remoteEvent:IsA("RemoteEvent") then return end
+	if originalFireServers[remoteEvent] then return end -- Already hooked
 	
-	-- Store original FireServer if not already done
+	-- Store original FireServer method
 	local origFire = remoteEvent.FireServer
+	originalFireServers[remoteEvent] = origFire
 	
-	-- Override FireServer
-	remoteEvent.FireServer = function(self, ...)
+	-- Create a new function that wraps the original
+	local function customFireServer(self, ...)
 		local eventName = self.Name
 		local eventPath = getFullPath(self)
 		
@@ -113,9 +94,12 @@ local function monitorRemoteEvent(remoteEvent)
 			os.date("%H:%M:%S")
 		)
 		
-		-- Call original
+		-- Call the original FireServer
 		return origFire(self, ...)
 	end
+	
+	-- Replace FireServer with our custom function
+	remoteEvent.FireServer = customFireServer
 end
 
 -- Monitor existing RemoteEvents
