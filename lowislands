@@ -155,5 +155,5 @@ local function followLoopFrom(folder)
 	end)
 end
 
--- ✅ Auto-start scanning Mainland
+-- ✅ Auto-start scanning Blizzard Island
 followLoopFrom(workspace.Islands["Blizzard Island"])
