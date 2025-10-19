@@ -70,20 +70,18 @@ local function getFullPath(instance)
 	return "game." .. path
 end
 
--- Store original FireServer references
-local originalFireServers = {}
+-- Get the metatable of RemoteEvent
+local mt = getrawmetatable(game)
+local oldNamecall = mt.__namecall
+local oldIndex = mt.__index
 
--- Function to monitor a RemoteEvent
-local function monitorRemoteEvent(remoteEvent)
-	if not remoteEvent:IsA("RemoteEvent") then return end
-	if originalFireServers[remoteEvent] then return end -- Already hooked
+setreadonly(mt, false)
+
+-- Hook __namecall to intercept FireServer calls
+mt.__namecall = newcclosure(function(self, ...)
+	local method = getnamecallmethod()
 	
-	-- Store original FireServer method
-	local origFire = remoteEvent.FireServer
-	originalFireServers[remoteEvent] = origFire
-	
-	-- Create a new function that wraps the original
-	local function customFireServer(self, ...)
+	if method == "FireServer" and typeof(self) == "Instance" and self:IsA("RemoteEvent") then
 		local eventName = self.Name
 		local eventPath = getFullPath(self)
 		
@@ -93,28 +91,11 @@ local function monitorRemoteEvent(remoteEvent)
 			eventPath,
 			os.date("%H:%M:%S")
 		)
-		
-		-- Call the original FireServer
-		return origFire(self, ...)
 	end
 	
-	-- Replace FireServer with our custom function
-	remoteEvent.FireServer = customFireServer
-end
-
--- Monitor existing RemoteEvents
-for _, descendant in ipairs(game:GetDescendants()) do
-	if descendant:IsA("RemoteEvent") then
-		task.spawn(monitorRemoteEvent, descendant)
-	end
-end
-
--- Monitor new RemoteEvents
-game.DescendantAdded:Connect(function(descendant)
-	if descendant:IsA("RemoteEvent") then
-		task.wait(0.1) -- Small delay to ensure it's set up
-		monitorRemoteEvent(descendant)
-	end
+	return oldNamecall(self, ...)
 end)
+
+setreadonly(mt, true)
 
 print("RemoteEvent Monitor initialized!")
