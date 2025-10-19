@@ -23,22 +23,60 @@ local function movePlayerToIsland(islandName)
 	print("Moved character model to:", islandName)
 	
 	-- Fire the Travel RemoteEvent to trigger island loading
-	local travelRemote = game:GetService("ReplicatedStorage"):FindFirstChild("Communication")
-	if travelRemote then
-		travelRemote = travelRemote:FindFirstChild("Functions")
-		if travelRemote then
-			travelRemote = travelRemote:FindFirstChild("Travel")
-			if travelRemote and travelRemote:IsA("RemoteEvent") then
-				travelRemote:FireServer(islandName)
-				print("Fired Travel RemoteEvent for:", islandName)
-			elseif travelRemote and travelRemote:IsA("RemoteFunction") then
-				travelRemote:InvokeServer(islandName)
-				print("Invoked Travel RemoteFunction for:", islandName)
+	local communication = game:GetService("ReplicatedStorage"):FindFirstChild("Communication")
+	if communication then
+		local functions = communication:FindFirstChild("Functions")
+		if functions then
+			local travelRemote = functions:FindFirstChild("Travel")
+			if travelRemote then
+				-- Check if there's a Response RemoteEvent
+				local responseRemote = travelRemote:FindFirstChild("Response")
+				
+				if responseRemote and responseRemote:IsA("RemoteEvent") then
+					-- Listen for response
+					local responded = false
+					local connection
+					connection = responseRemote.OnClientEvent:Connect(function(...)
+						print("Travel Response received:", ...)
+						responded = true
+						connection:Disconnect()
+					end)
+					
+					-- Fire the travel request
+					if travelRemote:IsA("RemoteEvent") then
+						travelRemote:FireServer(islandName)
+						print("Fired Travel RemoteEvent for:", islandName)
+					elseif travelRemote:IsA("RemoteFunction") then
+						local result = travelRemote:InvokeServer(islandName)
+						print("Invoked Travel RemoteFunction for:", islandName, "Result:", result)
+					end
+					
+					-- Wait for response with timeout
+					local waitTime = 0
+					while not responded and waitTime < 5 do
+						task.wait(0.1)
+						waitTime = waitTime + 0.1
+					end
+					
+					if not responded then
+						connection:Disconnect()
+						warn("No response received from Travel")
+					end
+				else
+					-- No response remote, just fire normally
+					if travelRemote:IsA("RemoteEvent") then
+						travelRemote:FireServer(islandName)
+						print("Fired Travel RemoteEvent for:", islandName)
+					elseif travelRemote:IsA("RemoteFunction") then
+						local result = travelRemote:InvokeServer(islandName)
+						print("Invoked Travel RemoteFunction for:", islandName, "Result:", result)
+					end
+				end
 			end
 		end
 	end
 	
-	task.wait(3) -- Wait longer for targets to load in
+	task.wait(3) -- Wait for targets to load in
 	return true
 end
 
