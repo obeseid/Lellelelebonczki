@@ -59,15 +59,21 @@ displayLabel.Parent = mainFrame
 
 -- Function to get full path of an instance
 local function getFullPath(instance)
-	local path = instance.Name
-	local current = instance.Parent
+	if not instance then return "Unknown" end
 	
+	local path = {}
+	local current = instance
+	
+	-- Build path from instance to game
 	while current and current ~= game do
-		path = current.Name .. "." .. path
+		table.insert(path, 1, current.Name)
 		current = current.Parent
 	end
 	
-	return "game." .. path
+	-- Add game at the start
+	table.insert(path, 1, "game")
+	
+	return table.concat(path, ".")
 end
 
 -- Safe metatable hooking with proper error handling
