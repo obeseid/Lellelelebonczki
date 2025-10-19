@@ -1,0 +1,136 @@
+-- LocalScript - Place this in StarterPlayer > StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "RemoteEventMonitor"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Create main frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 400, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BorderSizePixel = 2
+mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+mainFrame.Parent = screenGui
+
+-- Add UICorner
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = mainFrame
+
+-- Create title bar
+local titleBar = Instance.new("TextLabel")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0, 35)
+titleBar.Position = UDim2.new(0, 0, 0, 0)
+titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+titleBar.BorderSizePixel = 0
+titleBar.Text = "RemoteEvent Monitor"
+titleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleBar.TextSize = 18
+titleBar.Font = Enum.Font.GothamBold
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 8)
+titleCorner.Parent = titleBar
+
+-- Create display label
+local displayLabel = Instance.new("TextLabel")
+displayLabel.Name = "DisplayLabel"
+displayLabel.Size = UDim2.new(1, -20, 1, -55)
+displayLabel.Position = UDim2.new(0, 10, 0, 45)
+displayLabel.BackgroundTransparency = 1
+displayLabel.Text = "Waiting for RemoteEvent..."
+displayLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+displayLabel.TextSize = 14
+displayLabel.Font = Enum.Font.Code
+displayLabel.TextWrapped = true
+displayLabel.TextXAlignment = Enum.TextXAlignment.Left
+displayLabel.TextYAlignment = Enum.TextYAlignment.Top
+displayLabel.Parent = mainFrame
+
+-- Function to get full path of an instance
+local function getFullPath(instance)
+	local path = instance.Name
+	local current = instance.Parent
+	
+	while current and current ~= game do
+		path = current.Name .. "." .. path
+		current = current.Parent
+	end
+	
+	return "game." .. path
+end
+
+-- Function to hook RemoteEvent.FireServer
+local originalFireServer = nil
+local remoteEventMT = getmetatable(game:GetService("ReplicatedStorage"):FindFirstChildOfClass("RemoteEvent") or Instance.new("RemoteEvent"))
+
+if remoteEventMT then
+	originalFireServer = remoteEventMT.__index.FireServer
+	
+	remoteEventMT.__index.FireServer = function(self, ...)
+		-- Display the event info
+		local eventName = self.Name
+		local eventPath = getFullPath(self)
+		
+		displayLabel.Text = string.format(
+			"RemoteEvent Fired!\n\nName: %s\n\nFull Path:\n%s\n\nTime: %s",
+			eventName,
+			eventPath,
+			os.date("%H:%M:%S")
+		)
+		
+		-- Call the original function
+		return originalFireServer(self, ...)
+	end
+end
+
+-- Alternative method: Monitor all RemoteEvents in game
+local function monitorRemoteEvent(remoteEvent)
+	if not remoteEvent:IsA("RemoteEvent") then return end
+	
+	-- Store original FireServer if not already done
+	local origFire = remoteEvent.FireServer
+	
+	-- Override FireServer
+	remoteEvent.FireServer = function(self, ...)
+		local eventName = self.Name
+		local eventPath = getFullPath(self)
+		
+		displayLabel.Text = string.format(
+			"RemoteEvent Fired!\n\nName: %s\n\nFull Path:\n%s\n\nTime: %s",
+			eventName,
+			eventPath,
+			os.date("%H:%M:%S")
+		)
+		
+		-- Call original
+		return origFire(self, ...)
+	end
+end
+
+-- Monitor existing RemoteEvents
+for _, descendant in ipairs(game:GetDescendants()) do
+	if descendant:IsA("RemoteEvent") then
+		task.spawn(monitorRemoteEvent, descendant)
+	end
+end
+
+-- Monitor new RemoteEvents
+game.DescendantAdded:Connect(function(descendant)
+	if descendant:IsA("RemoteEvent") then
+		task.wait(0.1) -- Small delay to ensure it's set up
+		monitorRemoteEvent(descendant)
+	end
+end)
+
+print("RemoteEvent Monitor initialized!")
