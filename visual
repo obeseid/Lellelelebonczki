@@ -658,7 +658,7 @@ local autoClonePresets = {
     },
     {
         name = "Paint Horse (v1)",
-        amount = 11,
+        amount = 12,
         imageId = "rbxassetid://104180111511854",
         color = Color3.fromRGB(106, 254, 250)
     }
