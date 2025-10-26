@@ -32,6 +32,40 @@ local function parseRGB(rgbString)
     return nil
 end
 
+-- Function to replace ViewportFrame with ImageLabel
+local function replaceViewportWithImage(button, imageId)
+    -- Find and remove existing ViewportFrame
+    local viewportFrame = button:FindFirstChild("DisplayViewport") or button:FindFirstChildOfClass("ViewportFrame")
+    if viewportFrame then
+        viewportFrame:Destroy()
+    end
+    
+    -- Find and remove existing ImageLabel/ImageButton
+    local existingImage = button:FindFirstChild("DisplayImage") or button:FindFirstChildOfClass("ImageLabel") or button:FindFirstChildOfClass("ImageButton")
+    if existingImage then
+        existingImage:Destroy()
+    end
+    
+    -- Create new ImageLabel
+    local imageLabel = Instance.new("ImageLabel")
+    imageLabel.Name = "DisplayImage"
+    imageLabel.Size = UDim2.new(1, 0, 1, 0)
+    imageLabel.BackgroundTransparency = 1
+    imageLabel.Image = imageId
+    imageLabel.ScaleType = Enum.ScaleType.Fit
+    imageLabel.Parent = button
+    
+    return imageLabel
+end
+
+-- Function to apply SpecialIndicator color
+local function applySpecialIndicatorColor(button, color)
+    local specialIndicator = button:FindFirstChild("SpecialIndicator")
+    if specialIndicator and specialIndicator:IsA("Frame") then
+        specialIndicator.BackgroundColor3 = color
+    end
+end
+
 -- Create main GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ItemClonerGUI"
@@ -384,40 +418,6 @@ statusCorner.Parent = statusLabel
 local detectedItems = {}
 local selectedButton = nil
 
--- Function to replace ViewportFrame with ImageLabel
-local function replaceViewportWithImage(button, imageId)
-    -- Find and remove existing ViewportFrame
-    local viewportFrame = button:FindFirstChild("DisplayViewport") or button:FindFirstChildOfClass("ViewportFrame")
-    if viewportFrame then
-        viewportFrame:Destroy()
-    end
-    
-    -- Find and remove existing ImageLabel/ImageButton
-    local existingImage = button:FindFirstChild("DisplayImage") or button:FindFirstChildOfClass("ImageLabel") or button:FindFirstChildOfClass("ImageButton")
-    if existingImage then
-        existingImage:Destroy()
-    end
-    
-    -- Create new ImageLabel
-    local imageLabel = Instance.new("ImageLabel")
-    imageLabel.Name = "DisplayImage"
-    imageLabel.Size = UDim2.new(1, 0, 1, 0)
-    imageLabel.BackgroundTransparency = 1
-    imageLabel.Image = imageId
-    imageLabel.ScaleType = Enum.ScaleType.Fit
-    imageLabel.Parent = button
-    
-    return imageLabel
-end
-
--- Function to apply SpecialIndicator color
-local function applySpecialIndicatorColor(button, color)
-    local specialIndicator = button:FindFirstChild("SpecialIndicator")
-    if specialIndicator and specialIndicator:IsA("Frame") then
-        specialIndicator.BackgroundColor3 = color
-    end
-end
-
 -- Function to create item button in list
 local function createItemButton(buttonName, buttonRef, parentList)
     local itemButton = Instance.new("TextButton")
@@ -514,15 +514,7 @@ local function createItemButton(buttonName, buttonRef, parentList)
         local newColor = parseRGB(colorInput.Text)
         local shouldApplyEdits = (checkmark.Text == "✓")
         
-        print("Parent list: " .. tostring(parentList))
-        print("New name: " .. newName)
-        print("New image ID: " .. newImageId)
-        print("New color: " .. tostring(newColor))
-        print("Should apply edits: " .. tostring(shouldApplyEdits))
-        print("Checkmark text: '" .. checkmark.Text .. "'")
-        
         for i = 1, amount do
-            print("=== Starting clone #" .. i .. " ===")
             local clone = buttonRef:Clone()
             clone.Name = generateGUID()
             clone.Visible = true
@@ -554,7 +546,6 @@ local function createItemButton(buttonName, buttonRef, parentList)
                 repeat
                     task.wait()
                 until clone.AbsoluteSize.X > 0 and clone.AbsoluteSize.Y > 0
-                print("Clone #" .. i .. " is now loaded and visible on screen")
             end
         end
         
@@ -617,7 +608,7 @@ scanButton.MouseButton1Click:Connect(function()
         return
     end
     
-    -- Search for TextButtons and refresh their ViewportFrames
+    -- Search for TextButtons
     local foundCount = 0
     for _, categoryContainer in pairs(listPath:GetChildren()) do
         if categoryContainer:IsA("Frame") and categoryContainer.Name == "CategoryContainer" then
@@ -644,8 +635,6 @@ scanButton.MouseButton1Click:Connect(function()
         statusLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
     end
 end)
-
-print("Item Cloner & Editor GUI loaded successfully!")
 
 -- Predefined items for auto cloning
 local autoClonePresets = {
@@ -676,4 +665,122 @@ local autoClonePresets = {
 }
 
 -- Auto Clone Random Items Function
-autoCloneButton.MouseButton1Click
+autoCloneButton.MouseButton1Click:Connect(function()
+    statusLabel.Text = "Starting auto clone process..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    
+    -- Get the list path
+    local success, listPath = pcall(function()
+        local menusPath = playerGui:WaitForChild("Menus", 1)
+        local backpackPath = menusPath:FindFirstChild("Backpack")
+        local mainPath = backpackPath and backpackPath:FindFirstChild("Main")
+        local inventoryPath = mainPath and mainPath:FindFirstChild("Inventory")
+        local contentPath = inventoryPath and inventoryPath:FindFirstChild("Content")
+        return contentPath and contentPath:FindFirstChild("List")
+    end)
+    
+    if not success or not listPath then
+        statusLabel.Text = "Error: Could not find List path"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
+    end
+    
+    -- Find a random item button to use as template
+    local templateButton = nil
+    for _, categoryContainer in pairs(listPath:GetChildren()) do
+        if categoryContainer:IsA("Frame") and categoryContainer.Name == "CategoryContainer" then
+            local innerList = categoryContainer:FindFirstChild("List")
+            if innerList and innerList:IsA("Frame") then
+                for _, child in pairs(innerList:GetChildren()) do
+                    if child:IsA("TextButton") then
+                        templateButton = child
+                        break
+                    end
+                end
+                if templateButton then break end
+            end
+        end
+    end
+    
+    if not templateButton then
+        statusLabel.Text = "Error: No item found to use as template"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
+    end
+    
+    local parentList = templateButton.Parent
+    local totalCloned = 0
+    
+    -- Clone each preset
+    for _, preset in ipairs(autoClonePresets) do
+        print("=== Auto cloning: " .. preset.name .. " ===")
+        
+        for i = 1, preset.amount do
+            local clone = templateButton:Clone()
+            clone.Name = generateGUID()
+            clone.Visible = true
+            
+            -- Apply name
+            local nameL = clone:FindFirstChild("NameLabel")
+            if nameL and nameL:IsA("TextLabel") then
+                nameL.Text = preset.name
+            end
+            
+            -- Apply image (replace ViewportFrame with ImageLabel)
+            replaceViewportWithImage(clone, preset.imageId)
+            
+            -- Apply color
+            applySpecialIndicatorColor(clone, preset.color)
+            
+            clone.Parent = parentList
+            
+            -- Wait for the clone to be fully loaded
+            if clone:IsA("GuiObject") then
+                repeat
+                    task.wait()
+                until clone.AbsoluteSize.X > 0 and clone.AbsoluteSize.Y > 0
+            end
+            
+            totalCloned = totalCloned + 1
+        end
+        
+        print("Completed cloning " .. preset.amount .. " of " .. preset.name)
+    end
+    
+    -- Refresh layout
+    local layout = parentList:FindFirstChildOfClass("UIListLayout") or parentList:FindFirstChildOfClass("UIGridLayout")
+    if layout then
+        layout.Parent = nil
+        task.wait()
+        layout.Parent = parentList
+    end
+    
+    statusLabel.Text = "Auto clone complete! Created " .. totalCloned .. " items!"
+    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+end)
+
+print("Item Cloner & Editor GUI loaded successfully!")
+
+-- Automatically change AmountLabel to 2M
+task.spawn(function()
+    local success, amountLabel = pcall(function()
+        local menusPath = playerGui:WaitForChild("Menus", 5)
+        local backpackPath = menusPath:WaitForChild("Backpack", 5)
+        local mainPath = backpackPath:WaitForChild("Main", 5)
+        local inventoryPath = mainPath:WaitForChild("Inventory", 5)
+        local contentPath = inventoryPath:WaitForChild("Content", 5)
+        local bottomPath = contentPath:WaitForChild("Bottom", 5)
+        local bottomPath2 = bottomPath:WaitForChild("Bottom", 5)
+        local standardPath = bottomPath2:WaitForChild("Standard", 5)
+        local valuePath = standardPath:WaitForChild("Value", 5)
+        local amountPath = valuePath:WaitForChild("Amount", 5)
+        return amountPath:WaitForChild("AmountLabel", 5)
+    end)
+    
+    if success and amountLabel then
+        amountLabel.Text = "2M"
+        print("Successfully changed AmountLabel to 2M")
+    else
+        warn("Failed to find AmountLabel path")
+    end
+end)
