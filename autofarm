@@ -154,6 +154,15 @@ local Button = Tab1:CreateButton({
    end,
 })
 
+local Divider = Tab1:CreateDivider()
+
+local Button = Tab1:CreateButton({
+   Name = "DISABLE TEXTURES REDUCE LAG",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/nolag'))()
+   end,
+})
+
 -- MULTI ISLANDS FARM
 
 local Button = Tab2:CreateButton({
