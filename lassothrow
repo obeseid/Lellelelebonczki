@@ -1,65 +1,33 @@
--- Auto Lasso Controller
--- Place in StarterPlayerScripts
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
-local Players = game:GetService("Players")
-local UIS = game:GetService("UserInputService")
+local References = require(ReplicatedStorage:WaitForChild("References"))
+local CharacterHandler = require(References.PlayerScripts.Priority:WaitForChild("CharacterHandler"))
 
-local player = Players.LocalPlayer
-local backpack = player:WaitForChild("Backpack")
+-- ✅ Correct path you provided
+local LassoModule = require(game:GetService("StarterPlayer")
+    .StarterPlayerScripts
+    .Classes
+    .Equipment
+    .Controllers
+    .Lasso)
 
-local equippedTool = nil
-local autoThrowEnabled = true  -- Always auto-throw as requested
+local cooldown = 0.45 -- change lower for faster throws
+local lastThrow = 0
 
-local function canAuto(tool)
-    if not tool then return false end
-    -- Only auto for lassos
-    local name = tool.Name:lower()
-    return name:find("lasso") ~= nil
-end
+RunService.RenderStepped:Connect(function()
+    local now = tick()
+    if now - lastThrow < cooldown then return end
 
-local function activateLoop(tool)
-    -- One loop handles a single equipped lasso
-    task.spawn(function()
-        while equippedTool == tool and autoThrowEnabled and canAuto(tool) do
-            tool:Activate()
-            task.wait(0.2) 
-            -- ↑ Adjust if you want faster/slower later
-        end
-    end)
-end
+    local activeObject = CharacterHandler.object
+    if not activeObject then return end
 
-local function onEquipped(tool)
-    if canAuto(tool) then
-        equippedTool = tool
-        activateLoop(tool)
-    end
-end
+    local toolData = activeObject.toolData
+    if not toolData or not toolData.lasso then return end
 
-local function onUnequipped(tool)
-    if equippedTool == tool then
-        equippedTool = nil
-    end
-end
-
-local function trackTool(tool)
-    tool.Equipped:Connect(function() onEquipped(tool) end)
-    tool.Unequipped:Connect(onUnequipped)
-end
-
--- Track lasso tools that exist now or appear later
-local function scan()
-    for _, tool in ipairs(backpack:GetChildren()) do
-        if tool:IsA("Tool") then
-            trackTool(tool)
-        end
-    end
-end
-
-backpack.ChildAdded:Connect(function(child)
-    task.wait()
-    if child:IsA("Tool") then
-        trackTool(child)
+    local target, pos = LassoModule.GetTarget(toolData)
+    if target and pos then
+        toolData:Throw(pos)
+        lastThrow = now
     end
 end)
-
-scan()
