@@ -1,0 +1,65 @@
+-- Auto Lasso Controller
+-- Place in StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+local equippedTool = nil
+local autoThrowEnabled = true  -- Always auto-throw as requested
+
+local function canAuto(tool)
+    if not tool then return false end
+    -- Only auto for lassos
+    local name = tool.Name:lower()
+    return name:find("lasso") ~= nil
+end
+
+local function activateLoop(tool)
+    -- One loop handles a single equipped lasso
+    task.spawn(function()
+        while equippedTool == tool and autoThrowEnabled and canAuto(tool) do
+            tool:Activate()
+            task.wait(0.2) 
+            -- ↑ Adjust if you want faster/slower later
+        end
+    end)
+end
+
+local function onEquipped(tool)
+    if canAuto(tool) then
+        equippedTool = tool
+        activateLoop(tool)
+    end
+end
+
+local function onUnequipped(tool)
+    if equippedTool == tool then
+        equippedTool = nil
+    end
+end
+
+local function trackTool(tool)
+    tool.Equipped:Connect(function() onEquipped(tool) end)
+    tool.Unequipped:Connect(onUnequipped)
+end
+
+-- Track lasso tools that exist now or appear later
+local function scan()
+    for _, tool in ipairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            trackTool(tool)
+        end
+    end
+end
+
+backpack.ChildAdded:Connect(function(child)
+    task.wait()
+    if child:IsA("Tool") then
+        trackTool(child)
+    end
+end)
+
+scan()
