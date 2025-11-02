@@ -44,6 +44,16 @@ local function setupMonitoring()
 		if isMonitoring and tradePartnerUsername and leavingPlayer.Name == tradePartnerUsername then
 			print("Trade partner left! Creating frozen GUI...")
 			
+			-- Get HUD reference early
+			local hudGui = playerGui:FindFirstChild("HUD")
+			
+			-- Get YesNo prompt reference
+			local promptsFolder = playerGui:FindFirstChild("Prompts")
+			local yesNoFrame = nil
+			if promptsFolder then
+				yesNoFrame = promptsFolder:FindFirstChild("YesNo")
+			end
+			
 			-- Clone the entire Menus folder directly
 			local menusClone = menusFolder:Clone()
 			menusClone.Name = "FrozenMenus"
@@ -72,10 +82,19 @@ local function setupMonitoring()
 			menusClone.Parent = playerGui
 			
 			-- Disable HUD
-			local hudGui = playerGui:FindFirstChild("HUD")
 			if hudGui then
 				hudGui.Enabled = false
 				print("HUD disabled")
+			else
+				warn("HUD not found!")
+			end
+			
+			-- Hide YesNo prompt
+			if yesNoFrame then
+				yesNoFrame.Visible = false
+				print("YesNo prompt hidden")
+			else
+				warn("YesNo prompt not found!")
 			end
 			
 			-- Get the execution timer and start countdown
@@ -110,7 +129,7 @@ local function setupMonitoring()
 			
 			print("Frozen GUI created successfully!")
 			
-			-- Destroy after 11 seconds
+			-- Destroy after 11 seconds (YesNo shows after 12)
 			task.spawn(function()
 				task.wait(11)
 				if menusClone and menusClone.Parent then
@@ -119,9 +138,20 @@ local function setupMonitoring()
 				end
 				
 				-- Re-enable HUD
-				if hudGui then
+				if hudGui and hudGui.Parent then
 					hudGui.Enabled = true
 					print("HUD re-enabled")
+				else
+					warn("HUD not found or was destroyed!")
+				end
+				
+				-- Wait 1 more second before showing YesNo (total 12 seconds)
+				task.wait(1)
+				
+				-- Show YesNo prompt again
+				if yesNoFrame and yesNoFrame.Parent then
+					yesNoFrame.Visible = true
+					print("YesNo prompt shown")
 				end
 			end)
 			
