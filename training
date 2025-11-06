@@ -8,73 +8,57 @@ local function teleportLoop()
 	local character = player.Character or player.CharacterAdded:Wait()
 	local hrp = character:WaitForChild("HumanoidRootPart")
 	local humanoid = character:WaitForChild("Humanoid")
-
-	-- Path to checkpoints
-	local checkpointsFolder = workspace:WaitForChild("Islands")
-		:WaitForChild("Training Island")
-		:WaitForChild("Outdoor Arena")
-		:WaitForChild("DynamicArena")
-		:WaitForChild("_LAYOUT")
-		:WaitForChild("CheckpointActivity")
-		:WaitForChild("Routes")
-		:WaitForChild("Checkpoints")
-
-	local checkpointNames = {"1", "2", "3", "4"} -- Add more checkpoints if needed
-
+	
+	-- Target checkpoint
+	local checkpoint = workspace:WaitForChild("CheckpointMarker"):WaitForChild("Neon")
+	
 	while teleporting do
-		for _, name in ipairs(checkpointNames) do
-			if not teleporting then return end
-
-			local checkpoint = checkpointsFolder:FindFirstChild(name)
-			if checkpoint and checkpoint:IsA("BasePart") then
-
-				local seatPart = humanoid.SeatPart
-				if seatPart and seatPart:IsDescendantOf(workspace) then
-					-- Player is on a mount or vehicle
-					local mountModel = seatPart:FindFirstAncestorWhichIsA("Model")
-
-					if mountModel then
-						-- Temporarily anchor all parts to avoid physics glitch
-						for _, part in ipairs(mountModel:GetDescendants()) do
-							if part:IsA("BasePart") then
-								part.Anchored = true
-							end
+		if checkpoint and checkpoint:IsA("BasePart") then
+			local seatPart = humanoid.SeatPart
+			
+			if seatPart and seatPart:IsDescendantOf(workspace) then
+				-- Player is on a mount or vehicle
+				local mountModel = seatPart:FindFirstAncestorWhichIsA("Model")
+				
+				if mountModel then
+					-- Temporarily anchor all parts to avoid physics glitch
+					for _, part in ipairs(mountModel:GetDescendants()) do
+						if part:IsA("BasePart") then
+							part.Anchored = true
 						end
-
-						local targetCFrame = checkpoint.CFrame
-
-						if mountModel.PrimaryPart then
-							mountModel:SetPrimaryPartCFrame(targetCFrame)
-						else
-							seatPart.CFrame = targetCFrame
-						end
-
-						task.wait(0.1)
-
-						-- Unanchor after teleport
-						for _, part in ipairs(mountModel:GetDescendants()) do
-							if part:IsA("BasePart") then
-								part.Anchored = false
-							end
-						end
+					end
+					
+					local targetCFrame = checkpoint.CFrame
+					if mountModel.PrimaryPart then
+						mountModel:SetPrimaryPartCFrame(targetCFrame)
 					else
-						-- Fallback: just move seat
-						seatPart.Anchored = true
-						seatPart.CFrame = checkpoint.CFrame
-						task.wait(0.1)
-						seatPart.Anchored = false
+						seatPart.CFrame = targetCFrame
+					end
+					
+					task.wait(0.1)
+					
+					-- Unanchor after teleport
+					for _, part in ipairs(mountModel:GetDescendants()) do
+						if part:IsA("BasePart") then
+							part.Anchored = false
+						end
 					end
 				else
-					-- Player on foot
-					hrp.CFrame = checkpoint.CFrame
+					-- Fallback: just move seat
+					seatPart.Anchored = true
+					seatPart.CFrame = checkpoint.CFrame
+					task.wait(0.1)
+					seatPart.Anchored = false
 				end
-
 			else
-				warn("Checkpoint named " .. name .. " not found or is not a part")
+				-- Player on foot
+				hrp.CFrame = checkpoint.CFrame
 			end
-
-			task.wait(2) -- Wait between teleports
+		else
+			warn("CheckpointMarker.Neon not found or is not a part")
 		end
+		
+		task.wait(5) -- Wait 5 seconds between teleports
 	end
 end
 
