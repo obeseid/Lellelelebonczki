@@ -3,6 +3,24 @@ local player = game.Players.LocalPlayer
 local teleporting = true -- Set to true to start immediately
 local teleportCoroutine
 
+--// Function to find the model with HumanoidRootPart and tailMesh
+local function findTargetModel()
+	local trainingIsland = workspace:WaitForChild("Islands"):WaitForChild("Training Island")
+	
+	for _, model in ipairs(trainingIsland:GetDescendants()) do
+		if model:IsA("Model") then
+			local hasHRP = model:FindFirstChild("HumanoidRootPart")
+			local hasTailMesh = model:FindFirstChild("tailMesh", true) -- Recursive search
+			
+			if hasHRP and hasTailMesh then
+				return model
+			end
+		end
+	end
+	
+	return nil
+end
+
 --// Teleport Function
 local function teleportLoop()
 	local character = player.Character or player.CharacterAdded:Wait()
@@ -11,6 +29,14 @@ local function teleportLoop()
 	
 	-- Target checkpoint
 	local checkpoint = workspace:WaitForChild("CheckpointMarker"):WaitForChild("Neon")
+	
+	-- Find the target model
+	local targetModel = findTargetModel()
+	if targetModel then
+		print("Found target model: " .. targetModel.Name)
+	else
+		warn("Could not find model with HumanoidRootPart and tailMesh")
+	end
 	
 	while teleporting do
 		if checkpoint and checkpoint:IsA("BasePart") then
@@ -53,6 +79,34 @@ local function teleportLoop()
 			else
 				-- Player on foot
 				hrp.CFrame = checkpoint.CFrame
+			end
+			
+			-- Teleport the target model if it exists
+			if targetModel and targetModel:FindFirstChild("HumanoidRootPart") then
+				local modelHRP = targetModel.HumanoidRootPart
+				
+				-- Anchor all parts temporarily
+				for _, part in ipairs(targetModel:GetDescendants()) do
+					if part:IsA("BasePart") then
+						part.Anchored = true
+					end
+				end
+				
+				-- Teleport the model to checkpoint
+				if targetModel.PrimaryPart then
+					targetModel:SetPrimaryPartCFrame(checkpoint.CFrame)
+				else
+					modelHRP.CFrame = checkpoint.CFrame
+				end
+				
+				task.wait(0.1)
+				
+				-- Unanchor all parts
+				for _, part in ipairs(targetModel:GetDescendants()) do
+					if part:IsA("BasePart") then
+						part.Anchored = false
+					end
+				end
 			end
 		else
 			warn("CheckpointMarker.Neon not found or is not a part")
