@@ -4,7 +4,8 @@ local shouldStop = false
 local currentIslandIndex = 1
 local islands = {
 	"Blizzard Island",
-	"Forest Island"
+	"Forest Island",
+	"The Blessed Forest"
 }
 
 local function movePlayerToIsland(islandName)
@@ -24,26 +25,44 @@ local function movePlayerToIsland(islandName)
 	local References = game:GetService("ReplicatedStorage"):WaitForChild("References")
 	local Utilities = require(References).Utilities
 	
-	-- Use the same method as the game's TravelHandler
-	local success, result = pcall(function()
-		return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
-	end)
+	local success, result
 	
-	if success then
-		print("Travel request successful for:", islandName)
-		print("Result:", result)
+	-- Use RowboatTravel for The Blessed Forest
+	if islandName == "The Blessed Forest" then
+		-- FireServer for rowboat travel (not InvokeServer)
+		success, result = pcall(function()
+			-- arg1 is the rowboat destination identifier, arg2 is return boolean
+			Utilities.Network:FireServer("RowboatTravel", "Travel", "The Blessed Forest", false)
+		end)
+		
+		if success then
+			print("RowboatTravel request sent for:", islandName)
+		else
+			warn("RowboatTravel request failed:", result)
+		end
+		
+		-- Move character model into the island folder
+		char.Parent = islandFolder
+		
+		task.wait(4) -- Wait a bit longer for rowboat travel
+		return true
+	else
+		-- Use regular Travel for other islands
+		success, result = pcall(function()
+			return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
+		end)
+		
+		if success then
+			print("Travel request successful for:", islandName)
+			print("Result:", result)
+		else
+			warn("Travel request failed:", result)
+		end
 		
 		-- Move character model into the island folder
 		char.Parent = islandFolder
 		
 		task.wait(3) -- Wait for targets to load in
-		return true
-	else
-		warn("Travel request failed:", result)
-		
-		-- Fallback: Just move the character model
-		char.Parent = islandFolder
-		task.wait(3)
 		return true
 	end
 end
