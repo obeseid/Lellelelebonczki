@@ -148,12 +148,22 @@ local function checkModel(model, islandName)
     if maneMesh and tailMesh then
         local isSpecial = false
         
-        -- Get texture IDs
-        local maneTexture = maneMesh.TextureID or ""
-        local tailTexture = tailMesh.TextureID or ""
+        -- Safely get texture IDs
+        local maneTexture = ""
+        local tailTexture = ""
+        
+        pcall(function()
+            maneTexture = maneMesh.TextureID or ""
+        end)
+        
+        pcall(function()
+            tailTexture = tailMesh.TextureID or ""
+        end)
         
         -- Debug output
         print("Checking model: " .. model.Name)
+        print("  Mane Class: " .. maneMesh.ClassName)
+        print("  Tail Class: " .. tailMesh.ClassName)
         print("  Mane Texture: " .. maneTexture)
         print("  Tail Texture: " .. tailTexture)
         
