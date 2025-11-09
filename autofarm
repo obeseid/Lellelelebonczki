@@ -15,8 +15,8 @@ local Window = Rayfield:CreateWindow({
 
    ConfigurationSaving = {
       Enabled = false,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Big Hub"
+      FolderName = Whifarma, -- Create a custom folder for your hub/game
+      FileName = "bonczki"
    },
 
    Discord = {
@@ -145,19 +145,12 @@ local Button = Tab1:CreateButton({
 
 local Divider = Tab1:CreateDivider()
 
-local Button = Tab1:CreateButton({
-   Name = "Fake trade/spawner",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/faketrade'))()
-   end,
-})
-
-local Divider = Tab1:CreateDivider()
-
-local Button = Tab1:CreateButton({
-   Name = "DISABLE TEXTURES REDUCE LAG",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/nolag'))()
+local Toggle = Tab1:CreateToggle({
+   Name = "Discord webhook notifs",
+   CurrentValue = true,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
    end,
 })
 
