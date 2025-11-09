@@ -1,3 +1,4 @@
+-- Checking if script updated lol
 local HttpService = game:GetService("HttpService")
 
 -- Configuration
@@ -65,8 +66,15 @@ local function getMaterialColorName(material, color)
     local r = math.floor(color.R * 255 + 0.5)
     local g = math.floor(color.G * 255 + 0.5)
     local b = math.floor(color.B * 255 + 0.5)
-    local key = tostring(material) .. "_" .. r .. "," .. g .. "," .. b
-    return MATERIAL_COLOR_NAMES[key] or ("Unknown (" .. tostring(material) .. ", " .. r .. "," .. g .. "," .. b .. ")")
+    
+    -- Remove "Enum.Material." prefix if present
+    local materialName = tostring(material):gsub("Enum%.Material%.", "")
+    
+    local key = materialName .. "_" .. r .. "," .. g .. "," .. b
+    
+    print("  Looking up key: " .. key)
+    
+    return MATERIAL_COLOR_NAMES[key] or ("Unknown (" .. materialName .. ", " .. r .. "," .. g .. "," .. b .. ")")
 end
 
 -- Function to send webhook notification
