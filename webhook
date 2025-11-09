@@ -3,27 +3,79 @@ local HttpService = game:GetService("HttpService")
 -- Configuration
 local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook URL
 
--- Special TextureIDs to watch for
-local SPECIAL_TEXTURES = {
-    ["rbxassetid://136373168220543"] = true,
-    ["rbxassetid://116165213056086"] = true,
-    ["rbxassetid://11509046725"] = true,
-    ["rbxassetid://8895902468"] = true,
-    ["rbxassetid://103883884513514"] = true,
-    ["rbxassetid://11509043446"] = true,
-    ["rbxassetid://111500380221658"] = true,
-    ["rbxassetid://112405515165803"] = true,
-    ["rbxassetid://12859587687"] = true,
-    ["rbxassetid://86178361529080"] = true
+-- Special TextureIDs to watch for with their names
+local TEXTURE_NAMES = {
+    ["rbxassetid://136373168220543"] = "Pastel Streaks",
+    ["rbxassetid://116165213056086"] = "Winter Streaks",
+    ["rbxassetid://11509046725"] = "Cow Print",
+    ["rbxassetid://8895902468"] = "Zebra Print",
+    ["rbxassetid://103883884513514"] = "Dusty Fade",
+    ["rbxassetid://11509043446"] = "Pink Cow Print",
+    ["rbxassetid://111500380221658"] = "Sunrise Streaks",
+    ["rbxassetid://112405515165803"] = "Jaguar Spots",
+    ["rbxassetid://12859587687"] = "Tiger Stripes",
+    ["rbxassetid://86178361529080"] = "Cracked Lava Fade",
+    ["rbxassetid://9783778257"] = "Leathery"
 }
 
+-- Material and color combinations with their names
+local MATERIAL_COLOR_NAMES = {
+    -- Glass materials
+    ["Glass_171,171,255"] = "Blessed",
+    ["Glass_62,184,40"] = "Pearly Green",
+    ["Glass_244,220,255"] = "Pearly",
+    ["Glass_237,147,255"] = "Pearly Pink",
+    ["Glass_245,157,80"] = "Pearly Orange",
+    ["Glass_214,53,56"] = "Pearly Red",
+    ["Glass_32,62,171"] = "Pearly Blue",
+    ["Glass_34,34,34"] = "Pearly Black",
+    
+    -- Ice materials
+    ["Ice_154,197,202"] = "Icey Blue",
+    ["Ice_243,243,243"] = "Icey White",
+    ["Ice_216,157,210"] = "Icey Pink",
+    ["Ice_22,22,22"] = "Icey Black",
+    ["Ice_141,202,139"] = "Icey Green",
+    
+    -- Other materials
+    ["LeafyGrass_109,77,61"] = "Leafy",
+    ["Foil_255,225,246"] = "Clear Quartz",
+    ["Limestone_152,106,87"] = "Limestone",
+    ["Sandstone_105,68,57"] = "Sandstone",
+    ["Foil_184,22,37"] = "Ruby",
+    ["Glacier_154,248,191"] = "Glacier Green",
+    ["Glacier_223,187,255"] = "Glacier Pink",
+    ["Foil_0,176,176"] = "Diamond",
+    ["Foil_12,0,86"] = "Sapphire",
+    ["Foil_156,105,244"] = "Amethyst",
+    ["Foil_223,149,0"] = "Topaz",
+    ["Grass_62,109,27"] = "Mossy",
+    ["Foil_0,165,43"] = "Emerald",
+    ["Neon_72,85,222"] = "Neon Blue",
+    ["Neon_142,80,247"] = "Neon Purple",
+    ["Foil_17,17,17"] = "Obsidian",
+    ["Neon_253,234,141"] = "Moonstone",
+    ["CrackedLava_255,81,0"] = "Volcanic Orange",
+    ["CrackedLava_49,49,49"] = "Volcanic Black",
+    ["Neon_112,189,95"] = "Prismatic"
+}
+
+-- Helper function to get material/color name
+local function getMaterialColorName(material, color)
+    local r = math.floor(color.R * 255 + 0.5)
+    local g = math.floor(color.G * 255 + 0.5)
+    local b = math.floor(color.B * 255 + 0.5)
+    local key = tostring(material) .. "_" .. r .. "," .. g .. "," .. b
+    return MATERIAL_COLOR_NAMES[key] or ("Unknown (" .. tostring(material) .. ", " .. r .. "," .. g .. "," .. b .. ")")
+end
+
 -- Function to send webhook notification
-local function sendWebhook(modelName, island, maneMaterial, maneColor, tailMaterial, tailColor, maneTexture, tailTexture, reason)
+local function sendWebhook(modelName, island, maneName, tailName)
     local data = {
         ["content"] = "🚨 **RARE MESH DETECTED!**",
         ["embeds"] = {{
             ["title"] = "Special Mesh Found!",
-            ["description"] = "**Reason:** " .. reason,
+            ["description"] = "A rare mesh variant has been detected!",
             ["color"] = 15844367, -- Gold color
             ["fields"] = {
                 {
@@ -42,33 +94,13 @@ local function sendWebhook(modelName, island, maneMaterial, maneColor, tailMater
                     ["inline"] = true
                 },
                 {
-                    ["name"] = "Mane Material",
-                    ["value"] = tostring(maneMaterial),
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "Mane Color",
-                    ["value"] = string.format("R:%.2f G:%.2f B:%.2f", maneColor.R, maneColor.G, maneColor.B),
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "Mane Texture",
-                    ["value"] = maneTexture ~= "" and maneTexture or "None",
+                    ["name"] = "🎨 Mane Type",
+                    ["value"] = maneName,
                     ["inline"] = false
                 },
                 {
-                    ["name"] = "Tail Material",
-                    ["value"] = tostring(tailMaterial),
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "Tail Color",
-                    ["value"] = string.format("R:%.2f G:%.2f B:%.2f", tailColor.R, tailColor.G, tailColor.B),
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "Tail Texture",
-                    ["value"] = tailTexture ~= "" and tailTexture or "None",
+                    ["name"] = "🎨 Tail Type",
+                    ["value"] = tailName,
                     ["inline"] = false
                 }
             },
