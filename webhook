@@ -1,4 +1,4 @@
--- did script update
+-- ok
 local HttpService = game:GetService("HttpService")
 
 -- Configuration
@@ -83,7 +83,7 @@ end
 -- Function to send webhook notification
 local function sendWebhook(modelName, island, maneName, tailName)
     local data = {
-        ["content"] = "**RARE HORSE ATTRIBUTE CAUGHT!**",
+        ["content"] = "@everyone",
         ["embeds"] = {{
             ["title"] = "IUH has been found!",
             ["description"] = "Stats of the caught horse:",
