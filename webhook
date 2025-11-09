@@ -1,4 +1,4 @@
--- Checking if script updated lol
+-- did script update
 local HttpService = game:GetService("HttpService")
 
 -- Configuration
@@ -16,7 +16,9 @@ local TEXTURE_NAMES = {
     ["rbxassetid://112405515165803"] = "Jaguar Spots",
     ["rbxassetid://12859587687"] = "Tiger Stripes",
     ["rbxassetid://86178361529080"] = "Cracked Lava Fade",
-    ["rbxassetid://9783778257"] = "Leathery"
+    ["rbxassetid://9783778257"] = "Leathery",
+    ["rbxassetid://112458560900077"] = "Snowy Glacier Fade",
+    ["rbxassetid://85795242225613"] = "Deep Space"
 }
 
 -- Material and color combinations with their names
@@ -46,6 +48,7 @@ local MATERIAL_COLOR_NAMES = {
     ["Foil_184,22,37"] = "Ruby",
     ["Glacier_154,248,191"] = "Glacier Green",
     ["Glacier_223,187,255"] = "Glacier Pink",
+    ["Glacier_157,200,206"] = "Glacier Blue",
     ["Foil_0,176,176"] = "Diamond",
     ["Foil_12,0,86"] = "Sapphire",
     ["Foil_156,105,244"] = "Amethyst",
