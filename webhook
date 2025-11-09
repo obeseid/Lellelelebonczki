@@ -1,0 +1,150 @@
+local HttpService = game:GetService("HttpService")
+
+-- Configuration
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook URL
+
+-- Function to send webhook notification
+local function sendWebhook(modelName, island, maneMaterial, maneColor, tailMaterial, tailColor)
+    local data = {
+        ["content"] = "🚨 **RARE MESH DETECTED!**",
+        ["embeds"] = {{
+            ["title"] = "Special Mesh Found!",
+            ["description"] = "A mesh with non-default properties was detected",
+            ["color"] = 15844367, -- Gold color
+            ["fields"] = {
+                {
+                    ["name"] = "Model Name",
+                    ["value"] = modelName,
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "Island",
+                    ["value"] = island,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Player",
+                    ["value"] = game.Players.LocalPlayer.Name,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Mane Material",
+                    ["value"] = tostring(maneMaterial),
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Mane Color",
+                    ["value"] = string.format("R:%.2f G:%.2f B:%.2f", maneColor.R, maneColor.G, maneColor.B),
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Tail Material",
+                    ["value"] = tostring(tailMaterial),
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Tail Color",
+                    ["value"] = string.format("R:%.2f G:%.2f B:%.2f", tailColor.R, tailColor.G, tailColor.B),
+                    ["inline"] = true
+                }
+            },
+            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S")
+        }}
+    }
+    
+    local success, err = pcall(function()
+        local response = syn and syn.request or http_request or request
+        if response then
+            response({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Body = HttpService:JSONEncode(data)
+            })
+        else
+            HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
+        end
+    end)
+    
+    if success then
+        print("✅ Webhook sent for: " .. modelName)
+    else
+        warn("❌ Failed to send webhook: " .. tostring(err))
+    end
+end
+
+-- Function to check if a model has special meshes
+local function checkModel(model, islandName)
+    if not model:IsA("Model") then return end
+    
+    local maneMesh = model:FindFirstChild("maneMesh")
+    local tailMesh = model:FindFirstChild("tailMesh")
+    
+    if maneMesh and tailMesh then
+        local maneIsSpecial = false
+        local tailIsSpecial = false
+        
+        -- Check maneMesh
+        if maneMesh.Material ~= Enum.Material.Fabric or maneMesh.Color ~= Color3.new(0, 0, 0) then
+            maneIsSpecial = true
+        end
+        
+        -- Check tailMesh
+        if tailMesh.Material ~= Enum.Material.Fabric or tailMesh.Color ~= Color3.new(0, 0, 0) then
+            tailIsSpecial = true
+        end
+        
+        -- If either mesh is special, send webhook
+        if maneIsSpecial or tailIsSpecial then
+            print("🔥 FOUND SPECIAL MESH: " .. model.Name .. " on " .. islandName)
+            sendWebhook(
+                model.Name,
+                islandName,
+                maneMesh.Material,
+                maneMesh.Color,
+                tailMesh.Material,
+                tailMesh.Color
+            )
+        end
+    end
+end
+
+-- Function to monitor an island folder
+local function monitorIsland(island)
+    local islandName = island.Name
+    
+    -- Check existing models
+    for _, child in pairs(island:GetChildren()) do
+        checkModel(child, islandName)
+    end
+    
+    -- Monitor for new models
+    island.ChildAdded:Connect(function(child)
+        task.wait(0.1) -- Small delay to ensure model is fully loaded
+        checkModel(child, islandName)
+    end)
+    
+    print("👁️ Monitoring island: " .. islandName)
+end
+
+-- Main setup
+local Islands = game.Workspace:WaitForChild("Islands")
+
+-- Monitor all existing islands
+for _, island in pairs(Islands:GetChildren()) do
+    if island:IsA("Folder") then
+        monitorIsland(island)
+    end
+end
+
+-- Monitor for new islands being added
+Islands.ChildAdded:Connect(function(island)
+    if island:IsA("Folder") then
+        task.wait(0.1)
+        monitorIsland(island)
+    end
+end)
+
+print("🚀 Islands mesh monitor active! Watching all islands in workspace.")
