@@ -114,9 +114,20 @@ local function checkModel(model, islandName)
         local maneTexture = maneMesh.TextureID or ""
         local tailTexture = tailMesh.TextureID or ""
         
+        -- Debug output
+        print("Checking model: " .. model.Name)
+        print("  Mane Texture: " .. maneTexture)
+        print("  Tail Texture: " .. tailTexture)
+        
         -- Check for special textures
-        if SPECIAL_TEXTURES[maneTexture] or SPECIAL_TEXTURES[tailTexture] then
-            table.insert(reasons, "Special TextureID detected")
+        if SPECIAL_TEXTURES[maneTexture] then
+            table.insert(reasons, "Special mane TextureID detected")
+            print("  ✅ Mane texture is special!")
+        end
+        
+        if SPECIAL_TEXTURES[tailTexture] then
+            table.insert(reasons, "Special tail TextureID detected")
+            print("  ✅ Tail texture is special!")
         end
         
         -- Check for non-default material or color
