@@ -1,4 +1,4 @@
--- ok
+-- did it update
 local HttpService = game:GetService("HttpService")
 
 -- Configuration
@@ -159,6 +159,20 @@ local function checkModel(model, islandName)
     if maneMesh and tailMesh then
         local isSpecial = false
         
+        -- Get breed name from OverheadPart
+        local breedName = model.Name -- Default to model name
+        local overheadPart = model:FindFirstChild("OverheadPart")
+        if overheadPart then
+            local overhead = overheadPart:FindFirstChild("Overhead")
+            if overhead then
+                local breedLabel = overhead:FindFirstChild("BreedLabel")
+                if breedLabel and breedLabel:IsA("TextLabel") then
+                    breedName = breedLabel.Text
+                    print("  Found breed name: " .. breedName)
+                end
+            end
+        end
+        
         -- Safely get texture IDs
         local maneTexture = ""
         local tailTexture = ""
@@ -204,8 +218,8 @@ local function checkModel(model, islandName)
         
         -- If special, send webhook
         if isSpecial then
-            print("🔥 FOUND SPECIAL MESH: " .. model.Name .. " on " .. islandName)
-            sendWebhook(model.Name, islandName, maneName, tailName)
+            print("🔥 FOUND SPECIAL MESH: " .. breedName .. " on " .. islandName)
+            sendWebhook(breedName, islandName, maneName, tailName)
         end
     end
 end
