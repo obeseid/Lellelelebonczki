@@ -83,10 +83,10 @@ end
 -- Function to send webhook notification
 local function sendWebhook(modelName, island, maneName, tailName)
     local data = {
-        ["content"] = "🚨 **RARE MESH DETECTED!**",
+        ["content"] = "**RARE HORSE ATTRIBUTE CAUGHT!**",
         ["embeds"] = {{
-            ["title"] = "Special Mesh Found!",
-            ["description"] = "A rare mesh variant has been detected!",
+            ["title"] = "IUH has been found!",
+            ["description"] = "Stats of the caught horse:",
             ["color"] = 15844367, -- Gold color
             ["fields"] = {
                 {
