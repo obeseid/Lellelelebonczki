@@ -108,10 +108,15 @@ local function sendWebhook(modelName, island, maneName, tailName)
         }}
     }
     
+    print("🔔 Attempting to send webhook...")
+    print("  Webhook URL: " .. (WEBHOOK_URL ~= "YOUR_WEBHOOK_URL_HERE" and "Configured" or "NOT CONFIGURED"))
+    
     local success, err = pcall(function()
         local response = syn and syn.request or http_request or request
+        print("  Using request function: " .. (response and "Found" or "NOT FOUND"))
+        
         if response then
-            response({
+            local result = response({
                 Url = WEBHOOK_URL,
                 Method = "POST",
                 Headers = {
@@ -119,13 +124,15 @@ local function sendWebhook(modelName, island, maneName, tailName)
                 },
                 Body = HttpService:JSONEncode(data)
             })
+            print("  Request result: " .. tostring(result))
         else
+            print("  Falling back to HttpService")
             HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
         end
     end)
     
     if success then
-        print("✅ Webhook sent for: " .. modelName)
+        print("✅ Webhook sent successfully for: " .. modelName)
     else
         warn("❌ Failed to send webhook: " .. tostring(err))
     end
@@ -140,7 +147,6 @@ local function checkModel(model, islandName)
     
     if maneMesh and tailMesh then
         local isSpecial = false
-        local reasons = {}
         
         -- Get texture IDs
         local maneTexture = maneMesh.TextureID or ""
@@ -151,42 +157,34 @@ local function checkModel(model, islandName)
         print("  Mane Texture: " .. maneTexture)
         print("  Tail Texture: " .. tailTexture)
         
-        -- Check for special textures
-        if SPECIAL_TEXTURES[maneTexture] then
-            table.insert(reasons, "Special mane TextureID detected")
-            print("  ✅ Mane texture is special!")
-        end
-        
-        if SPECIAL_TEXTURES[tailTexture] then
-            table.insert(reasons, "Special tail TextureID detected")
-            print("  ✅ Tail texture is special!")
-        end
-        
-        -- Check for non-default material or color
-        if maneMesh.Material ~= Enum.Material.Fabric or maneMesh.Color ~= Color3.new(0, 0, 0) then
-            table.insert(reasons, "Non-default mane material or color")
-        end
-        
-        if tailMesh.Material ~= Enum.Material.Fabric or tailMesh.Color ~= Color3.new(0, 0, 0) then
-            table.insert(reasons, "Non-default tail material or color")
-        end
-        
-        -- If any reason exists, it's special
-        if #reasons > 0 then
+        -- Determine mane name
+        local maneName = "Default"
+        if TEXTURE_NAMES[maneTexture] then
+            maneName = TEXTURE_NAMES[maneTexture]
             isSpecial = true
-            local combinedReason = table.concat(reasons, " + ")
-            print("🔥 FOUND SPECIAL MESH: " .. model.Name .. " on " .. islandName .. " (" .. combinedReason .. ")")
-            sendWebhook(
-                model.Name,
-                islandName,
-                maneMesh.Material,
-                maneMesh.Color,
-                tailMesh.Material,
-                tailMesh.Color,
-                maneTexture,
-                tailTexture,
-                combinedReason
-            )
+            print("  ✅ Mane texture is special: " .. maneName)
+        elseif maneMesh.Material ~= Enum.Material.Fabric or maneMesh.Color ~= Color3.new(0, 0, 0) then
+            maneName = getMaterialColorName(maneMesh.Material, maneMesh.Color)
+            isSpecial = true
+            print("  ✅ Mane has special material/color: " .. maneName)
+        end
+        
+        -- Determine tail name
+        local tailName = "Default"
+        if TEXTURE_NAMES[tailTexture] then
+            tailName = TEXTURE_NAMES[tailTexture]
+            isSpecial = true
+            print("  ✅ Tail texture is special: " .. tailName)
+        elseif tailMesh.Material ~= Enum.Material.Fabric or tailMesh.Color ~= Color3.new(0, 0, 0) then
+            tailName = getMaterialColorName(tailMesh.Material, tailMesh.Color)
+            isSpecial = true
+            print("  ✅ Tail has special material/color: " .. tailName)
+        end
+        
+        -- If special, send webhook
+        if isSpecial then
+            print("🔥 FOUND SPECIAL MESH: " .. model.Name .. " on " .. islandName)
+            sendWebhook(model.Name, islandName, maneName, tailName)
         end
     end
 end
