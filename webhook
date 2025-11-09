@@ -108,28 +108,31 @@ local function checkModel(model, islandName)
     
     if maneMesh and tailMesh then
         local isSpecial = false
-        local reason = ""
+        local reasons = {}
         
         -- Get texture IDs
         local maneTexture = maneMesh.TextureID or ""
         local tailTexture = tailMesh.TextureID or ""
         
-        -- Check for special textures first
+        -- Check for special textures
         if SPECIAL_TEXTURES[maneTexture] or SPECIAL_TEXTURES[tailTexture] then
-            isSpecial = true
-            reason = "Special TextureID detected"
-        -- Check for non-default material or color
-        elseif maneMesh.Material ~= Enum.Material.Fabric or maneMesh.Color ~= Color3.new(0, 0, 0) then
-            isSpecial = true
-            reason = "Non-default mane material or color"
-        elseif tailMesh.Material ~= Enum.Material.Fabric or tailMesh.Color ~= Color3.new(0, 0, 0) then
-            isSpecial = true
-            reason = "Non-default tail material or color"
+            table.insert(reasons, "Special TextureID detected")
         end
         
-        -- If special, send webhook
-        if isSpecial then
-            print("🔥 FOUND SPECIAL MESH: " .. model.Name .. " on " .. islandName .. " (" .. reason .. ")")
+        -- Check for non-default material or color
+        if maneMesh.Material ~= Enum.Material.Fabric or maneMesh.Color ~= Color3.new(0, 0, 0) then
+            table.insert(reasons, "Non-default mane material or color")
+        end
+        
+        if tailMesh.Material ~= Enum.Material.Fabric or tailMesh.Color ~= Color3.new(0, 0, 0) then
+            table.insert(reasons, "Non-default tail material or color")
+        end
+        
+        -- If any reason exists, it's special
+        if #reasons > 0 then
+            isSpecial = true
+            local combinedReason = table.concat(reasons, " + ")
+            print("🔥 FOUND SPECIAL MESH: " .. model.Name .. " on " .. islandName .. " (" .. combinedReason .. ")")
             sendWebhook(
                 model.Name,
                 islandName,
@@ -139,7 +142,7 @@ local function checkModel(model, islandName)
                 tailMesh.Color,
                 maneTexture,
                 tailTexture,
-                reason
+                combinedReason
             )
         end
     end
