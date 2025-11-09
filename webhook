@@ -1,4 +1,3 @@
--- did it update
 local HttpService = game:GetService("HttpService")
 
 -- Configuration
@@ -80,14 +79,14 @@ local function getMaterialColorName(material, color)
     return MATERIAL_COLOR_NAMES[key] or ("Unknown (" .. materialName .. ", " .. r .. "," .. g .. "," .. b .. ")")
 end
 
--- Function to send webhook notification
+-- Function to send webhook notification for mane/tail
 local function sendWebhook(modelName, island, maneName, tailName)
     local data = {
         ["content"] = "@everyone",
         ["embeds"] = {{
             ["title"] = "IUH has been found!",
             ["description"] = "Stats of the caught horse:",
-            ["color"] = 15844367, -- Gold color
+            ["color"] = 16716947, -- hot pink
             ["fields"] = {
                 {
                     ["name"] = "Model Name",
@@ -112,6 +111,69 @@ local function sendWebhook(modelName, island, maneName, tailName)
                 {
                     ["name"] = "🎨 Tail Type",
                     ["value"] = tailName,
+                    ["inline"] = false
+                }
+            },
+            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S")
+        }}
+    }
+    print("🔔 Attempting to send horn webhook...")
+    print("  Webhook URL: " .. (WEBHOOK_URL ~= "YOUR_WEBHOOK_URL_HERE" and "Configured" or "NOT CONFIGURED"))
+    
+    local success, err = pcall(function()
+        local response = syn and syn.request or http_request or request
+        print("  Using request function: " .. (response and "Found" or "NOT FOUND"))
+        
+        if response then
+            local result = response({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Body = HttpService:JSONEncode(data)
+            })
+            print("  Request result: " .. tostring(result))
+        else
+            print("  Falling back to HttpService")
+            HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
+        end
+    end)
+    
+    if success then
+        print("✅ Horn webhook sent successfully for: " .. modelName)
+    else
+        warn("❌ Failed to send horn webhook: " .. tostring(err))
+    end
+end
+
+-- Function to send webhook notification for horn
+local function sendHornWebhook(modelName, island, hornName)
+    local data = {
+        ["content"] = "@everyone",
+        ["embeds"] = {{
+            ["title"] = "Horned has been found!",
+            ["description"] = "Stats of the caught horse:",
+            ["color"] = 255, -- Yellow color
+            ["fields"] = {
+                {
+                    ["name"] = "Model Name",
+                    ["value"] = modelName,
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "Island",
+                    ["value"] = island,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Player",
+                    ["value"] = game.Players.LocalPlayer.Name,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "🦄 Horn Type",
+                    ["value"] = hornName,
                     ["inline"] = false
                 }
             },
@@ -155,23 +217,31 @@ local function checkModel(model, islandName)
     
     local maneMesh = model:FindFirstChild("maneMesh")
     local tailMesh = model:FindFirstChild("tailMesh")
+    local hornModel = model:FindFirstChild("hornModel")
     
-    if maneMesh and tailMesh then
-        local isSpecial = false
-        
-        -- Get breed name from OverheadPart
-        local breedName = model.Name -- Default to model name
-        local overheadPart = model:FindFirstChild("OverheadPart")
-        if overheadPart then
-            local overhead = overheadPart:FindFirstChild("Overhead")
-            if overhead then
-                local breedLabel = overhead:FindFirstChild("BreedLabel")
-                if breedLabel and breedLabel:IsA("TextLabel") then
-                    breedName = breedLabel.Text
-                    print("  Found breed name: " .. breedName)
-                end
+    -- Get breed name from OverheadPart
+    local breedName = model.Name -- Default to model name
+    local overheadPart = model:FindFirstChild("OverheadPart")
+    if overheadPart then
+        local overhead = overheadPart:FindFirstChild("Overhead")
+        if overhead then
+            local breedLabel = overhead:FindFirstChild("BreedLabel")
+            if breedLabel and breedLabel:IsA("TextLabel") then
+                breedName = breedLabel.Text
+                print("  Found breed name: " .. breedName)
             end
         end
+    end
+    
+    -- Check for horn
+    if hornModel then
+        print("🦄 FOUND HORN: " .. breedName .. " on " .. islandName)
+        sendHornWebhook(breedName, islandName, "Horn Present")
+    end
+    
+    -- Check for special mane/tail
+    if maneMesh and tailMesh then
+        local isSpecial = false
         
         -- Safely get texture IDs
         local maneTexture = ""
