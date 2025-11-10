@@ -1,7 +1,8 @@
+-- did it update
 local HttpService = game:GetService("HttpService")
 
 -- Configuration
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook URL
+local WEBHOOK_URL = "YOUR_WEBHOOK_URL_HERE" -- Replace with your Discord webhook URL
 
 -- Special TextureIDs to watch for with their names
 local TEXTURE_NAMES = {
@@ -82,11 +83,11 @@ end
 -- Function to send webhook notification for mane/tail
 local function sendWebhook(modelName, island, maneName, tailName)
     local data = {
-        ["content"] = "@everyone",
+        ["content"] = "🚨 **RARE MESH DETECTED!**",
         ["embeds"] = {{
-            ["title"] = "IUH has been found!",
-            ["description"] = "Stats of the caught horse:",
-            ["color"] = 16716947, -- hot pink
+            ["title"] = "Special Mesh Found!",
+            ["description"] = "A rare mesh variant has been detected!",
+            ["color"] = 15844367, -- Gold color
             ["fields"] = {
                 {
                     ["name"] = "Model Name",
@@ -150,11 +151,11 @@ end
 -- Function to send webhook notification for horn
 local function sendHornWebhook(modelName, island, hornName)
     local data = {
-        ["content"] = "@everyone",
+        ["content"] = "🦄 **HORN DETECTED!**",
         ["embeds"] = {{
-            ["title"] = "Horned has been found!",
-            ["description"] = "Stats of the caught horse:",
-            ["color"] = 255, -- Yellow color
+            ["title"] = "Horned Creature Found!",
+            ["description"] = "A creature with a horn has been detected!",
+            ["color"] = 16776960, -- Yellow color
             ["fields"] = {
                 {
                     ["name"] = "Model Name",
@@ -294,6 +295,41 @@ local function checkModel(model, islandName)
     end
 end
 
+-- Function to get the player's current island
+local function getPlayerIsland()
+    local character = game.Players.LocalPlayer.Character
+    if not character then return nil end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return nil end
+    
+    local Islands = game.Workspace:FindFirstChild("Islands")
+    if not Islands then return nil end
+    
+    -- Check which island folder the player is in
+    for _, island in pairs(Islands:GetChildren()) do
+        if island:IsA("Folder") then
+            -- Check if player's character is a descendant of this island
+            if humanoidRootPart:IsDescendantOf(island) then
+                return island
+            end
+            
+            -- Alternative: Check by proximity to island bounds
+            -- This helps if the character isn't directly parented to the island
+            local islandRegion = island:FindFirstChild("IslandRegion") or island:FindFirstChild("Region")
+            if islandRegion and islandRegion:IsA("BasePart") then
+                local distance = (humanoidRootPart.Position - islandRegion.Position).Magnitude
+                local size = islandRegion.Size.Magnitude
+                if distance < size then
+                    return island
+                end
+            end
+        end
+    end
+    
+    return nil
+end
+
 -- Function to monitor an island folder
 local function monitorIsland(island)
     local islandName = island.Name
@@ -306,7 +342,14 @@ local function monitorIsland(island)
     -- Monitor for new models
     island.ChildAdded:Connect(function(child)
         task.wait(0.1) -- Small delay to ensure model is fully loaded
-        checkModel(child, islandName)
+        
+        -- Only check if player is on this island
+        local playerIsland = getPlayerIsland()
+        if playerIsland and playerIsland == island then
+            checkModel(child, islandName)
+        else
+            print("⏭️ Skipping check - player not on " .. islandName)
+        end
     end)
     
     print("👁️ Monitoring island: " .. islandName)
