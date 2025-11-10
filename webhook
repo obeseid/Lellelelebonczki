@@ -20,18 +20,6 @@ local TEXTURE_NAMES = {
     ["rbxassetid://85795242225613"] = "Deep Space"
 }
 
--- Body TextureIDs to watch for
-local BODY_TEXTURE_NAMES = {
-    ["rbxassetid://113103040884654"] = "Blowing Snow",
-    ["rbxassetid://130845145281644"] = "Mother of Pearl",
-    ["rbxassetid://135058641443394"] = "Dusty Brindle",
-    ["rbxassetid://94920612359921"] = "Glacier Chimera",
-    ["rbxassetid://127786237142282"] = "Mountain Sunrise",
-    ["rbxassetid://73022658037146"] = "Jaguar",
-    ["rbxassetid://123342212722176"] = "Deep Space",
-    ["rbxassetid://94361314630149"] = "Cracked Lava"
-}
-
 -- Material and color combinations with their names
 local MATERIAL_COLOR_NAMES = {
     -- Glass materials
@@ -98,7 +86,7 @@ local function sendWebhook(modelName, island, maneName, tailName)
         ["embeds"] = {{
             ["title"] = "IUH has been found!",
             ["description"] = "Stats of the caught horse:",
-            ["color"] = 16716947, -- hot pink color
+            ["color"] = 16716947, -- Gold color
             ["fields"] = {
                 {
                     ["name"] = "Model Name",
@@ -166,7 +154,7 @@ local function sendHornWebhook(modelName, island, hornName)
         ["embeds"] = {{
             ["title"] = "Horned has been found!",
             ["description"] = "Stats of the caught horse:",
-            ["color"] = 16776960, -- Yellow color
+            ["color"] = 255, -- Yellow color
             ["fields"] = {
                 {
                     ["name"] = "Model Name",
@@ -230,7 +218,6 @@ local function checkModel(model, islandName)
     local maneMesh = model:FindFirstChild("maneMesh")
     local tailMesh = model:FindFirstChild("tailMesh")
     local hornModel = model:FindFirstChild("hornModel")
-    local bodyPart = model:FindFirstChild("Body")
     
     -- Get breed name from OverheadPart
     local breedName = model.Name -- Default to model name
@@ -250,24 +237,6 @@ local function checkModel(model, islandName)
     if hornModel then
         print("🦄 FOUND HORN: " .. breedName .. " on " .. islandName)
         sendHornWebhook(breedName, islandName, "Horn Present")
-    end
-    
-    -- Check for special body texture
-    if bodyPart then
-        local bodyTexture = ""
-        pcall(function()
-            bodyTexture = bodyPart.TextureID or ""
-        end)
-        
-        if bodyTexture ~= "" then
-            print("  Body Texture: " .. bodyTexture)
-        end
-        
-        if BODY_TEXTURE_NAMES[bodyTexture] then
-            local bodyName = BODY_TEXTURE_NAMES[bodyTexture]
-            print("✨ FOUND SPECIAL BODY: " .. breedName .. " (" .. bodyName .. ") on " .. islandName)
-            sendBodyWebhook(breedName, islandName, bodyName)
-        end
     end
     
     -- Check for special mane/tail
