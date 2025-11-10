@@ -1,5 +1,5 @@
 -- Auto Lasso Throw Script
--- Works by directly calling the equipment activation
+-- Works by ngr
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
