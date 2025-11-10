@@ -1,4 +1,4 @@
--- update omfg NGA
+-- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -18,6 +18,23 @@ local partnerNameLabel = partnerFrame:WaitForChild("NameLabel")
 
 -- Set your name immediately
 yourNameLabel.Text = player.Name
+
+-- Get Body elements for accept functionality
+local body = negotiationFrame:WaitForChild("Body")
+local myOffer = body:WaitForChild("MyOffer")
+local partnerOffer = body:WaitForChild("PartnerOffer")
+local myAcceptedLabel = myOffer:WaitForChild("Accepted")
+local partnerAcceptedLabel = partnerOffer:WaitForChild("Accepted")
+local acceptButton = body:WaitForChild("Accept")
+
+-- Hide both Accepted labels initially
+myAcceptedLabel.Visible = false
+partnerAcceptedLabel.Visible = false
+
+-- Accept button functionality
+acceptButton.MouseButton1Click:Connect(function()
+	myAcceptedLabel.Visible = true
+end)
 
 -- Create the moveable name picker GUI
 local namePickerGui = Instance.new("ScreenGui")
