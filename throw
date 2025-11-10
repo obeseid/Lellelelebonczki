@@ -1,4 +1,4 @@
--- Auto Lasso Throw Script
+-- just update ffs
 -- Works by ngr
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
