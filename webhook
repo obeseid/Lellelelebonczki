@@ -1,4 +1,4 @@
--- did it update
+-- UPDATE U NG
 local HttpService = game:GetService("HttpService")
 
 -- Configuration
