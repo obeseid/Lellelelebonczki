@@ -1,4 +1,4 @@
--- LocalScript in StarterPlayerNGA > StarterPlayerScripts or StarterGui
+-- SarrerNGA
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
