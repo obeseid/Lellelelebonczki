@@ -1,7 +1,9 @@
+-- did it update
+
 local HttpService = game:GetService("HttpService")
 
 -- Configuration
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook URL
+local WEBHOOK_URL = "YOUR_WEBHOOK_URL_HERE" -- Replace with your Discord webhook URL
 
 -- Special TextureIDs to watch for with their names
 local TEXTURE_NAMES = {
@@ -18,6 +20,18 @@ local TEXTURE_NAMES = {
     ["rbxassetid://9783778257"] = "Leathery",
     ["rbxassetid://112458560900077"] = "Snowy Glacier Fade",
     ["rbxassetid://85795242225613"] = "Deep Space"
+}
+
+-- Body TextureIDs to watch for
+local BODY_TEXTURE_NAMES = {
+    ["rbxassetid://113103040884654"] = "Blowing Snow",
+    ["rbxassetid://130845145281644"] = "Mother of Pearl",
+    ["rbxassetid://135058641443394"] = "Dusty Brindle",
+    ["rbxassetid://94920612359921"] = "Glacier Chimera",
+    ["rbxassetid://127786237142282"] = "Mountain Sunrise",
+    ["rbxassetid://73022658037146"] = "Jaguar",
+    ["rbxassetid://123342212722176"] = "Deep Space",
+    ["rbxassetid://94361314630149"] = "Cracked Lava"
 }
 
 -- Material and color combinations with their names
@@ -147,6 +161,70 @@ local function sendWebhook(modelName, island, maneName, tailName)
     end
 end
 
+-- Function to send webhook notification for body texture
+local function sendBodyWebhook(modelName, island, bodyName)
+    local data = {
+        ["content"] = "@everyone",
+        ["embeds"] = {{
+            ["title"] = "SIUC has been found!",
+            ["description"] = "Stats of the caught horse:",
+            ["color"] = 16716947, -- Purple color
+            ["fields"] = {
+                {
+                    ["name"] = "Model Name",
+                    ["value"] = modelName,
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "Island",
+                    ["value"] = island,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Player",
+                    ["value"] = game.Players.LocalPlayer.Name,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "✨ Body Pattern",
+                    ["value"] = bodyName,
+                    ["inline"] = false
+                }
+            },
+            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S")
+        }}
+    }
+    
+    print("🔔 Attempting to send body texture webhook...")
+    print("  Webhook URL: " .. (WEBHOOK_URL ~= "YOUR_WEBHOOK_URL_HERE" and "Configured" or "NOT CONFIGURED"))
+    
+    local success, err = pcall(function()
+        local response = syn and syn.request or http_request or request
+        print("  Using request function: " .. (response and "Found" or "NOT FOUND"))
+        
+        if response then
+            local result = response({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Body = HttpService:JSONEncode(data)
+            })
+            print("  Request result: " .. tostring(result))
+        else
+            print("  Falling back to HttpService")
+            HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
+        end
+    end)
+    
+    if success then
+        print("✅ Body texture webhook sent successfully for: " .. modelName)
+    else
+        warn("❌ Failed to send body texture webhook: " .. tostring(err))
+    end
+end
+
 -- Function to send webhook notification for horn
 local function sendHornWebhook(modelName, island, hornName)
     local data = {
@@ -218,6 +296,7 @@ local function checkModel(model, islandName)
     local maneMesh = model:FindFirstChild("maneMesh")
     local tailMesh = model:FindFirstChild("tailMesh")
     local hornModel = model:FindFirstChild("hornModel")
+    local bodyPart = model:FindFirstChild("Body")
     
     -- Get breed name from OverheadPart
     local breedName = model.Name -- Default to model name
@@ -237,6 +316,24 @@ local function checkModel(model, islandName)
     if hornModel then
         print("🦄 FOUND HORN: " .. breedName .. " on " .. islandName)
         sendHornWebhook(breedName, islandName, "Horn Present")
+    end
+    
+    -- Check for special body texture
+    if bodyPart then
+        local bodyTexture = ""
+        pcall(function()
+            bodyTexture = bodyPart.TextureID or ""
+        end)
+        
+        if bodyTexture ~= "" then
+            print("  Body Texture: " .. bodyTexture)
+        end
+        
+        if BODY_TEXTURE_NAMES[bodyTexture] then
+            local bodyName = BODY_TEXTURE_NAMES[bodyTexture]
+            print("✨ FOUND SPECIAL BODY: " .. breedName .. " (" .. bodyName .. ") on " .. islandName)
+            sendBodyWebhook(breedName, islandName, bodyName)
+        end
     end
     
     -- Check for special mane/tail
