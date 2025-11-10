@@ -1,4 +1,4 @@
--- SarrerNGA
+-- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -28,7 +28,7 @@ local partnerAcceptedLabel = partnerOffer:WaitForChild("Accepted")
 local acceptButton = body:WaitForChild("Accept")
 local declineButton = body:WaitForChild("Decline")
 
--- Get ConfirmationFrame elements (no Body frame, everything is directly in ConfirmationFrame)
+-- Get ConfirmationFrame elements (everything is directly in ConfirmationFrame)
 local confirmationFrame = frame:WaitForChild("ConfirmationFrame")
 local confirmMyOffer = confirmationFrame:WaitForChild("MyOffer")
 local confirmPartnerOffer = confirmationFrame:WaitForChild("PartnerOffer")
@@ -36,12 +36,9 @@ local confirmMyAcceptedLabel = confirmMyOffer:WaitForChild("Accepted")
 local confirmPartnerAcceptedLabel = confirmPartnerOffer:WaitForChild("Accepted")
 local confirmAcceptButton = confirmationFrame:WaitForChild("Accept")
 
--- Get name labels in ConfirmationFrame
-local confirmHeader = confirmationFrame:WaitForChild("Header")
-local confirmYouFrame = confirmHeader:WaitForChild("YouFrame")
-local confirmPartnerFrame = confirmHeader:WaitForChild("PartnerFrame")
-local confirmYouLabel = confirmYouFrame:WaitForChild("PartnerLabel")
-local confirmPartnerLabel = confirmPartnerFrame:WaitForChild("PartnerLabel")
+-- Get name labels directly from ConfirmationFrame
+local confirmYouLabel = confirmationFrame:WaitForChild("YouLabel")
+local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel")
 
 -- Hide both Accepted labels initially
 myAcceptedLabel.Visible = false
