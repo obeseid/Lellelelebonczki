@@ -1,4 +1,4 @@
--- LocalScript NGA in StarterPlayer > StarterPlayerScripts or StarterGui
+-- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -28,11 +28,10 @@ local partnerAcceptedLabel = partnerOffer:WaitForChild("Accepted")
 local acceptButton = body:WaitForChild("Accept")
 local declineButton = body:WaitForChild("Decline")
 
--- Get ConfirmationFrame elements
+-- Get ConfirmationFrame elements (no Body frame, everything is directly in ConfirmationFrame)
 local confirmationFrame = frame:WaitForChild("ConfirmationFrame")
-local confirmBody = confirmationFrame:WaitForChild("Body")
-local confirmMyOffer = confirmBody:WaitForChild("MyOffer")
-local confirmPartnerOffer = confirmBody:WaitForChild("PartnerOffer")
+local confirmMyOffer = confirmationFrame:WaitForChild("MyOffer")
+local confirmPartnerOffer = confirmationFrame:WaitForChild("PartnerOffer")
 local confirmMyAcceptedLabel = confirmMyOffer:WaitForChild("Accepted")
 local confirmPartnerAcceptedLabel = confirmPartnerOffer:WaitForChild("Accepted")
 local confirmAcceptButton = confirmationFrame:WaitForChild("Accept")
