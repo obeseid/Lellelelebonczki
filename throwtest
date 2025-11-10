@@ -17,7 +17,7 @@ local CharacterHandler = require(References.PlayerScripts.Priority:WaitForChild(
 -- Configuration
 local AUTO_THROW_ENABLED = true -- Set to false to disable auto-throw
 local CHECK_INTERVAL = 0.1 -- How often to check for horses (in seconds)
-local AUTO_THROW_RANGE = 20 -- Range to auto-throw (adjust based on your lasso's captureRadius)
+local AUTO_THROW_RANGE = 5 -- Range to auto-throw (adjust based on your lasso's captureRadius)
 
 -- State variables
 local lastThrowTime = 0
