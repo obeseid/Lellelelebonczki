@@ -1,20 +1,36 @@
 -- Auto Lasso Throw Script
--- Execute this at runtime with your executor
 local Players = game:GetService("Players")
-local VirtualInputManager = game:GetService("VirtualInputManager")
+local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
 -- Configuration
-local CHECK_INTERVAL = 0.2 -- How often to check for horses (in seconds)
-local AUTO_THROW_RANGE = 5 -- Range to auto-throw
-local THROW_COOLDOWN = 1.5 -- Cooldown between throws
+local CHECK_INTERVAL = 0.2
+local AUTO_THROW_RANGE = 25
+local THROW_COOLDOWN = 1.5
 
 -- State
 local lastThrowTime = 0
 local running = true
 
--- Function to get closest horse in range
+-- Function to check if model is valid target
+local function isValidTarget(model)
+	if not model:IsA("Model") then return false end
+	
+	local hrp = model:FindFirstChild("HumanoidRootPart")
+	if not hrp then return false end
+	
+	-- Check for ManeMesh in any child
+	for _, child in pairs(model:GetDescendants()) do
+		if child.Name == "ManeMesh" or (child:IsA("SpecialMesh") and child.Name:lower():find("mane")) then
+			return true, hrp
+		end
+	end
+	
+	return false
+end
+
+-- Function to get closest valid target
 local function getClosestHorse()
 	local character = player.Character
 	if not character then return nil end
@@ -25,19 +41,16 @@ local function getClosestHorse()
 	local closestHorse = nil
 	local closestDistance = math.huge
 	
-	-- Search through workspace for valid targets
-	for _, model in pairs(workspace:GetDescendants()) do
-		if model:IsA("Model") then
-			local hasHumanoidRootPart = model:FindFirstChild("HumanoidRootPart")
-			local hasManeMesh = model:FindFirstChild("ManeMesh", true) -- true = recursive search
+	-- Check all models in workspace
+	for _, obj in pairs(workspace:GetChildren()) do
+		local isValid, targetHRP = isValidTarget(obj)
+		
+		if isValid and targetHRP then
+			local distance = (rootPart.Position - targetHRP.Position).Magnitude
 			
-			if hasHumanoidRootPart and hasManeMesh then
-				local distance = (rootPart.Position - hasHumanoidRootPart.Position).Magnitude
-				
-				if distance <= AUTO_THROW_RANGE and distance < closestDistance then
-					closestHorse = model
-					closestDistance = distance
-				end
+			if distance <= AUTO_THROW_RANGE and distance < closestDistance then
+				closestHorse = obj
+				closestDistance = distance
 			end
 		end
 	end
@@ -51,42 +64,52 @@ local function isLassoEquipped()
 	if not character then return false end
 	
 	local tool = character:FindFirstChildOfClass("Tool")
-	if tool and (tool.Name:lower():find("lasso") or tool:FindFirstChild("Handle")) then
-		return true
-	end
-	
-	return false
+	return tool ~= nil
 end
 
--- Function to simulate input (works on both PC and Mobile)
-local function simulateClick()
-	local viewportSize = workspace.CurrentCamera.ViewportSize
-	local centerX = viewportSize.X / 2
-	local centerY = viewportSize.Y / 2
+-- Function to throw lasso
+local function throwLasso()
+	-- Try multiple methods
+	local success = false
 	
-	-- Check if we're on mobile or PC
-	local UserInputService = game:GetService("UserInputService")
+	-- Method 1: mouse1click
+	pcall(function()
+		mouse1click()
+		success = true
+	end)
 	
-	if UserInputService.TouchEnabled and not UserInputService.MouseEnabled then
-		-- Mobile: Simulate touch
-		pcall(function()
-			VirtualInputManager:SendTouchEvent(0, centerX, centerY)
-			task.wait(0.05)
-			VirtualInputManager:SendTouchEvent(1, centerX, centerY)
-		end)
-	else
-		-- PC: Simulate mouse click
+	if not success then
+		-- Method 2: mouse1press/release
 		pcall(function()
 			mouse1press()
 			task.wait(0.05)
 			mouse1release()
+			success = true
 		end)
 	end
+	
+	if not success then
+		-- Method 3: Virtual Input
+		pcall(function()
+			local vim = game:GetService("VirtualInputManager")
+			local camera = workspace.CurrentCamera
+			local viewportSize = camera.ViewportSize
+			vim:SendMouseButtonEvent(viewportSize.X/2, viewportSize.Y/2, 0, true, game, 0)
+			task.wait(0.05)
+			vim:SendMouseButtonEvent(viewportSize.X/2, viewportSize.Y/2, 0, false, game, 0)
+			success = true
+		end)
+	end
+	
+	return success
 end
 
--- Main auto-throw loop
+-- Main loop
 local function autoThrowLoop()
-	print("Auto Lasso Throw started!")
+	print("🎯 Auto Lasso Throw started!")
+	print("📏 Range: " .. AUTO_THROW_RANGE .. " studs")
+	print("⏱️ Cooldown: " .. THROW_COOLDOWN .. " seconds")
+	print("=====================================")
 	
 	while running do
 		task.wait(CHECK_INTERVAL)
@@ -103,31 +126,31 @@ local function autoThrowLoop()
 			continue
 		end
 		
-		-- Get closest horse
-		local horse, distance = getClosestHorse()
+		-- Get closest target
+		local target, distance = getClosestHorse()
 		
-		if horse then
-			print("Found horse:", horse.Name, "at distance:", math.floor(distance))
+		if target then
+			print("🐴 Found target: " .. target.Name .. " at " .. math.floor(distance) .. " studs")
 			
-			-- Simulate click to throw lasso (FIXED: was clickMouse())
-			simulateClick()
-			
-			lastThrowTime = currentTime
-			
-			print("Threw lasso!")
+			-- Throw lasso
+			if throwLasso() then
+				lastThrowTime = currentTime
+				print("✅ Lasso thrown!")
+			else
+				print("❌ Failed to throw lasso")
+			end
 		end
 	end
 end
 
--- Start the loop
+-- Start
 task.spawn(autoThrowLoop)
-print("=================================")
-print("AUTO LASSO THROW LOADED")
-print("Range:", AUTO_THROW_RANGE, "studs")
-print("=================================")
 
--- Optional: Stop the script
+-- Stop function
 getgenv().StopAutoLasso = function()
 	running = false
-	print("Auto Lasso Throw stopped!")
+	print("🛑 Auto Lasso Throw stopped!")
 end
+
+print("✅ AUTO LASSO SCRIPT LOADED")
+print("💡 Type 'StopAutoLasso()' in console to stop")
