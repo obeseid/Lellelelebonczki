@@ -1,4 +1,4 @@
--- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
+-- LocalScript NGA in StarterPlayer > StarterPlayerScripts or StarterGui
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
