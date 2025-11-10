@@ -1,4 +1,4 @@
--- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
+-- Lupdate
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -187,7 +187,10 @@ showTradeButton.MouseButton1Click:Connect(function()
 	
 	task.wait(1)
 	
+	-- Make sure both the main Frame and NegotiationFrame are visible
+	frame.Visible = true
 	negotiationFrame.Visible = true
+	tradeApp.Enabled = true -- Also ensure the ScreenGui itself is enabled
 	
 	showTradeButton.Text = "✓ Trade Window Opened"
 	showTradeButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
