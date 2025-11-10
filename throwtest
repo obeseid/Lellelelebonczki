@@ -10,14 +10,9 @@ local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
--- Get references
-local References = ReplicatedStorage:WaitForChild("References")
-local CharacterHandler = require(References.PlayerScripts.Priority:WaitForChild("CharacterHandler"))
-
 -- Configuration
-local AUTO_THROW_ENABLED = true -- Set to false to disable auto-throw
 local CHECK_INTERVAL = 0.1 -- How often to check for horses (in seconds)
-local AUTO_THROW_RANGE = 5 -- Range to auto-throw (adjust based on your lasso's captureRadius)
+local AUTO_THROW_RANGE = 20 -- Range to auto-throw (adjust based on your lasso's captureRadius)
 
 -- State variables
 local lastThrowTime = 0
@@ -32,16 +27,21 @@ local function getClosestHorse()
 	for _, animal in pairs(CollectionService:GetTagged("LassoCapture")) do
 		if animal:IsDescendantOf(workspace) then
 			-- Get the animal's position
-			local animalCFrame = animal:GetBoundingBox()
-			local animalPos = animalCFrame.Position
+			local success, animalCFrame = pcall(function()
+				return animal:GetBoundingBox()
+			end)
 			
-			-- Calculate distance from player
-			local distance = (humanoidRootPart.Position - animalPos).Magnitude
-			
-			-- Check if in range and closer than previous closest
-			if distance <= AUTO_THROW_RANGE and distance < closestDistance then
-				closestHorse = animal
-				closestDistance = distance
+			if success and animalCFrame then
+				local animalPos = animalCFrame.Position
+				
+				-- Calculate distance from player
+				local distance = (humanoidRootPart.Position - animalPos).Magnitude
+				
+				-- Check if in range and closer than previous closest
+				if distance <= AUTO_THROW_RANGE and distance < closestDistance then
+					closestHorse = animal
+					closestDistance = distance
+				end
 			end
 		end
 	end
@@ -53,8 +53,11 @@ end
 local function hasLassoEquipped()
 	-- Check if the player's character has the lasso tool equipped
 	local tool = character:FindFirstChildOfClass("Tool")
-	if tool and (tool.Name:lower():find("lasso") or tool:FindFirstChild("LassoHandler")) then
-		return true, tool
+	if tool then
+		-- Check if it's a lasso by name or if it has the lasso handler script
+		if tool.Name:lower():find("lasso") or tool:FindFirstChild("LassoHandler") or tool:FindFirstChild("Handle") then
+			return true, tool
+		end
 	end
 	return false, nil
 end
@@ -90,13 +93,15 @@ end
 
 -- Main loop
 local function startAutoThrow()
-	while AUTO_THROW_ENABLED and task.wait(CHECK_INTERVAL) do
-		if character and humanoidRootPart and humanoidRootPart.Parent then
-			autoThrowLasso()
+	while task.wait(CHECK_INTERVAL) do
+		if character and character.Parent and humanoidRootPart and humanoidRootPart.Parent then
+			pcall(autoThrowLasso) -- Wrap in pcall to prevent errors from breaking the loop
 		else
 			-- Character died or was removed, wait for respawn
-			character = player.Character or player.CharacterAdded:Wait()
-			humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+			if player.Character then
+				character = player.Character
+				humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+			end
 		end
 	end
 end
@@ -105,20 +110,10 @@ end
 player.CharacterAdded:Connect(function(newCharacter)
 	character = newCharacter
 	humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+	print("Character respawned - Auto lasso ready")
 end)
 
 -- Start the auto-throw system
 task.spawn(startAutoThrow)
 
--- Optional: Toggle auto-throw with a key press (e.g., "Q")
-local UserInputService = game:GetService("UserInputService")
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	
-	if input.KeyCode == Enum.KeyCode.Q then
-		AUTO_THROW_ENABLED = not AUTO_THROW_ENABLED
-		print("Auto Lasso Throw:", AUTO_THROW_ENABLED and "ENABLED" or "DISABLED")
-	end
-end)
-
-print("Auto Lasso Throw script loaded! Press Q to toggle on/off")
+print("Auto Lasso Throw script loaded and running!")
