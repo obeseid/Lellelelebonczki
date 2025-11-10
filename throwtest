@@ -1,5 +1,5 @@
 -- Auto Lasso Throw Script
--- pls update
+-- pls update UPDATE NG
 
 local Players = game:GetService("Players")
 local CollectionService = game:GetService("CollectionService")
