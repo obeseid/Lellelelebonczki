@@ -1,5 +1,5 @@
 -- Auto Lasso Throw Script
--- Place this in StarterPlayer > StarterPlayerScripts
+-- UPDATE FOR FUCKS SAKE
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
@@ -12,7 +12,7 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 -- Configuration
 local CHECK_INTERVAL = 0.1 -- How often to check for horses (in seconds)
-local AUTO_THROW_RANGE = 20 -- Range to auto-throw (adjust based on your lasso's captureRadius)
+local AUTO_THROW_RANGE = 5 -- Range to auto-throw (adjust based on your lasso's captureRadius)
 
 -- State variables
 local lastThrowTime = 0
