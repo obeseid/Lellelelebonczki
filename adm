@@ -1,4 +1,4 @@
--- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
+-- please update
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -26,6 +26,7 @@ local partnerOffer = body:WaitForChild("PartnerOffer")
 local myAcceptedLabel = myOffer:WaitForChild("Accepted")
 local partnerAcceptedLabel = partnerOffer:WaitForChild("Accepted")
 local acceptButton = body:WaitForChild("Accept")
+local declineButton = body:WaitForChild("Decline")
 
 -- Hide both Accepted labels initially
 myAcceptedLabel.Visible = false
@@ -34,6 +35,14 @@ partnerAcceptedLabel.Visible = false
 -- Accept button functionality
 acceptButton.MouseButton1Click:Connect(function()
 	myAcceptedLabel.Visible = true
+end)
+
+-- Decline button functionality
+declineButton.MouseButton1Click:Connect(function()
+	negotiationFrame.Visible = false
+	-- Reset accepted labels when declining
+	myAcceptedLabel.Visible = false
+	partnerAcceptedLabel.Visible = false
 end)
 
 -- Create the moveable name picker GUI
