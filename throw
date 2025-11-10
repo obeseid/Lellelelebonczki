@@ -1,10 +1,7 @@
--- just update omfg
--- pls update UPDATE NG
-
+-- Auto Lasso Throw Script
+-- Execute this at runtime with your executor
 local Players = game:GetService("Players")
-local CollectionService = game:GetService("CollectionService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
-
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
@@ -28,17 +25,17 @@ local function getClosestHorse()
 	local closestHorse = nil
 	local closestDistance = math.huge
 	
-	for _, animal in pairs(CollectionService:GetTagged("LassoCapture")) do
-		if animal:IsDescendantOf(workspace) then
-			local success, result = pcall(function()
-				return animal:GetBoundingBox()
-			end)
+	-- Search through workspace for valid targets
+	for _, model in pairs(workspace:GetDescendants()) do
+		if model:IsA("Model") then
+			local hasHumanoidRootPart = model:FindFirstChild("HumanoidRootPart")
+			local hasManeMesh = model:FindFirstChild("ManeMesh", true) -- true = recursive search
 			
-			if success and result then
-				local distance = (rootPart.Position - result.Position).Magnitude
+			if hasHumanoidRootPart and hasManeMesh then
+				local distance = (rootPart.Position - hasHumanoidRootPart.Position).Magnitude
 				
 				if distance <= AUTO_THROW_RANGE and distance < closestDistance then
-					closestHorse = animal
+					closestHorse = model
 					closestDistance = distance
 				end
 			end
@@ -112,7 +109,7 @@ local function autoThrowLoop()
 		if horse then
 			print("Found horse:", horse.Name, "at distance:", math.floor(distance))
 			
-			-- Simulate click/tap to throw lasso
+			-- Simulate click to throw lasso (FIXED: was clickMouse())
 			simulateClick()
 			
 			lastThrowTime = currentTime
@@ -124,10 +121,8 @@ end
 
 -- Start the loop
 task.spawn(autoThrowLoop)
-
 print("=================================")
 print("AUTO LASSO THROW LOADED")
-print("Platform:", game:GetService("UserInputService").TouchEnabled and "MOBILE" or "PC")
 print("Range:", AUTO_THROW_RANGE, "studs")
 print("=================================")
 
