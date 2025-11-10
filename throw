@@ -1,8 +1,8 @@
 -- Auto Lasso Throw Script
+-- Works by directly calling the equipment activation
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
-local mouse = player:GetMouse()
 
 -- Configuration
 local CHECK_INTERVAL = 0.2
@@ -13,16 +13,19 @@ local THROW_COOLDOWN = 1.5
 local lastThrowTime = 0
 local running = true
 
--- Function to check if model is valid target
+-- Get References module
+local References = ReplicatedStorage:WaitForChild("References")
+
+-- Function to check if model is valid target (has HumanoidRootPart and ManeMesh)
 local function isValidTarget(model)
-	if not model:IsA("Model") then return false end
+	if not model or not model:IsA("Model") then return false end
 	
 	local hrp = model:FindFirstChild("HumanoidRootPart")
 	if not hrp then return false end
 	
-	-- Check for ManeMesh in any child
+	-- Check for ManeMesh anywhere in the model
 	for _, child in pairs(model:GetDescendants()) do
-		if child.Name == "ManeMesh" or (child:IsA("SpecialMesh") and child.Name:lower():find("mane")) then
+		if child.Name == "ManeMesh" then
 			return true, hrp
 		end
 	end
@@ -58,45 +61,76 @@ local function getClosestHorse()
 	return closestHorse, closestDistance
 end
 
--- Function to check if lasso is equipped
-local function isLassoEquipped()
+-- Function to get equipped lasso
+local function getEquippedLasso()
 	local character = player.Character
-	if not character then return false end
+	if not character then return nil end
 	
+	-- Check for equipped tool
 	local tool = character:FindFirstChildOfClass("Tool")
-	return tool ~= nil
+	if not tool then return nil end
+	
+	-- Check if it's a lasso (by name)
+	if tool.Name:lower():find("lasso") or tool.Name:lower():find("rope") then
+		return tool
+	end
+	
+	return nil
 end
 
--- Function to throw lasso
-local function throwLasso()
-	-- Try multiple methods
-	local success = false
+-- Function to get equipment object from tool
+local function getEquipmentObject(tool)
+	-- Try to find the equipment handler in PlayerScripts
+	local playerScripts = player:WaitForChild("PlayerScripts")
 	
-	-- Method 1: mouse1click
+	-- Look for Equipment handler
+	local success, equipmentHandler = pcall(function()
+		return require(playerScripts:WaitForChild("Priority"):WaitForChild("Equipment"))
+	end)
+	
+	if success and equipmentHandler then
+		-- Try to get the active equipment
+		if equipmentHandler.equipped then
+			return equipmentHandler.equipped
+		end
+	end
+	
+	return nil
+end
+
+-- Function to activate lasso
+local function activateLasso()
+	local tool = getEquippedLasso()
+	if not tool then return false end
+	
+	-- Method 1: Try to call equipment activation directly
+	local equipmentObj = getEquipmentObject(tool)
+	if equipmentObj then
+		local success = pcall(function()
+			equipmentObj:Activate()
+		end)
+		if success then
+			return true
+		end
+	end
+	
+	-- Method 2: Try tool activation
+	pcall(function()
+		tool:Activate()
+	end)
+	
+	-- Method 3: Simulate mouse click
+	local success = false
 	pcall(function()
 		mouse1click()
 		success = true
 	end)
 	
 	if not success then
-		-- Method 2: mouse1press/release
 		pcall(function()
 			mouse1press()
 			task.wait(0.05)
 			mouse1release()
-			success = true
-		end)
-	end
-	
-	if not success then
-		-- Method 3: Virtual Input
-		pcall(function()
-			local vim = game:GetService("VirtualInputManager")
-			local camera = workspace.CurrentCamera
-			local viewportSize = camera.ViewportSize
-			vim:SendMouseButtonEvent(viewportSize.X/2, viewportSize.Y/2, 0, true, game, 0)
-			task.wait(0.05)
-			vim:SendMouseButtonEvent(viewportSize.X/2, viewportSize.Y/2, 0, false, game, 0)
 			success = true
 		end)
 	end
@@ -109,6 +143,7 @@ local function autoThrowLoop()
 	print("🎯 Auto Lasso Throw started!")
 	print("📏 Range: " .. AUTO_THROW_RANGE .. " studs")
 	print("⏱️ Cooldown: " .. THROW_COOLDOWN .. " seconds")
+	print("🔍 Looking for models with HumanoidRootPart + ManeMesh")
 	print("=====================================")
 	
 	while running do
@@ -122,7 +157,8 @@ local function autoThrowLoop()
 		end
 		
 		-- Check if lasso is equipped
-		if not isLassoEquipped() then
+		local lasso = getEquippedLasso()
+		if not lasso then
 			continue
 		end
 		
@@ -132,12 +168,12 @@ local function autoThrowLoop()
 		if target then
 			print("🐴 Found target: " .. target.Name .. " at " .. math.floor(distance) .. " studs")
 			
-			-- Throw lasso
-			if throwLasso() then
+			-- Activate lasso
+			if activateLasso() then
 				lastThrowTime = currentTime
-				print("✅ Lasso thrown!")
+				print("✅ Lasso activated!")
 			else
-				print("❌ Failed to throw lasso")
+				print("⚠️ Failed to activate lasso")
 			end
 		end
 	end
@@ -153,4 +189,5 @@ getgenv().StopAutoLasso = function()
 end
 
 print("✅ AUTO LASSO SCRIPT LOADED")
-print("💡 Type 'StopAutoLasso()' in console to stop")
+print("💡 Run 'StopAutoLasso()' to stop")
+print("💡 Make sure lasso is equipped!")
