@@ -1,4 +1,4 @@
--- please update nga
+-- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -28,6 +28,22 @@ local partnerAcceptedLabel = partnerOffer:WaitForChild("Accepted")
 local acceptButton = body:WaitForChild("Accept")
 local declineButton = body:WaitForChild("Decline")
 
+-- Get ConfirmationFrame elements
+local confirmationFrame = frame:WaitForChild("ConfirmationFrame")
+local confirmBody = confirmationFrame:WaitForChild("Body")
+local confirmMyOffer = confirmBody:WaitForChild("MyOffer")
+local confirmPartnerOffer = confirmBody:WaitForChild("PartnerOffer")
+local confirmMyAcceptedLabel = confirmMyOffer:WaitForChild("Accepted")
+local confirmPartnerAcceptedLabel = confirmPartnerOffer:WaitForChild("Accepted")
+local confirmAcceptButton = confirmationFrame:WaitForChild("Accept")
+
+-- Get name labels in ConfirmationFrame
+local confirmHeader = confirmationFrame:WaitForChild("Header")
+local confirmYouFrame = confirmHeader:WaitForChild("YouFrame")
+local confirmPartnerFrame = confirmHeader:WaitForChild("PartnerFrame")
+local confirmYouLabel = confirmYouFrame:WaitForChild("PartnerLabel")
+local confirmPartnerLabel = confirmPartnerFrame:WaitForChild("PartnerLabel")
+
 -- Hide both Accepted labels initially
 myAcceptedLabel.Visible = false
 partnerAcceptedLabel.Visible = false
@@ -35,6 +51,21 @@ partnerAcceptedLabel.Visible = false
 -- Accept button functionality
 acceptButton.MouseButton1Click:Connect(function()
 	myAcceptedLabel.Visible = true
+	
+	-- Wait 2 seconds then show ConfirmationFrame
+	task.wait(2)
+	negotiationFrame.Visible = false
+	
+	-- Set names in ConfirmationFrame
+	confirmYouLabel.Text = player.Name
+	confirmPartnerLabel.Text = partnerNameLabel.Text
+	
+	-- Hide both accepted labels in ConfirmationFrame
+	confirmMyAcceptedLabel.Visible = false
+	confirmPartnerAcceptedLabel.Visible = false
+	
+	-- Show ConfirmationFrame
+	confirmationFrame.Visible = true
 end)
 
 -- Decline button functionality
@@ -43,6 +74,15 @@ declineButton.MouseButton1Click:Connect(function()
 	-- Reset accepted labels when declining
 	myAcceptedLabel.Visible = false
 	partnerAcceptedLabel.Visible = false
+end)
+
+-- ConfirmationFrame Accept button functionality
+confirmAcceptButton.MouseButton1Click:Connect(function()
+	confirmMyAcceptedLabel.Visible = true
+	
+	-- Wait 3 seconds then hide ConfirmationFrame
+	task.wait(3)
+	confirmationFrame.Visible = false
 end)
 
 -- Create the moveable name picker GUI
