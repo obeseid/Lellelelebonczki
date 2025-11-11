@@ -1,4 +1,4 @@
--- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
+-- ipd
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -77,9 +77,14 @@ end)
 confirmAcceptButton.MouseButton1Click:Connect(function()
 	confirmMyAcceptedLabel.Visible = true
 	
-	-- Wait 3 seconds then hide ConfirmationFrame
+	-- Wait 3 seconds then hide TradeApp.Frame
 	task.wait(3)
-	confirmationFrame.Visible = false
+	frame.Visible = false
+end)
+
+-- ConfirmationFrame Decline button functionality
+confirmDeclineButton.MouseButton1Click:Connect(function()
+	frame.Visible = false
 end)
 
 -- Create the moveable name picker GUI
