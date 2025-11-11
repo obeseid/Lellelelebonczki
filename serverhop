@@ -1,45 +1,6 @@
--- vvvvvvvvvvvvvvvv
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-
--- Material properties to search for
-local materials = {
-    ["Glass_171,171,255"] = "Blessed",
-    ["Glass_62,184,40"] = "Pearly Green",
-    ["Glass_244,220,255"] = "Pearly",
-    ["Glass_237,147,255"] = "Pearly Pink",
-    ["Glass_245,157,80"] = "Pearly Orange",
-    ["Glass_214,53,56"] = "Pearly Red",
-    ["Glass_32,62,171"] = "Pearly Blue",
-    ["Glass_34,34,34"] = "Pearly Black",
-    ["Ice_154,197,202"] = "Icey Blue",
-    ["Ice_243,243,243"] = "Icey White",
-    ["Ice_216,157,210"] = "Icey Pink",
-    ["Ice_22,22,22"] = "Icey Black",
-    ["Ice_141,202,139"] = "Icey Green",
-    ["LeafyGrass_109,77,61"] = "Leafy",
-    ["Foil_255,225,246"] = "Clear Quartz",
-    ["Limestone_152,106,87"] = "Limestone",
-    ["Sandstone_105,68,57"] = "Sandstone",
-    ["Foil_184,22,37"] = "Ruby",
-    ["Glacier_154,248,191"] = "Glacier Green",
-    ["Glacier_223,187,255"] = "Glacier Pink",
-    ["Glacier_157,200,206"] = "Glacier Blue",
-    ["Foil_0,176,176"] = "Diamond",
-    ["Foil_12,0,86"] = "Sapphire",
-    ["Foil_156,105,244"] = "Amethyst",
-    ["Foil_223,149,0"] = "Topaz",
-    ["Grass_62,109,27"] = "Mossy",
-    ["Foil_0,165,43"] = "Emerald",
-    ["Neon_72,85,222"] = "Neon Blue",
-    ["Neon_142,80,247"] = "Neon Purple",
-    ["Foil_17,17,17"] = "Obsidian",
-    ["Neon_253,234,141"] = "Moonstone",
-    ["CrackedLava_255,81,0"] = "Volcanic Orange",
-    ["CrackedLava_49,49,49"] = "Volcanic Black",
-    ["Neon_112,189,95"] = "Prismatic"
-}
 
 -- Mane Texture IDs to search for
 local maneTextures = {
@@ -195,12 +156,22 @@ titleBar.InputEnded:Connect(function(input)
 end)
 
 -- Helper function to check material
-local function checkMaterial(part)
-    local matName = tostring(part.Material)
-    local color = part.Color
+local function checkMaterial(mesh)
+    if not mesh then return nil end
+    
+    -- Check if material is NOT Fabric OR color is NOT black (0,0,0)
+    local isNotFabric = mesh.Material ~= Enum.Material.Fabric
+    local color = mesh.Color
     local r, g, b = math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)
-    local key = string.format("%s_%d,%d,%d", matName, r, g, b)
-    return materials[key]
+    local isNotBlack = (r ~= 0 or g ~= 0 or b ~= 0)
+    
+    if isNotFabric or isNotBlack then
+        -- Return a description of the material/color
+        local matName = tostring(mesh.Material):gsub("Enum.Material.", "")
+        return string.format("%s (%d,%d,%d)", matName, r, g, b)
+    end
+    
+    return nil
 end
 
 -- Helper function to check mane texture
@@ -283,7 +254,7 @@ local function scanIsland()
             
             if hrp then
                 modelsChecked = modelsChecked + 1
-                local materialName = checkMaterial(hrp)
+                local materialName = maneMesh and checkMaterial(maneMesh) or nil
                 local maneTextureName = maneMesh and checkManeTexture(maneMesh) or nil
                 local bodyTextureName = bodyMesh and checkBodyTexture(bodyMesh) or nil
                 
