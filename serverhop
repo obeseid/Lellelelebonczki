@@ -1,3 +1,4 @@
+-- Horse Scanner & Teleporter Script
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -221,9 +222,11 @@ end
 
 -- Scan function
 local function scanIsland()
+    print("=== SCAN STARTED ===")
+    
     -- Clear previous results
     for _, child in pairs(scrollFrame:GetChildren()) do
-        if child:IsA("Frame") then
+        if child:IsA("Frame") or child:IsA("TextLabel") then
             child:Destroy()
         end
     end
@@ -233,8 +236,9 @@ local function scanIsland()
     
     local island = findCurrentIsland()
     if not island then
+        print("Not on an island")
         scanBtn.Text = "❌ Not on an island!"
-        wait(2)
+        task.wait(2)
         scanBtn.Text = "🔍 Scan Island"
         scanBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 250)
         return
@@ -265,9 +269,7 @@ local function scanIsland()
                     if maneTextureName then print("  Mane:", maneTextureName) end
                     if bodyTextureName then print("  Body:", bodyTextureName) end
                     if hornModel then print("  Has horn!") end
-                end
-                
-                if materialName or maneTextureName or bodyTextureName or hornModel then
+                    
                     table.insert(foundHorses, {
                         model = descendant,
                         material = materialName,
@@ -282,12 +284,11 @@ local function scanIsland()
     
     print("Models checked:", modelsChecked)
     print("Special horses found:", #foundHorses)
-    
-    wait(0.1) -- Small delay to ensure everything is ready
+    print("Now displaying results...")
     
     -- Display results
     if #foundHorses == 0 then
-        print("Displaying 'no results' message")
+        print("Creating 'no results' message")
         local noResults = Instance.new("TextLabel")
         noResults.Size = UDim2.new(1, -10, 0, 30)
         noResults.BackgroundTransparency = 1
@@ -296,16 +297,17 @@ local function scanIsland()
         noResults.TextSize = 14
         noResults.Font = Enum.Font.Gotham
         noResults.Parent = scrollFrame
+        print("No results message created")
     else
-        print("Creating GUI elements for", #foundHorses, "horses")
+        print("Creating", #foundHorses, "result frames")
         for i, horse in ipairs(foundHorses) do
-            print("Creating result frame for horse", i)
+            print("Creating frame for horse", i)
+            
             local resultFrame = Instance.new("Frame")
             resultFrame.Size = UDim2.new(1, -10, 0, 90)
             resultFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
             resultFrame.BorderSizePixel = 0
             resultFrame.Parent = scrollFrame
-            print("Result frame created and parented")
             
             local resultCorner = Instance.new("UICorner")
             resultCorner.CornerRadius = UDim.new(0, 6)
@@ -337,7 +339,6 @@ local function scanIsland()
                 infoText = infoText .. "🦄 Has Horn!"
             end
             infoLabel.Text = infoText
-            print("Info label text set:", infoText)
             
             local tpBtn = Instance.new("TextButton")
             tpBtn.Size = UDim2.new(0, 70, 0, 30)
@@ -358,102 +359,25 @@ local function scanIsland()
                 local char = player.Character
                 if char and char:FindFirstChild("HumanoidRootPart") and horse.model:FindFirstChild("HumanoidRootPart") then
                     char.HumanoidRootPart.CFrame = horse.model.HumanoidRootPart.CFrame + Vector3.new(5, 0, 0)
-                    print("Teleported to horse", i)
-                else
-                    print("Failed to teleport - missing parts")
+                    print("Teleported!")
                 end
             end)
+            
+            print("Frame", i, "created successfully")
         end
-        print("All result frames created")
+        print("All frames created!")
     end
     
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
-    print("Canvas size updated:", listLayout.AbsoluteContentSize.Y)
+    print("Canvas size updated")
     
     scanBtn.Text = "🔍 Scan Island"
     scanBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 250)
-end
-    
-    -- Display results
-    if #foundHorses == 0 then
-        local noResults = Instance.new("TextLabel")
-        noResults.Size = UDim2.new(1, -10, 0, 30)
-        noResults.BackgroundTransparency = 1
-        noResults.Text = "No special horses found 😔"
-        noResults.TextColor3 = Color3.fromRGB(200, 200, 200)
-        noResults.TextSize = 14
-        noResults.Font = Enum.Font.Gotham
-        noResults.Parent = scrollFrame
-    else
-        for i, horse in ipairs(foundHorses) do
-            local resultFrame = Instance.new("Frame")
-            resultFrame.Size = UDim2.new(1, -10, 0, 80)
-            resultFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
-            resultFrame.BorderSizePixel = 0
-            resultFrame.Parent = scrollFrame
-            
-            local resultCorner = Instance.new("UICorner")
-            resultCorner.CornerRadius = UDim.new(0, 6)
-            resultCorner.Parent = resultFrame
-            
-            local infoLabel = Instance.new("TextLabel")
-            infoLabel.Size = UDim2.new(1, -90, 1, -10)
-            infoLabel.Position = UDim2.new(0, 10, 0, 5)
-            infoLabel.BackgroundTransparency = 1
-            infoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-            infoLabel.TextSize = 13
-            infoLabel.Font = Enum.Font.Gotham
-            infoLabel.TextXAlignment = Enum.TextXAlignment.Left
-            infoLabel.TextYAlignment = Enum.TextYAlignment.Top
-            infoLabel.TextWrapped = true
-            infoLabel.Parent = resultFrame
-            
-            local infoText = string.format("Horse #%d%s\n", i, horse.hasHorn and " 🦄" or "")
-            if horse.material then
-                infoText = infoText .. "Material: " .. horse.material .. "\n"
-            end
-            if horse.maneTexture then
-                infoText = infoText .. "Mane: " .. horse.maneTexture .. "\n"
-            end
-            if horse.bodyTexture then
-                infoText = infoText .. "Body: " .. horse.bodyTexture .. "\n"
-            end
-            if horse.hasHorn then
-                infoText = infoText .. "🦄 Has Horn!"
-            end
-            infoLabel.Text = infoText
-            
-            local tpBtn = Instance.new("TextButton")
-            tpBtn.Size = UDim2.new(0, 70, 0, 30)
-            tpBtn.Position = UDim2.new(1, -80, 0.5, -15)
-            tpBtn.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
-            tpBtn.Text = "TP"
-            tpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            tpBtn.TextSize = 14
-            tpBtn.Font = Enum.Font.GothamBold
-            tpBtn.Parent = resultFrame
-            
-            local tpBtnCorner = Instance.new("UICorner")
-            tpBtnCorner.CornerRadius = UDim.new(0, 6)
-            tpBtnCorner.Parent = tpBtn
-            
-            tpBtn.MouseButton1Click:Connect(function()
-                local char = player.Character
-                if char and char:FindFirstChild("HumanoidRootPart") and horse.model:FindFirstChild("HumanoidRootPart") then
-                    char.HumanoidRootPart.CFrame = horse.model.HumanoidRootPart.CFrame + Vector3.new(5, 0, 0)
-                end
-            end)
-        end
-    end
-    
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
-    
-    scanBtn.Text = "🔍 Scan Island"
-    scanBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 250)
+    print("=== SCAN COMPLETE ===")
 end
 
 scanBtn.MouseButton1Click:Connect(scanIsland)
 
 -- Auto-scan on load
-wait(1)
+task.wait(1)
 scanIsland()
