@@ -1,4 +1,4 @@
--- ngr just update omfg
+-- Horse Scanner & Teleporter Script
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -269,24 +269,36 @@ local function scanIsland()
         return
     end
     
+    print("Scanning island:", island.Name)
     local foundHorses = {}
+    local modelsChecked = 0
     
     -- Scan all models in island
-    for _, model in pairs(island:GetDescendants()) do
-        if model:IsA("Model") then
-            local hrp = model:FindFirstChild("HumanoidRootPart")
-            local maneMesh = model:FindFirstChild("maneMesh")
-            local bodyMesh = model:FindFirstChild("Body")
-            local hornModel = model:FindFirstChild("hornModel")
+    for _, descendant in pairs(island:GetDescendants()) do
+        if descendant:IsA("Model") and descendant.Name ~= player.Name then
+            local hrp = descendant:FindFirstChild("HumanoidRootPart")
+            local maneMesh = descendant:FindFirstChild("maneMesh")
+            local bodyMesh = descendant:FindFirstChild("Body")
+            local hornModel = descendant:FindFirstChild("hornModel")
             
-            if hrp and (maneMesh or bodyMesh) then
+            if hrp then
+                modelsChecked = modelsChecked + 1
                 local materialName = checkMaterial(hrp)
                 local maneTextureName = maneMesh and checkManeTexture(maneMesh) or nil
                 local bodyTextureName = bodyMesh and checkBodyTexture(bodyMesh) or nil
                 
+                -- Debug output
+                if materialName or maneTextureName or bodyTextureName or hornModel then
+                    print("Found special horse:", descendant.Name)
+                    if materialName then print("  Material:", materialName) end
+                    if maneTextureName then print("  Mane:", maneTextureName) end
+                    if bodyTextureName then print("  Body:", bodyTextureName) end
+                    if hornModel then print("  Has horn!") end
+                end
+                
                 if materialName or maneTextureName or bodyTextureName or hornModel then
                     table.insert(foundHorses, {
-                        model = model,
+                        model = descendant,
                         material = materialName,
                         maneTexture = maneTextureName,
                         bodyTexture = bodyTextureName,
@@ -296,6 +308,9 @@ local function scanIsland()
             end
         end
     end
+    
+    print("Models checked:", modelsChecked)
+    print("Special horses found:", #foundHorses)
     
     -- Display results
     if #foundHorses == 0 then
