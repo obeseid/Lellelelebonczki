@@ -1,4 +1,4 @@
--- Horse Scanner & Teleporter Script
+-- Hfffff
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -228,9 +228,13 @@ local function findCurrentIsland()
     if not hrp then return nil end
     
     local islands = workspace:WaitForChild("Islands")
+    -- Check each subfolder (island) in workspace.Islands
     for _, island in pairs(islands:GetChildren()) do
-        if island:IsA("Model") and char:IsDescendantOf(island) then
-            return island
+        if island:IsA("Folder") or island:IsA("Model") then
+            -- Check if player character is inside this island folder
+            if char:IsDescendantOf(island) then
+                return island
+            end
         end
     end
     return nil
