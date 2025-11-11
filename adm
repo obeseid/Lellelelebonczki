@@ -4,12 +4,8 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Wait for original TradeApp and clone it
-local originalTradeApp = playerGui:WaitForChild("TradeApp")
-local tradeApp = originalTradeApp:Clone()
-tradeApp.Name = "TradeAppClone"
-tradeApp.Parent = playerGui
-
+-- Wait for TradeApp
+local tradeApp = playerGui:WaitForChild("TradeApp")
 local frame = tradeApp:WaitForChild("Frame")
 local negotiationFrame = frame:WaitForChild("NegotiationFrame")
 local header = negotiationFrame:WaitForChild("Header")
@@ -99,8 +95,8 @@ namePickerGui.Parent = playerGui
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 180)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
+mainFrame.Size = UDim2.new(0, 300, 0, 150)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
 mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 mainFrame.BorderSizePixel = 2
 mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
@@ -154,8 +150,8 @@ textBoxCorner.Parent = textBox
 -- Submit button
 local submitButton = Instance.new("TextButton")
 submitButton.Name = "SubmitButton"
-submitButton.Size = UDim2.new(0.4, 0, 0, 30)
-submitButton.Position = UDim2.new(0.3, 0, 0.5, 0)
+submitButton.Size = UDim2.new(0.4, 0, 0, 35)
+submitButton.Position = UDim2.new(0.3, 0, 0.7, 0)
 submitButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
 submitButton.BorderSizePixel = 0
 submitButton.Text = "Set Name"
@@ -230,8 +226,8 @@ end)
 -- Show Trade button
 local showTradeButton = Instance.new("TextButton")
 showTradeButton.Name = "ShowTradeButton"
-showTradeButton.Size = UDim2.new(0.85, 0, 0, 32)
-showTradeButton.Position = UDim2.new(0.075, 0, 0.65, 0)
+showTradeButton.Size = UDim2.new(0.85, 0, 0, 35)
+showTradeButton.Position = UDim2.new(0.075, 0, 0.7, 0)
 showTradeButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 showTradeButton.BorderSizePixel = 0
 showTradeButton.Text = "Show Trade Window"
@@ -244,22 +240,13 @@ local showTradeCorner = Instance.new("UICorner")
 showTradeCorner.CornerRadius = UDim.new(0, 6)
 showTradeCorner.Parent = showTradeButton
 
--- Clone Trade button
-local cloneTradeButton = Instance.new("TextButton")
-cloneTradeButton.Name = "CloneTradeButton"
-cloneTradeButton.Size = UDim2.new(0.85, 0, 0, 32)
-cloneTradeButton.Position = UDim2.new(0.075, 0, 0.82, 0)
-cloneTradeButton.BackgroundColor3 = Color3.fromRGB(170, 0, 170)
-cloneTradeButton.BorderSizePixel = 0
-cloneTradeButton.Text = "Clone Trade Window"
-cloneTradeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-cloneTradeButton.Font = Enum.Font.GothamBold
-cloneTradeButton.TextSize = 14
-cloneTradeButton.Parent = mainFrame
+-- Adjust submit button position to make room
+submitButton.Size = UDim2.new(0.4, 0, 0, 30)
+submitButton.Position = UDim2.new(0.3, 0, 0.5, 0)
 
-local cloneTradeCorner = Instance.new("UICorner")
-cloneTradeCorner.CornerRadius = UDim.new(0, 6)
-cloneTradeCorner.Parent = cloneTradeButton
+-- Adjust main frame height to fit new button
+mainFrame.Size = UDim2.new(0, 300, 0, 180)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
 
 -- Show Trade button functionality
 showTradeButton.MouseButton1Click:Connect(function()
@@ -278,97 +265,4 @@ showTradeButton.MouseButton1Click:Connect(function()
 	task.wait(1)
 	showTradeButton.Text = "Show Trade Window"
 	showTradeButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
-end)
-
--- Clone Trade button functionality
-cloneTradeButton.MouseButton1Click:Connect(function()
-	-- Clone the original TradeApp
-	local newTradeApp = originalTradeApp:Clone()
-	newTradeApp.Name = "TradeAppClone_" .. tick() -- Unique name using timestamp
-	newTradeApp.Parent = playerGui
-	
-	-- Setup the clone's name labels
-	local newFrame = newTradeApp:WaitForChild("Frame")
-	local newNegotiationFrame = newFrame:WaitForChild("NegotiationFrame")
-	local newHeader = newNegotiationFrame:WaitForChild("Header")
-	local newYouFrame = newHeader:WaitForChild("YouFrame")
-	local newPartnerFrame = newHeader:WaitForChild("PartnerFrame")
-	local newYourNameLabel = newYouFrame:WaitForChild("NameLabel")
-	local newPartnerNameLabel = newPartnerFrame:WaitForChild("NameLabel")
-	
-	-- Set names
-	newYourNameLabel.Text = player.Name
-	newPartnerNameLabel.Text = partnerNameLabel.Text
-	
-	-- Setup accepted labels
-	local newBody = newNegotiationFrame:WaitForChild("Body")
-	local newMyOffer = newBody:WaitForChild("MyOffer")
-	local newPartnerOffer = newBody:WaitForChild("PartnerOffer")
-	local newMyAcceptedLabel = newMyOffer:WaitForChild("Accepted")
-	local newPartnerAcceptedLabel = newPartnerOffer:WaitForChild("Accepted")
-	local newAcceptButton = newBody:WaitForChild("Accept")
-	local newDeclineButton = newBody:WaitForChild("Decline")
-	
-	-- Get ConfirmationFrame elements
-	local newConfirmationFrame = newFrame:WaitForChild("ConfirmationFrame")
-	local newConfirmMyOffer = newConfirmationFrame:WaitForChild("MyOffer")
-	local newConfirmPartnerOffer = newConfirmationFrame:WaitForChild("PartnerOffer")
-	local newConfirmMyAcceptedLabel = newConfirmMyOffer:WaitForChild("Accepted")
-	local newConfirmPartnerAcceptedLabel = newConfirmPartnerOffer:WaitForChild("Accepted")
-	local newConfirmAcceptButton = newConfirmationFrame:WaitForChild("Accept")
-	local newConfirmDeclineButton = newConfirmationFrame:WaitForChild("Decline")
-	local newConfirmYouLabel = newConfirmationFrame:WaitForChild("YouLabel")
-	local newConfirmPartnerLabel = newConfirmationFrame:WaitForChild("PartnerLabel")
-	
-	-- Hide accepted labels
-	newMyAcceptedLabel.Visible = false
-	newPartnerAcceptedLabel.Visible = false
-	
-	-- Accept button functionality
-	newAcceptButton.MouseButton1Click:Connect(function()
-		newMyAcceptedLabel.Visible = true
-		
-		task.wait(2)
-		newNegotiationFrame.Visible = false
-		
-		newConfirmYouLabel.Text = player.Name
-		newConfirmPartnerLabel.Text = newPartnerNameLabel.Text
-		
-		newConfirmMyAcceptedLabel.Visible = false
-		newConfirmPartnerAcceptedLabel.Visible = false
-		
-		newConfirmationFrame.Visible = true
-	end)
-	
-	-- Decline button functionality
-	newDeclineButton.MouseButton1Click:Connect(function()
-		newFrame.Visible = false
-		newMyAcceptedLabel.Visible = false
-		newPartnerAcceptedLabel.Visible = false
-	end)
-	
-	-- ConfirmationFrame Accept button
-	newConfirmAcceptButton.MouseButton1Click:Connect(function()
-		newConfirmMyAcceptedLabel.Visible = true
-		
-		task.wait(3)
-		newFrame.Visible = false
-	end)
-	
-	-- ConfirmationFrame Decline button
-	newConfirmDeclineButton.MouseButton1Click:Connect(function()
-		newFrame.Visible = false
-	end)
-	
-	-- Show the cloned trade window
-	newFrame.Visible = true
-	newNegotiationFrame.Visible = true
-	newTradeApp.Enabled = true
-	
-	-- Visual feedback
-	cloneTradeButton.Text = "✓ Cloned!"
-	cloneTradeButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-	task.wait(0.5)
-	cloneTradeButton.Text = "Clone Trade Window"
-	cloneTradeButton.BackgroundColor3 = Color3.fromRGB(170, 0, 170)
 end)
