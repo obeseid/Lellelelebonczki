@@ -1,4 +1,4 @@
--- Hfffff
+-- gggggggggg
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -228,10 +228,18 @@ local function findCurrentIsland()
     if not hrp then return nil end
     
     local islands = workspace:WaitForChild("Islands")
+    local playerName = player.Name
+    
     -- Check each subfolder (island) in workspace.Islands
     for _, island in pairs(islands:GetChildren()) do
         if island:IsA("Folder") or island:IsA("Model") then
-            -- Check if player character is inside this island folder
+            -- Check if player's character (by name) is in this island folder
+            local playerCharInIsland = island:FindFirstChild(playerName)
+            if playerCharInIsland and playerCharInIsland == char then
+                return island
+            end
+            
+            -- Alternative: check if character is descendant of island
             if char:IsDescendantOf(island) then
                 return island
             end
