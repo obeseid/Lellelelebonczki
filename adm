@@ -1,4 +1,4 @@
--- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
+-- ffffffffffff
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -20,7 +20,18 @@ local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel")
 
 -- Store the desired partner name
 local desiredPartnerName = ""
-local autoCorrectEnabled = true
+
+-- Store connection references so we can disconnect them
+local connections = {}
+
+-- Function to disconnect all auto-correct listeners
+local function disconnectListeners()
+	for _, connection in pairs(connections) do
+		connection:Disconnect()
+	end
+	connections = {}
+	print("Auto-correction listeners disconnected.")
+end
 
 -- Function to set the partner name
 local function setPartnerName(name)
@@ -28,6 +39,66 @@ local function setPartnerName(name)
 	partnerNameLabel.Text = name
 	confirmPartnerLabel.Text = name
 end
+
+-- Function to setup auto-correct listeners
+local function setupListeners()
+	-- Clear any existing connections first
+	disconnectListeners()
+	
+	-- Monitor for unexpected changes and auto-correct
+	table.insert(connections, partnerNameLabel:GetPropertyChangedSignal("Text"):Connect(function()
+		if desiredPartnerName ~= "" and partnerNameLabel.Text ~= desiredPartnerName then
+			partnerNameLabel.Text = desiredPartnerName
+			print("Partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
+		end
+	end))
+
+	-- Monitor the confirmation frame partner label too
+	table.insert(connections, confirmPartnerLabel:GetPropertyChangedSignal("Text"):Connect(function()
+		if desiredPartnerName ~= "" and confirmPartnerLabel.Text ~= desiredPartnerName then
+			confirmPartnerLabel.Text = desiredPartnerName
+			print("Confirmation partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
+		end
+	end))
+
+	-- Monitor if the label gets replaced
+	table.insert(connections, partnerFrame.ChildAdded:Connect(function(child)
+		if child.Name == "NameLabel" then
+			partnerNameLabel = child
+			if desiredPartnerName ~= "" then
+				partnerNameLabel.Text = desiredPartnerName
+			end
+			setupListeners() -- Re-setup listeners for new label
+		end
+	end))
+
+	-- Monitor if confirmation partner label gets replaced
+	table.insert(connections, confirmationFrame.ChildAdded:Connect(function(child)
+		if child.Name == "PartnerLabel" then
+			confirmPartnerLabel = child
+			if desiredPartnerName ~= "" then
+				confirmPartnerLabel.Text = desiredPartnerName
+			end
+			setupListeners() -- Re-setup listeners for new label
+		end
+	end))
+	
+	print("Auto-correction listeners enabled.")
+end
+
+-- Setup initial listeners
+setupListeners()
+
+-- Monitor when TradeApp.Frame becomes invisible and disconnect listeners
+frame:GetPropertyChangedSignal("Visible"):Connect(function()
+	if not frame.Visible then
+		disconnectListeners()
+		print("Trade window closed. Auto-correction disabled.")
+	else
+		setupListeners()
+		print("Trade window opened. Auto-correction enabled.")
+	end
+end)
 
 -- Create the moveable name picker GUI
 local namePickerGui = Instance.new("ScreenGui")
@@ -162,69 +233,5 @@ end)
 textBox.FocusLost:Connect(function(enterPressed)
 	if enterPressed and textBox.Text ~= "" then
 		submitButton.MouseButton1Click:Fire()
-	end
-end)
-
--- Monitor for unexpected changes and auto-correct
-partnerNameLabel:GetPropertyChangedSignal("Text"):Connect(function()
-	-- If the name changes to something other than the desired name, fix it
-	if autoCorrectEnabled and desiredPartnerName ~= "" and partnerNameLabel.Text ~= desiredPartnerName then
-		partnerNameLabel.Text = desiredPartnerName
-		print("Partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
-	end
-end)
-
--- Monitor the confirmation frame partner label too
-confirmPartnerLabel:GetPropertyChangedSignal("Text"):Connect(function()
-	if autoCorrectEnabled and desiredPartnerName ~= "" and confirmPartnerLabel.Text ~= desiredPartnerName then
-		confirmPartnerLabel.Text = desiredPartnerName
-		print("Confirmation partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
-	end
-end)
-
--- Also monitor if the label gets replaced or destroyed
-partnerFrame.ChildAdded:Connect(function(child)
-	if child.Name == "NameLabel" then
-		partnerNameLabel = child
-		if desiredPartnerName ~= "" then
-			partnerNameLabel.Text = desiredPartnerName
-		end
-		
-		-- Re-attach the property changed listener
-		partnerNameLabel:GetPropertyChangedSignal("Text"):Connect(function()
-			if autoCorrectEnabled and desiredPartnerName ~= "" and partnerNameLabel.Text ~= desiredPartnerName then
-				partnerNameLabel.Text = desiredPartnerName
-				print("Partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
-			end
-		end)
-	end
-end)
-
--- Monitor if confirmation partner label gets replaced
-confirmationFrame.ChildAdded:Connect(function(child)
-	if child.Name == "PartnerLabel" then
-		confirmPartnerLabel = child
-		if desiredPartnerName ~= "" then
-			confirmPartnerLabel.Text = desiredPartnerName
-		end
-		
-		-- Re-attach the property changed listener
-		confirmPartnerLabel:GetPropertyChangedSignal("Text"):Connect(function()
-			if autoCorrectEnabled and desiredPartnerName ~= "" and confirmPartnerLabel.Text ~= desiredPartnerName then
-				confirmPartnerLabel.Text = desiredPartnerName
-				print("Confirmation partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
-			end
-		end)
-	end
-end)
-
--- Monitor when TradeApp.Frame becomes invisible and disable auto-correct
-frame:GetPropertyChangedSignal("Visible"):Connect(function()
-	if not frame.Visible then
-		autoCorrectEnabled = false
-		print("Trade window closed. Auto-correction disabled.")
-	else
-		autoCorrectEnabled = true
-		print("Trade window opened. Auto-correction enabled.")
 	end
 end)
