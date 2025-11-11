@@ -1,4 +1,4 @@
--- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
+-- dihhhh
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -10,82 +10,18 @@ local frame = tradeApp:WaitForChild("Frame")
 local negotiationFrame = frame:WaitForChild("NegotiationFrame")
 local header = negotiationFrame:WaitForChild("Header")
 
--- Get the name label frames
-local youFrame = header:WaitForChild("YouFrame")
+-- Get the partner name label
 local partnerFrame = header:WaitForChild("PartnerFrame")
-local yourNameLabel = youFrame:WaitForChild("NameLabel")
 local partnerNameLabel = partnerFrame:WaitForChild("NameLabel")
 
--- Set your name immediately
-yourNameLabel.Text = player.Name
+-- Store the desired partner name
+local desiredPartnerName = ""
 
--- Get Body elements for accept functionality
-local body = negotiationFrame:WaitForChild("Body")
-local myOffer = body:WaitForChild("MyOffer")
-local partnerOffer = body:WaitForChild("PartnerOffer")
-local myAcceptedLabel = myOffer:WaitForChild("Accepted")
-local partnerAcceptedLabel = partnerOffer:WaitForChild("Accepted")
-local acceptButton = body:WaitForChild("Accept")
-local declineButton = body:WaitForChild("Decline")
-
--- Get ConfirmationFrame elements (everything is directly in ConfirmationFrame)
-local confirmationFrame = frame:WaitForChild("ConfirmationFrame")
-local confirmMyOffer = confirmationFrame:WaitForChild("MyOffer")
-local confirmPartnerOffer = confirmationFrame:WaitForChild("PartnerOffer")
-local confirmMyAcceptedLabel = confirmMyOffer:WaitForChild("Accepted")
-local confirmPartnerAcceptedLabel = confirmPartnerOffer:WaitForChild("Accepted")
-local confirmAcceptButton = confirmationFrame:WaitForChild("Accept")
-local confirmDeclineButton = confirmationFrame:WaitForChild("Decline")
-
--- Get name labels directly from ConfirmationFrame
-local confirmYouLabel = confirmationFrame:WaitForChild("YouLabel")
-local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel")
-
--- Hide both Accepted labels initially
-myAcceptedLabel.Visible = false
-partnerAcceptedLabel.Visible = false
-
--- Accept button functionality
-acceptButton.MouseButton1Click:Connect(function()
-	myAcceptedLabel.Visible = true
-	
-	-- Wait 2 seconds then show ConfirmationFrame
-	task.wait(2)
-	negotiationFrame.Visible = false
-	
-	-- Set names in ConfirmationFrame
-	confirmYouLabel.Text = player.Name
-	confirmPartnerLabel.Text = partnerNameLabel.Text
-	
-	-- Hide both accepted labels in ConfirmationFrame
-	confirmMyAcceptedLabel.Visible = false
-	confirmPartnerAcceptedLabel.Visible = false
-	
-	-- Show ConfirmationFrame
-	confirmationFrame.Visible = true
-end)
-
--- Decline button functionality
-declineButton.MouseButton1Click:Connect(function()
-	frame.Visible = false
-	-- Reset accepted labels when declining
-	myAcceptedLabel.Visible = false
-	partnerAcceptedLabel.Visible = false
-end)
-
--- ConfirmationFrame Accept button functionality
-confirmAcceptButton.MouseButton1Click:Connect(function()
-	confirmMyAcceptedLabel.Visible = true
-	
-	-- Wait 3 seconds then hide TradeApp.Frame
-	task.wait(3)
-	frame.Visible = false
-end)
-
--- ConfirmationFrame Decline button functionality
-confirmDeclineButton.MouseButton1Click:Connect(function()
-	frame.Visible = false
-end)
+-- Function to set the partner name
+local function setPartnerName(name)
+	desiredPartnerName = name
+	partnerNameLabel.Text = name
+end
 
 -- Create the moveable name picker GUI
 local namePickerGui = Instance.new("ScreenGui")
@@ -205,7 +141,7 @@ submitButton.MouseButton1Click:Connect(function()
 	local partnerName = textBox.Text
 	
 	if partnerName ~= "" then
-		partnerNameLabel.Text = partnerName
+		setPartnerName(partnerName)
 		
 		-- Show a confirmation
 		submitButton.Text = "✓ Set!"
@@ -223,46 +159,29 @@ textBox.FocusLost:Connect(function(enterPressed)
 	end
 end)
 
--- Show Trade button
-local showTradeButton = Instance.new("TextButton")
-showTradeButton.Name = "ShowTradeButton"
-showTradeButton.Size = UDim2.new(0.85, 0, 0, 35)
-showTradeButton.Position = UDim2.new(0.075, 0, 0.7, 0)
-showTradeButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
-showTradeButton.BorderSizePixel = 0
-showTradeButton.Text = "Show Trade Window"
-showTradeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-showTradeButton.Font = Enum.Font.GothamBold
-showTradeButton.TextSize = 14
-showTradeButton.Parent = mainFrame
+-- Monitor for unexpected changes and auto-correct
+partnerNameLabel:GetPropertyChangedSignal("Text"):Connect(function()
+	-- If the name changes to something other than the desired name, fix it
+	if desiredPartnerName ~= "" and partnerNameLabel.Text ~= desiredPartnerName then
+		partnerNameLabel.Text = desiredPartnerName
+		print("Partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
+	end
+end)
 
-local showTradeCorner = Instance.new("UICorner")
-showTradeCorner.CornerRadius = UDim.new(0, 6)
-showTradeCorner.Parent = showTradeButton
-
--- Adjust submit button position to make room
-submitButton.Size = UDim2.new(0.4, 0, 0, 30)
-submitButton.Position = UDim2.new(0.3, 0, 0.5, 0)
-
--- Adjust main frame height to fit new button
-mainFrame.Size = UDim2.new(0, 300, 0, 180)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
-
--- Show Trade button functionality
-showTradeButton.MouseButton1Click:Connect(function()
-	showTradeButton.Text = "Opening in 1 second..."
-	showTradeButton.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
-	
-	task.wait(1)
-	
-	-- Make sure both the main Frame and NegotiationFrame are visible
-	frame.Visible = true
-	negotiationFrame.Visible = true
-	tradeApp.Enabled = true -- Also ensure the ScreenGui itself is enabled
-	
-	showTradeButton.Text = "✓ Trade Window Opened"
-	showTradeButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-	task.wait(1)
-	showTradeButton.Text = "Show Trade Window"
-	showTradeButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+-- Also monitor if the label gets replaced or destroyed
+partnerFrame.ChildAdded:Connect(function(child)
+	if child.Name == "NameLabel" then
+		partnerNameLabel = child
+		if desiredPartnerName ~= "" then
+			partnerNameLabel.Text = desiredPartnerName
+		end
+		
+		-- Re-attach the property changed listener
+		partnerNameLabel:GetPropertyChangedSignal("Text"):Connect(function()
+			if desiredPartnerName ~= "" and partnerNameLabel.Text ~= desiredPartnerName then
+				partnerNameLabel.Text = desiredPartnerName
+				print("Partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
+			end
+		end)
+	end
 end)
