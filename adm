@@ -35,6 +35,7 @@ local confirmPartnerOffer = confirmationFrame:WaitForChild("PartnerOffer")
 local confirmMyAcceptedLabel = confirmMyOffer:WaitForChild("Accepted")
 local confirmPartnerAcceptedLabel = confirmPartnerOffer:WaitForChild("Accepted")
 local confirmAcceptButton = confirmationFrame:WaitForChild("Accept")
+local confirmDeclineButton = confirmationFrame:WaitForChild("Decline")
 
 -- Get name labels directly from ConfirmationFrame
 local confirmYouLabel = confirmationFrame:WaitForChild("YouLabel")
