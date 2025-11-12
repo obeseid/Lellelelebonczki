@@ -28,6 +28,10 @@ local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel")
 -- Store the desired partner name
 local desiredPartnerName = ""
 
+-- Configuration: Only change names if they match this username
+-- Set this to the username you want to replace, or leave as "" to replace any name
+local TARGET_USERNAME = "" -- Change this to the specific username you want to replace
+
 -- Store connection references so we can disconnect them
 local connections = {}
 
@@ -40,12 +44,38 @@ local function disconnectListeners()
 	print("Auto-correction listeners disconnected.")
 end
 
+-- Function to check if we should change the name
+local function shouldChange(currentText)
+	-- If no target is set, always change
+	if TARGET_USERNAME == "" then
+		return true
+	end
+	-- If target is set, only change if current text matches target
+	return currentText == TARGET_USERNAME
+end
+
 -- Function to set the partner name
 local function setPartnerName(name)
 	desiredPartnerName = name
-	partnerNameLabel.Text = name
-	confirmPartnerLabel.Text = name
-	dialogTextLabel.Text = name .. " sent you a trade request"
+	
+	-- Change partner name label if it matches target
+	if shouldChange(partnerNameLabel.Text) then
+		partnerNameLabel.Text = name
+		print("Set partner name to:", name)
+	end
+	
+	-- Change confirmation label if it matches target
+	if shouldChange(confirmPartnerLabel.Text) then
+		confirmPartnerLabel.Text = name
+		print("Set confirmation partner name to:", name)
+	end
+	
+	-- Change dialog text if it matches target pattern
+	local currentDialogText = dialogTextLabel.Text
+	if TARGET_USERNAME == "" or currentDialogText:find(TARGET_USERNAME) or currentDialogText:match("sent you a trade request") then
+		dialogTextLabel.Text = name .. " sent you a trade request"
+		print("Set dialog text to:", name .. " sent you a trade request")
+	end
 end
 
 -- Function to setup auto-correct listeners
@@ -53,61 +83,39 @@ local function setupListeners()
 	-- Clear any existing connections first
 	disconnectListeners()
 	
-	-- Monitor for unexpected changes and auto-correct
+	-- Monitor partner name label changes
 	table.insert(connections, partnerNameLabel:GetPropertyChangedSignal("Text"):Connect(function()
 		if desiredPartnerName ~= "" and partnerNameLabel.Text ~= desiredPartnerName then
-			partnerNameLabel.Text = desiredPartnerName
-			print("Partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
+			if shouldChange(partnerNameLabel.Text) then
+				partnerNameLabel.Text = desiredPartnerName
+				print("Partner name auto-corrected to:", desiredPartnerName)
+			end
 		end
 	end))
 
-	-- Monitor the confirmation frame partner label too
+	-- Monitor confirmation partner label changes
 	table.insert(connections, confirmPartnerLabel:GetPropertyChangedSignal("Text"):Connect(function()
 		if desiredPartnerName ~= "" and confirmPartnerLabel.Text ~= desiredPartnerName then
-			confirmPartnerLabel.Text = desiredPartnerName
-			print("Confirmation partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
-		end
-	end))
-
-	-- Monitor the dialog text label too
-	table.insert(connections, dialogTextLabel:GetPropertyChangedSignal("Text"):Connect(function()
-		local expectedText = desiredPartnerName .. " sent you a trade request"
-		if desiredPartnerName ~= "" and dialogTextLabel.Text ~= expectedText then
-			dialogTextLabel.Text = expectedText
-			print("Dialog text was changed unexpectedly. Auto-corrected to:", expectedText)
-		end
-	end))
-
-	-- Monitor if the label gets replaced
-	table.insert(connections, partnerFrame.ChildAdded:Connect(function(child)
-		if child.Name == "NameLabel" then
-			partnerNameLabel = child
-			if desiredPartnerName ~= "" then
-				partnerNameLabel.Text = desiredPartnerName
-			end
-			setupListeners() -- Re-setup listeners for new label
-		end
-	end))
-
-	-- Monitor if confirmation partner label gets replaced
-	table.insert(connections, confirmationFrame.ChildAdded:Connect(function(child)
-		if child.Name == "PartnerLabel" then
-			confirmPartnerLabel = child
-			if desiredPartnerName ~= "" then
+			if shouldChange(confirmPartnerLabel.Text) then
 				confirmPartnerLabel.Text = desiredPartnerName
+				print("Confirmation partner name auto-corrected to:", desiredPartnerName)
 			end
-			setupListeners() -- Re-setup listeners for new label
 		end
 	end))
 
-	-- Monitor if dialog text label gets replaced
-	table.insert(connections, info.ChildAdded:Connect(function(child)
-		if child.Name == "TextLabel" then
-			dialogTextLabel = child
-			if desiredPartnerName ~= "" then
-				dialogTextLabel.Text = desiredPartnerName .. " sent you a trade request"
+	-- Monitor dialog text label changes
+	table.insert(connections, dialogTextLabel:GetPropertyChangedSignal("Text"):Connect(function()
+		if desiredPartnerName ~= "" then
+			local expectedText = desiredPartnerName .. " sent you a trade request"
+			local currentText = dialogTextLabel.Text
+			
+			if currentText ~= expectedText then
+				-- Check if this looks like a trade request message
+				if TARGET_USERNAME == "" or currentText:find(TARGET_USERNAME) or currentText:match("sent you a trade request") then
+					dialogTextLabel.Text = expectedText
+					print("Dialog text auto-corrected to:", expectedText)
+				end
 			end
-			setupListeners() -- Re-setup listeners for new label
 		end
 	end))
 	
