@@ -1,62 +1,32 @@
--- LocalScript in StarterPlayer > StarterPlayerScripts or StarterGui
+-- LocalScript in hhhh > StarterPlayerScripts or StarterGui
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-print("Script starting...")
+-- Wait for TradeApp
+local tradeApp = playerGui:WaitForChild("TradeApp")
+local frame = tradeApp:WaitForChild("Frame")
+local negotiationFrame = frame:WaitForChild("NegotiationFrame")
+local header = negotiationFrame:WaitForChild("Header")
 
--- Wait for TradeApp with error handling
-local tradeApp = playerGui:WaitForChild("TradeApp", 10)
-if not tradeApp then
-	warn("TradeApp not found!")
-	return
-end
-print("Found TradeApp")
-
-local frame = tradeApp:WaitForChild("Frame", 10)
-local negotiationFrame = frame:WaitForChild("NegotiationFrame", 10)
-local header = negotiationFrame:WaitForChild("Header", 10)
-
--- Wait for DialogApp with error handling
-local dialogApp = playerGui:WaitForChild("DialogApp", 10)
-if not dialogApp then
-	warn("DialogApp not found!")
-end
-
-local dialogTextLabel
-if dialogApp then
-	local dialog = dialogApp:WaitForChild("Dialog", 10)
-	if dialog then
-		local headerDialog = dialog:WaitForChild("HeaderDialog", 10)
-		if headerDialog then
-			local info = headerDialog:WaitForChild("Info", 10)
-			if info then
-				dialogTextLabel = info:WaitForChild("TextLabel", 10)
-				print("Found DialogApp TextLabel")
-			end
-		end
-	end
-end
+-- Wait for DialogApp
+local dialogApp = playerGui:WaitForChild("DialogApp")
+local dialog = dialogApp:WaitForChild("Dialog")
+local headerDialog = dialog:WaitForChild("HeaderDialog")
+local info = headerDialog:WaitForChild("Info")
+local dialogTextLabel = info:WaitForChild("TextLabel")
 
 -- Get the partner name label
-local partnerFrame = header:WaitForChild("PartnerFrame", 10)
-local partnerNameLabel = partnerFrame:WaitForChild("NameLabel", 10)
-print("Found PartnerFrame NameLabel")
+local partnerFrame = header:WaitForChild("PartnerFrame")
+local partnerNameLabel = partnerFrame:WaitForChild("NameLabel")
 
 -- Get the confirmation frame partner label
-local confirmationFrame = frame:WaitForChild("ConfirmationFrame", 10)
-local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel", 10)
-print("Found ConfirmationFrame PartnerLabel")
+local confirmationFrame = frame:WaitForChild("ConfirmationFrame")
+local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel")
 
 -- Store the desired partner name
 local desiredPartnerName = ""
-
--- Configuration: Only change names if they match this username
--- Set this to the username you want to replace, or leave as "" to replace any name
-local TARGET_USERNAME = "" -- Change this to the specific username you want to replace
-
-print("TARGET_USERNAME is set to:", TARGET_USERNAME == "" and "(empty - will change any name)" or TARGET_USERNAME)
 
 -- Store connection references so we can disconnect them
 local connections = {}
@@ -70,48 +40,12 @@ local function disconnectListeners()
 	print("Auto-correction listeners disconnected.")
 end
 
--- Function to check if we should change the name
-local function shouldChange(currentText)
-	-- If no target is set, always change
-	if TARGET_USERNAME == "" then
-		return true
-	end
-	-- If target is set, only change if current text matches target
-	return currentText == TARGET_USERNAME
-end
-
 -- Function to set the partner name
 local function setPartnerName(name)
 	desiredPartnerName = name
-	print("==================")
-	print("Setting partner name to:", name)
-	print("Current partner label:", partnerNameLabel.Text)
-	print("Current confirm label:", confirmPartnerLabel.Text)
-	print("TARGET_USERNAME:", TARGET_USERNAME)
-	print("==================")
-	
-	-- FORCE change partner name label (ignore target check for now)
 	partnerNameLabel.Text = name
-	print("✓ FORCED partner name to:", name)
-	
-	-- FORCE change confirmation label
 	confirmPartnerLabel.Text = name
-	print("✓ FORCED confirmation partner name to:", name)
-	
-	-- FORCE change dialog text if it exists
-	if dialogTextLabel then
-		dialogTextLabel.Text = name .. " sent you a trade request"
-		print("✓ FORCED dialog text to:", name .. " sent you a trade request")
-	end
-	
-	print("==================")
-	print("After setting:")
-	print("Partner label now:", partnerNameLabel.Text)
-	print("Confirm label now:", confirmPartnerLabel.Text)
-	if dialogTextLabel then
-		print("Dialog text now:", dialogTextLabel.Text)
-	end
-	print("==================")
+	dialogTextLabel.Text = name .. " sent you a trade request"
 end
 
 -- Function to setup auto-correct listeners
@@ -119,43 +53,63 @@ local function setupListeners()
 	-- Clear any existing connections first
 	disconnectListeners()
 	
-	-- Monitor partner name label changes
+	-- Monitor for unexpected changes and auto-correct
 	table.insert(connections, partnerNameLabel:GetPropertyChangedSignal("Text"):Connect(function()
 		if desiredPartnerName ~= "" and partnerNameLabel.Text ~= desiredPartnerName then
-			if shouldChange(partnerNameLabel.Text) then
-				partnerNameLabel.Text = desiredPartnerName
-				print("Partner name auto-corrected to:", desiredPartnerName)
-			end
+			partnerNameLabel.Text = desiredPartnerName
+			print("Partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
 		end
 	end))
 
-	-- Monitor confirmation partner label changes
+	-- Monitor the confirmation frame partner label too
 	table.insert(connections, confirmPartnerLabel:GetPropertyChangedSignal("Text"):Connect(function()
 		if desiredPartnerName ~= "" and confirmPartnerLabel.Text ~= desiredPartnerName then
-			if shouldChange(confirmPartnerLabel.Text) then
-				confirmPartnerLabel.Text = desiredPartnerName
-				print("Confirmation partner name auto-corrected to:", desiredPartnerName)
-			end
+			confirmPartnerLabel.Text = desiredPartnerName
+			print("Confirmation partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
 		end
 	end))
 
-	-- Monitor dialog text label changes
-	if dialogTextLabel then
-		table.insert(connections, dialogTextLabel:GetPropertyChangedSignal("Text"):Connect(function()
+	-- Monitor the dialog text label too
+	table.insert(connections, dialogTextLabel:GetPropertyChangedSignal("Text"):Connect(function()
+		local expectedText = desiredPartnerName .. " sent you a trade request"
+		if desiredPartnerName ~= "" and dialogTextLabel.Text ~= expectedText then
+			dialogTextLabel.Text = expectedText
+			print("Dialog text was changed unexpectedly. Auto-corrected to:", expectedText)
+		end
+	end))
+
+	-- Monitor if the label gets replaced
+	table.insert(connections, partnerFrame.ChildAdded:Connect(function(child)
+		if child.Name == "NameLabel" then
+			partnerNameLabel = child
 			if desiredPartnerName ~= "" then
-				local expectedText = desiredPartnerName .. " sent you a trade request"
-				local currentText = dialogTextLabel.Text
-				
-				if currentText ~= expectedText then
-					-- Check if this looks like a trade request message
-					if TARGET_USERNAME == "" or currentText:find(TARGET_USERNAME) or currentText:match("sent you a trade request") then
-						dialogTextLabel.Text = expectedText
-						print("Dialog text auto-corrected to:", expectedText)
-					end
-				end
+				partnerNameLabel.Text = desiredPartnerName
 			end
-		end))
-	end
+			setupListeners() -- Re-setup listeners for new label
+		end
+	end))
+
+	-- Monitor if confirmation partner label gets replaced
+	table.insert(connections, confirmationFrame.ChildAdded:Connect(function(child)
+		if child.Name == "PartnerLabel" then
+			confirmPartnerLabel = child
+			if desiredPartnerName ~= "" then
+				confirmPartnerLabel.Text = desiredPartnerName
+			end
+			setupListeners() -- Re-setup listeners for new label
+		end
+	end))
+
+	-- Monitor if dialog text label gets replaced
+	table.insert(connections, info.ChildAdded:Connect(function(child)
+		if child.Name == "TextLabel" then
+			dialogTextLabel = child
+			if desiredPartnerName ~= "" then
+				dialogTextLabel.Text = desiredPartnerName .. " sent you a trade request"
+			end
+			setupListeners() -- Re-setup listeners for new label
+		end
+	end))
 	
 	print("Auto-correction listeners enabled.")
 end
