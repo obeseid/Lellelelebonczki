@@ -1,4 +1,4 @@
--- LocalScript in StarterPlayer > rrtyenndnd or StarterGui
+-- LocalScript in StarterPlayer > hryvhefhbcuhdec or StarterGui
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -28,6 +28,9 @@ local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel")
 -- Store the desired partner name
 local desiredPartnerName = ""
 
+-- Store the last actual partner name from the game
+local lastPartnerName = ""
+
 -- Store connection references so we can disconnect them
 local connections = {}
 
@@ -54,7 +57,11 @@ local function setupListeners()
 	
 	-- Monitor for unexpected changes and auto-correct
 	table.insert(connections, partnerNameLabel:GetPropertyChangedSignal("Text"):Connect(function()
-		if desiredPartnerName ~= "" and partnerNameLabel.Text ~= desiredPartnerName then
+		-- If no custom name is set, store this as the last partner name
+		if desiredPartnerName == "" then
+			lastPartnerName = partnerNameLabel.Text
+			print("Stored last partner name:", lastPartnerName)
+		elseif partnerNameLabel.Text ~= desiredPartnerName then
 			partnerNameLabel.Text = desiredPartnerName
 			print("Partner name was changed unexpectedly. Auto-corrected to:", desiredPartnerName)
 		end
@@ -100,7 +107,9 @@ setupListeners()
 frame:GetPropertyChangedSignal("Visible"):Connect(function()
 	if not frame.Visible then
 		disconnectListeners()
-		print("Trade window closed. Auto-correction disabled.")
+		-- Clear the desired name so the script stops interfering
+		desiredPartnerName = ""
+		print("Trade window closed. Auto-correction disabled. Names will function normally until you set them again.")
 	else
 		setupListeners()
 		print("Trade window opened. Auto-correction enabled.")
@@ -115,8 +124,8 @@ namePickerGui.Parent = playerGui
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 150)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+mainFrame.Size = UDim2.new(0, 300, 0, 180)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
 mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 mainFrame.BorderSizePixel = 2
 mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
@@ -151,7 +160,7 @@ titleLabel.Parent = titleBar
 local textBox = Instance.new("TextBox")
 textBox.Name = "NameTextBox"
 textBox.Size = UDim2.new(0.85, 0, 0, 35)
-textBox.Position = UDim2.new(0.075, 0, 0.35, 0)
+textBox.Position = UDim2.new(0.075, 0, 0.28, 0)
 textBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 textBox.BorderSizePixel = 1
 textBox.BorderColor3 = Color3.fromRGB(100, 100, 100)
@@ -170,8 +179,8 @@ textBoxCorner.Parent = textBox
 -- Submit button
 local submitButton = Instance.new("TextButton")
 submitButton.Name = "SubmitButton"
-submitButton.Size = UDim2.new(0.4, 0, 0, 35)
-submitButton.Position = UDim2.new(0.3, 0, 0.7, 0)
+submitButton.Size = UDim2.new(0.85, 0, 0, 35)
+submitButton.Position = UDim2.new(0.075, 0, 0.55, 0)
 submitButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
 submitButton.BorderSizePixel = 0
 submitButton.Text = "Set Name"
@@ -183,6 +192,23 @@ submitButton.Parent = mainFrame
 local buttonCorner = Instance.new("UICorner")
 buttonCorner.CornerRadius = UDim.new(0, 6)
 buttonCorner.Parent = submitButton
+
+-- Use Last Partner button
+local lastPartnerButton = Instance.new("TextButton")
+lastPartnerButton.Name = "LastPartnerButton"
+lastPartnerButton.Size = UDim2.new(0.85, 0, 0, 35)
+lastPartnerButton.Position = UDim2.new(0.075, 0, 0.78, 0)
+lastPartnerButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+lastPartnerButton.BorderSizePixel = 0
+lastPartnerButton.Text = "Use Last Partner"
+lastPartnerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+lastPartnerButton.Font = Enum.Font.GothamBold
+lastPartnerButton.TextSize = 14
+lastPartnerButton.Parent = mainFrame
+
+local lastButtonCorner = Instance.new("UICorner")
+lastButtonCorner.CornerRadius = UDim.new(0, 6)
+lastButtonCorner.Parent = lastPartnerButton
 
 -- Make the GUI draggable
 local dragging = false
@@ -233,6 +259,28 @@ submitButton.MouseButton1Click:Connect(function()
 		task.wait(0.5)
 		submitButton.Text = "Set Name"
 		submitButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+	end
+end)
+
+-- Last Partner button functionality
+lastPartnerButton.MouseButton1Click:Connect(function()
+	if lastPartnerName ~= "" then
+		textBox.Text = lastPartnerName
+		setPartnerName(lastPartnerName)
+		
+		-- Show a confirmation
+		lastPartnerButton.Text = "✓ Applied!"
+		lastPartnerButton.BackgroundColor3 = Color3.fromRGB(30, 150, 200)
+		task.wait(0.5)
+		lastPartnerButton.Text = "Use Last Partner"
+		lastPartnerButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+	else
+		-- Show error if no last partner exists
+		lastPartnerButton.Text = "No partner yet"
+		lastPartnerButton.BackgroundColor3 = Color3.fromRGB(180, 70, 70)
+		task.wait(1)
+		lastPartnerButton.Text = "Use Last Partner"
+		lastPartnerButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
 	end
 end)
 
