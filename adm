@@ -1,4 +1,4 @@
--- LocalScript in hhhh > StarterPlayerScripts or StarterGui
+-- LocalScript in StarterPlayer > rrtyenndnd or StarterGui
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -45,7 +45,6 @@ local function setPartnerName(name)
 	desiredPartnerName = name
 	partnerNameLabel.Text = name
 	confirmPartnerLabel.Text = name
-	dialogTextLabel.Text = name .. " sent you a trade request"
 end
 
 -- Function to setup auto-correct listeners
@@ -69,15 +68,6 @@ local function setupListeners()
 		end
 	end))
 
-	-- Monitor the dialog text label too
-	table.insert(connections, dialogTextLabel:GetPropertyChangedSignal("Text"):Connect(function()
-		local expectedText = desiredPartnerName .. " sent you a trade request"
-		if desiredPartnerName ~= "" and dialogTextLabel.Text ~= expectedText then
-			dialogTextLabel.Text = expectedText
-			print("Dialog text was changed unexpectedly. Auto-corrected to:", expectedText)
-		end
-	end))
-
 	-- Monitor if the label gets replaced
 	table.insert(connections, partnerFrame.ChildAdded:Connect(function(child)
 		if child.Name == "NameLabel" then
@@ -95,17 +85,6 @@ local function setupListeners()
 			confirmPartnerLabel = child
 			if desiredPartnerName ~= "" then
 				confirmPartnerLabel.Text = desiredPartnerName
-			end
-			setupListeners() -- Re-setup listeners for new label
-		end
-	end))
-
-	-- Monitor if dialog text label gets replaced
-	table.insert(connections, info.ChildAdded:Connect(function(child)
-		if child.Name == "TextLabel" then
-			dialogTextLabel = child
-			if desiredPartnerName ~= "" then
-				dialogTextLabel.Text = desiredPartnerName .. " sent you a trade request"
 			end
 			setupListeners() -- Re-setup listeners for new label
 		end
