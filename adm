@@ -54,7 +54,7 @@ local desiredPartnerName = ""
 
 -- Configuration: Only change names if they match this username
 -- Set this to the username you want to replace, or leave as "" to replace any name
-local TARGET_USERNAME = "" -- Change this to the specific username you want to replace
+local TARGET_USERNAME = "WhiVault" -- Change this to the specific username you want to replace
 
 -- Store connection references so we can disconnect them
 local connections = {}
