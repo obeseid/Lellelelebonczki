@@ -4,33 +4,57 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Wait for TradeApp
-local tradeApp = playerGui:WaitForChild("TradeApp")
-local frame = tradeApp:WaitForChild("Frame")
-local negotiationFrame = frame:WaitForChild("NegotiationFrame")
-local header = negotiationFrame:WaitForChild("Header")
+print("Script starting...")
 
--- Wait for DialogApp
-local dialogApp = playerGui:WaitForChild("DialogApp")
-local dialog = dialogApp:WaitForChild("Dialog")
-local headerDialog = dialog:WaitForChild("HeaderDialog")
-local info = headerDialog:WaitForChild("Info")
-local dialogTextLabel = info:WaitForChild("TextLabel")
+-- Wait for TradeApp with error handling
+local tradeApp = playerGui:WaitForChild("TradeApp", 10)
+if not tradeApp then
+	warn("TradeApp not found!")
+	return
+end
+print("Found TradeApp")
+
+local frame = tradeApp:WaitForChild("Frame", 10)
+local negotiationFrame = frame:WaitForChild("NegotiationFrame", 10)
+local header = negotiationFrame:WaitForChild("Header", 10)
+
+-- Wait for DialogApp with error handling
+local dialogApp = playerGui:WaitForChild("DialogApp", 10)
+if not dialogApp then
+	warn("DialogApp not found!")
+end
+
+local dialogTextLabel
+if dialogApp then
+	local dialog = dialogApp:WaitForChild("Dialog", 10)
+	if dialog then
+		local headerDialog = dialog:WaitForChild("HeaderDialog", 10)
+		if headerDialog then
+			local info = headerDialog:WaitForChild("Info", 10)
+			if info then
+				dialogTextLabel = info:WaitForChild("TextLabel", 10)
+				print("Found DialogApp TextLabel")
+			end
+		end
+	end
+end
 
 -- Get the partner name label
-local partnerFrame = header:WaitForChild("PartnerFrame")
-local partnerNameLabel = partnerFrame:WaitForChild("NameLabel")
+local partnerFrame = header:WaitForChild("PartnerFrame", 10)
+local partnerNameLabel = partnerFrame:WaitForChild("NameLabel", 10)
+print("Found PartnerFrame NameLabel")
 
 -- Get the confirmation frame partner label
-local confirmationFrame = frame:WaitForChild("ConfirmationFrame")
-local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel")
+local confirmationFrame = frame:WaitForChild("ConfirmationFrame", 10)
+local confirmPartnerLabel = confirmationFrame:WaitForChild("PartnerLabel", 10)
+print("Found ConfirmationFrame PartnerLabel")
 
 -- Store the desired partner name
 local desiredPartnerName = ""
 
 -- Configuration: Only change names if they match this username
 -- Set this to the username you want to replace, or leave as "" to replace any name
-local TARGET_USERNAME = "zdenerwowanydiego" -- Change this to the specific username you want to replace
+local TARGET_USERNAME = "" -- Change this to the specific username you want to replace
 
 -- Store connection references so we can disconnect them
 local connections = {}
