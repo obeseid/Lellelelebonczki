@@ -54,7 +54,9 @@ local desiredPartnerName = ""
 
 -- Configuration: Only change names if they match this username
 -- Set this to the username you want to replace, or leave as "" to replace any name
-local TARGET_USERNAME = "BikingWithLayla" -- Change this to the specific username you want to replace
+local TARGET_USERNAME = "" -- Change this to the specific username you want to replace
+
+print("TARGET_USERNAME is set to:", TARGET_USERNAME == "" and "(empty - will change any name)" or TARGET_USERNAME)
 
 -- Store connection references so we can disconnect them
 local connections = {}
@@ -81,25 +83,35 @@ end
 -- Function to set the partner name
 local function setPartnerName(name)
 	desiredPartnerName = name
+	print("==================")
+	print("Setting partner name to:", name)
+	print("Current partner label:", partnerNameLabel.Text)
+	print("Current confirm label:", confirmPartnerLabel.Text)
+	print("TARGET_USERNAME:", TARGET_USERNAME)
+	print("==================")
 	
-	-- Change partner name label if it matches target
-	if shouldChange(partnerNameLabel.Text) then
-		partnerNameLabel.Text = name
-		print("Set partner name to:", name)
-	end
+	-- FORCE change partner name label (ignore target check for now)
+	partnerNameLabel.Text = name
+	print("✓ FORCED partner name to:", name)
 	
-	-- Change confirmation label if it matches target
-	if shouldChange(confirmPartnerLabel.Text) then
-		confirmPartnerLabel.Text = name
-		print("Set confirmation partner name to:", name)
-	end
+	-- FORCE change confirmation label
+	confirmPartnerLabel.Text = name
+	print("✓ FORCED confirmation partner name to:", name)
 	
-	-- Change dialog text if it matches target pattern
-	local currentDialogText = dialogTextLabel.Text
-	if TARGET_USERNAME == "" or currentDialogText:find(TARGET_USERNAME) or currentDialogText:match("sent you a trade request") then
+	-- FORCE change dialog text if it exists
+	if dialogTextLabel then
 		dialogTextLabel.Text = name .. " sent you a trade request"
-		print("Set dialog text to:", name .. " sent you a trade request")
+		print("✓ FORCED dialog text to:", name .. " sent you a trade request")
 	end
+	
+	print("==================")
+	print("After setting:")
+	print("Partner label now:", partnerNameLabel.Text)
+	print("Confirm label now:", confirmPartnerLabel.Text)
+	if dialogTextLabel then
+		print("Dialog text now:", dialogTextLabel.Text)
+	end
+	print("==================")
 end
 
 -- Function to setup auto-correct listeners
@@ -128,20 +140,22 @@ local function setupListeners()
 	end))
 
 	-- Monitor dialog text label changes
-	table.insert(connections, dialogTextLabel:GetPropertyChangedSignal("Text"):Connect(function()
-		if desiredPartnerName ~= "" then
-			local expectedText = desiredPartnerName .. " sent you a trade request"
-			local currentText = dialogTextLabel.Text
-			
-			if currentText ~= expectedText then
-				-- Check if this looks like a trade request message
-				if TARGET_USERNAME == "" or currentText:find(TARGET_USERNAME) or currentText:match("sent you a trade request") then
-					dialogTextLabel.Text = expectedText
-					print("Dialog text auto-corrected to:", expectedText)
+	if dialogTextLabel then
+		table.insert(connections, dialogTextLabel:GetPropertyChangedSignal("Text"):Connect(function()
+			if desiredPartnerName ~= "" then
+				local expectedText = desiredPartnerName .. " sent you a trade request"
+				local currentText = dialogTextLabel.Text
+				
+				if currentText ~= expectedText then
+					-- Check if this looks like a trade request message
+					if TARGET_USERNAME == "" or currentText:find(TARGET_USERNAME) or currentText:match("sent you a trade request") then
+						dialogTextLabel.Text = expectedText
+						print("Dialog text auto-corrected to:", expectedText)
+					end
 				end
 			end
-		end
-	end))
+		end))
+	end
 	
 	print("Auto-correction listeners enabled.")
 end
