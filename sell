@@ -1,0 +1,37 @@
+-- AUTO-SELL ALL *UNLOCKED* HORSES
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local References = require(ReplicatedStorage:WaitForChild("References"))
+local Items = References.Items
+local InventoryHandler = require(References.PlayerScripts.Priority:WaitForChild("InventoryHandler"))
+local Utilities = References.Utilities
+
+local horseGuids = {}
+
+for name, item in pairs(Items.byName) do
+    -- Confirm species is Horse
+    if Items.byId[item.id] and Items.byId[item.id].species == "Horse" then
+        
+        -- Get all horse GUIDs of this item type
+        local guids = InventoryHandler.GetGuidsOfItemId(item.id)
+
+        for _, guid in ipairs(guids) do
+            -- Only sell UNLOCKED horses
+            if not InventoryHandler.IsGuidLocked(guid) then
+                table.insert(horseGuids, guid)
+            end
+        end
+    end
+end
+
+if #horseGuids == 0 then
+    print("No unlocked horses to sell.")
+    return
+end
+
+Utilities.Network:FireServer("Shopping", "SellItems", horseGuids)
+
+print("Requested sale of", #horseGuids, "unlocked horses.")
