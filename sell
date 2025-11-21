@@ -10,17 +10,19 @@ local InventoryHandler = require(References.PlayerScripts.Priority:WaitForChild(
 local Utilities = References.Utilities
 
 local horseGuids = {}
+local lockedTable = InventoryHandler.local.locked or {}
 
 for name, item in pairs(Items.byName) do
-    -- Confirm species is Horse
-    if Items.byId[item.id] and Items.byId[item.id].species == "Horse" then
-        
-        -- Get all horse GUIDs of this item type
-        local guids = InventoryHandler.GetGuidsOfItemId(item.id)
+    -- Only items whose species is Horse
+    local info = Items.byId[item.id]
+    if info and info.species == "Horse" then
 
+        -- Get all GUIDs of this specific horse type
+        local guids = InventoryHandler.GetGuidsOfItemId(item.id)
         for _, guid in ipairs(guids) do
-            -- Only sell UNLOCKED horses
-            if not InventoryHandler.IsGuidLocked(guid) then
+
+            -- Ignore locked horses
+            if not lockedTable[guid] then
                 table.insert(horseGuids, guid)
             end
         end
@@ -28,10 +30,11 @@ for name, item in pairs(Items.byName) do
 end
 
 if #horseGuids == 0 then
-    print("No unlocked horses to sell.")
+    warn("No unlocked horses to sell.")
     return
 end
 
+-- Sell them via Larry's official shop event
 Utilities.Network:FireServer("Shopping", "SellItems", horseGuids)
 
 print("Requested sale of", #horseGuids, "unlocked horses.")
