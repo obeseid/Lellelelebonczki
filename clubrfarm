@@ -5,8 +5,8 @@ local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
 
 -- Configuration
-local TARGET_PLACE_ID = 0 -- CHANGE THIS to your target place ID
-local MIN_PLAYER_COUNT = 4 -- Will server hop when players <= this number
+local TARGET_PLACE_ID = 5313457830 -- CHANGE THIS to your target place ID
+local MIN_PLAYER_COUNT = 5 -- Will server hop when players <= this number
 
 local player = Players.LocalPlayer
 local isServerHopping = false
