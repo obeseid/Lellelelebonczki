@@ -1,0 +1,151 @@
+-- Roblox Server Hop Script (Local Script)
+-- Place this in StarterPlayer > StarterPlayerScripts
+
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+
+-- Configuration
+local TARGET_PLACE_ID = 0 -- CHANGE THIS to your target place ID
+local MIN_PLAYER_COUNT = 4 -- Will server hop when players <= this number
+
+local player = Players.LocalPlayer
+local isServerHopping = false
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ServerHopGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 80)
+frame.Position = UDim2.new(0.5, -100, 0.5, -40)
+frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = frame
+
+local playerLabel = Instance.new("TextLabel")
+playerLabel.Size = UDim2.new(1, -20, 0, 30)
+playerLabel.Position = UDim2.new(0, 10, 0, 10)
+playerLabel.BackgroundTransparency = 1
+playerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerLabel.Font = Enum.Font.GothamBold
+playerLabel.TextSize = 16
+playerLabel.Text = "Players: 0"
+playerLabel.TextXAlignment = Enum.TextXAlignment.Left
+playerLabel.Parent = frame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -20, 0, 30)
+statusLabel.Position = UDim2.new(0, 10, 0, 40)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextSize = 14
+statusLabel.Text = "Monitoring..."
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+statusLabel.Parent = frame
+
+-- Function to update GUI
+local function updateGui(playerCount, status)
+    playerLabel.Text = string.format("Players: %d", playerCount)
+    statusLabel.Text = status
+    
+    if status == "Teleporting..." then
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+    elseif playerCount <= MIN_PLAYER_COUNT then
+        statusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+    else
+        statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    end
+end
+
+-- Function to get server list and teleport to a new one
+local function serverHop()
+    if isServerHopping then return end
+    isServerHopping = true
+    
+    local currentPlayerCount = #Players:GetPlayers()
+    updateGui(currentPlayerCount, "Teleporting...")
+    
+    print("Server hopping to a new server...")
+    
+    local success, errorMsg = pcall(function()
+        local servers = {}
+        local cursor = ""
+        
+        -- Get list of servers for the place
+        repeat
+            local success, result = pcall(function()
+                return game:HttpGet(string.format(
+                    "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100&cursor=%s",
+                    TARGET_PLACE_ID,
+                    cursor
+                ))
+            end)
+            
+            if success then
+                local data = game:GetService("HttpService"):JSONDecode(result)
+                
+                for _, server in pairs(data.data) do
+                    -- Filter out full servers and current server
+                    if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                        table.insert(servers, server.id)
+                    end
+                end
+                
+                cursor = data.nextPageCursor or ""
+            else
+                break
+            end
+        until cursor == ""
+        
+        -- Teleport to a random server from the list
+        if #servers > 0 then
+            local randomServer = servers[math.random(1, #servers)]
+            TeleportService:TeleportToPlaceInstance(TARGET_PLACE_ID, randomServer, player)
+        else
+            -- If no servers found, do regular teleport
+            TeleportService:Teleport(TARGET_PLACE_ID, player)
+        end
+    end)
+    
+    if not success then
+        warn("Server hop failed:", errorMsg)
+        -- Fallback to regular teleport
+        TeleportService:Teleport(TARGET_PLACE_ID, player)
+    end
+end
+
+-- Monitor player count
+local function checkPlayerCount()
+    local playerCount = #Players:GetPlayers()
+    
+    if playerCount <= MIN_PLAYER_COUNT then
+        print(string.format("Player count is %d (threshold: %d). Server hopping...", playerCount, MIN_PLAYER_COUNT))
+        updateGui(playerCount, string.format("Low players (%d) - Hopping...", playerCount))
+        serverHop()
+    else
+        updateGui(playerCount, "Monitoring...")
+    end
+end
+
+-- Initial check
+wait(2) -- Wait a bit for game to load
+checkPlayerCount()
+
+-- Monitor when players leave
+Players.PlayerRemoving:Connect(function()
+    wait(0.5) -- Small delay to let player count update
+    checkPlayerCount()
+end)
+
+-- Monitor when players join
+Players.PlayerAdded:Connect(function()
+    wait(0.5)
+    checkPlayerCount()
+end)
