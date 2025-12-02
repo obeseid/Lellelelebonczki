@@ -1,4 +1,4 @@
--- DataStore Save Blocker GUI (hookfunction version for Delta)
+-- DataStore Save Blocker dildo
 -- Execute this script with Delta
 
 local Players = game:GetService("Players")
@@ -24,8 +24,8 @@ end
 -- Create Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 150)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+mainFrame.Size = UDim2.new(0, 300, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
 mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -63,11 +63,39 @@ statusLabel.Font = Enum.Font.Gotham
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
 statusLabel.Parent = mainFrame
 
+-- Create Blocked Counter Label
+local blockedLabel = Instance.new("TextLabel")
+blockedLabel.Name = "BlockedLabel"
+blockedLabel.Size = UDim2.new(1, -20, 0, 30)
+blockedLabel.Position = UDim2.new(0, 10, 0, 85)
+blockedLabel.BackgroundTransparency = 1
+blockedLabel.Text = "Blocked Saves: 0"
+blockedLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+blockedLabel.TextSize = 16
+blockedLabel.Font = Enum.Font.GothamBold
+blockedLabel.TextXAlignment = Enum.TextXAlignment.Left
+blockedLabel.Visible = false
+blockedLabel.Parent = mainFrame
+
+-- Create Last Blocked Info Label
+local lastBlockedLabel = Instance.new("TextLabel")
+lastBlockedLabel.Name = "LastBlockedLabel"
+lastBlockedLabel.Size = UDim2.new(1, -20, 0, 25)
+lastBlockedLabel.Position = UDim2.new(0, 10, 0, 115)
+lastBlockedLabel.BackgroundTransparency = 1
+lastBlockedLabel.Text = "Last: None"
+lastBlockedLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+lastBlockedLabel.TextSize = 11
+lastBlockedLabel.Font = Enum.Font.Gotham
+lastBlockedLabel.TextXAlignment = Enum.TextXAlignment.Left
+lastBlockedLabel.Visible = false
+lastBlockedLabel.Parent = mainFrame
+
 -- Create Toggle Button
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
 toggleButton.Size = UDim2.new(0, 260, 0, 40)
-toggleButton.Position = UDim2.new(0, 20, 0, 95)
+toggleButton.Position = UDim2.new(0, 20, 0, 150)
 toggleButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
 toggleButton.Text = "Block Saves"
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -84,6 +112,19 @@ buttonCorner.Parent = toggleButton
 -- Variables
 local isBlocking = false
 local originalNamecall = nil
+local blockedCount = 0
+
+-- Function to update blocked counter
+local function updateBlockedCounter(method, key)
+    blockedCount = blockedCount + 1
+    blockedLabel.Text = "Blocked Saves: " .. blockedCount
+    lastBlockedLabel.Text = "Last: " .. method .. " (" .. tostring(key):sub(1, 20) .. ")"
+    
+    -- Flash effect
+    blockedLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+    wait(0.1)
+    blockedLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+end
 
 -- Function to block saves using hookfunction
 local function blockSaves()
@@ -109,9 +150,13 @@ local function blockSaves()
             end)
             
             if success and result then
-                warn("🛡️ [DataStore Blocker] Blocked " .. method)
-                warn("   Key: " .. tostring(args[1] or "unknown"))
-                warn("   Value: " .. tostring(args[2] or "N/A"))
+                -- Update GUI counter
+                spawn(function()
+                    updateBlockedCounter(method, args[1])
+                end)
+                
+                -- Print to console
+                print("🛡️ [BLOCKED] " .. method .. " | Key: " .. tostring(args[1] or "unknown"))
                 
                 -- Return nil to block the operation
                 return nil
@@ -125,13 +170,16 @@ local function blockSaves()
     setreadonly(mt, true)
     
     isBlocking = true
+    blockedCount = 0
     statusLabel.Text = "Status: Blocking All Saves ✓"
     statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
     toggleButton.Text = "Unblock Saves"
     toggleButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+    blockedLabel.Visible = true
+    lastBlockedLabel.Visible = true
     
-    warn("🛡️ [DataStore Blocker] Save blocking is now ACTIVE")
-    warn("   Watch console (F9) when leaving to see blocked saves!")
+    print("🛡️ [DataStore Blocker] Save blocking is now ACTIVE")
+    print("   Watching for DataStore saves...")
 end
 
 -- Function to unblock saves
@@ -150,8 +198,11 @@ local function unblockSaves()
     statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
     toggleButton.Text = "Block Saves"
     toggleButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+    blockedLabel.Visible = false
+    lastBlockedLabel.Visible = false
     
-    warn("❌ [DataStore Blocker] Save blocking is now DISABLED")
+    print("❌ [DataStore Blocker] Save blocking is now DISABLED")
+    print("   Total saves blocked: " .. blockedCount)
 end
 
 -- Button click handler
