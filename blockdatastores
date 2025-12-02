@@ -1,4 +1,4 @@
--- DataStore Save Blocker GUI
+-- tttt
 -- Execute this script with your executor
 
 local Players = game:GetService("Players")
@@ -84,37 +84,30 @@ buttonCorner.Parent = toggleButton
 
 -- Variables
 local isBlocking = false
-local originalGetDataStore = nil
+local hookedFunctions = {}
 
 -- Function to block saves
 local function blockSaves()
     if isBlocking then return end
     
-    originalGetDataStore = DataStoreService.GetDataStore
+    -- Hook __namecall metamethod to intercept DataStore calls
+    local oldNamecall
+    oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+        
+        -- Block DataStore save operations
+        if method == "SetAsync" or method == "UpdateAsync" or method == "RemoveAsync" then
+            if tostring(self):find("DataStore") then
+                warn("[DataStore Blocker] Blocked " .. method .. " for key:", args[1] or "unknown")
+                return nil
+            end
+        end
+        
+        return oldNamecall(self, ...)
+    end)
     
-    DataStoreService.GetDataStore = function(...)
-        local datastore = originalGetDataStore(...)
-        local oldSetAsync = datastore.SetAsync
-        local oldUpdateAsync = datastore.UpdateAsync
-        local oldRemoveAsync = datastore.RemoveAsync
-        
-        datastore.SetAsync = function(self, key, value)
-            warn("[DataStore Blocker] Blocked SetAsync for key:", key)
-            return nil
-        end
-        
-        datastore.UpdateAsync = function(self, key, transformFunction)
-            warn("[DataStore Blocker] Blocked UpdateAsync for key:", key)
-            return nil
-        end
-        
-        datastore.RemoveAsync = function(self, key)
-            warn("[DataStore Blocker] Blocked RemoveAsync for key:", key)
-            return nil
-        end
-        
-        return datastore
-    end
+    table.insert(hookedFunctions, oldNamecall)
     
     isBlocking = true
     statusLabel.Text = "Status: Blocking All Saves ✓"
@@ -129,9 +122,11 @@ end
 local function unblockSaves()
     if not isBlocking then return end
     
-    if originalGetDataStore then
-        DataStoreService.GetDataStore = originalGetDataStore
+    -- Restore original functions
+    for _, func in pairs(hookedFunctions) do
+        hookmetamethod(game, "__namecall", func)
     end
+    hookedFunctions = {}
     
     isBlocking = false
     statusLabel.Text = "Status: Not Active"
