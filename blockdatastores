@@ -1,0 +1,155 @@
+-- DataStore Save Blocker GUI
+-- Execute this script with your executor
+
+local Players = game:GetService("Players")
+local DataStoreService = game:GetService("DataStoreService")
+local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "DataStoreBlockerGUI"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Try to parent to CoreGui, fallback to PlayerGui
+local success = pcall(function()
+    screenGui.Parent = CoreGui
+end)
+if not success then
+    screenGui.Parent = playerGui
+end
+
+-- Create Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 300, 0, 150)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+-- Add corner radius
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
+
+-- Create Title
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, -20, 0, 40)
+title.Position = UDim2.new(0, 10, 0, 10)
+title.BackgroundTransparency = 1
+title.Text = "DataStore Blocker"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 18
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = mainFrame
+
+-- Create Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "StatusLabel"
+statusLabel.Size = UDim2.new(1, -20, 0, 30)
+statusLabel.Position = UDim2.new(0, 10, 0, 55)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: Not Active"
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.TextSize = 14
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+statusLabel.Parent = mainFrame
+
+-- Create Toggle Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 260, 0, 40)
+toggleButton.Position = UDim2.new(0, 20, 0, 95)
+toggleButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+toggleButton.Text = "Block Saves"
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextSize = 16
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.BorderSizePixel = 0
+toggleButton.Parent = mainFrame
+
+-- Button corner
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 8)
+buttonCorner.Parent = toggleButton
+
+-- Variables
+local isBlocking = false
+local originalGetDataStore = nil
+
+-- Function to block saves
+local function blockSaves()
+    if isBlocking then return end
+    
+    originalGetDataStore = DataStoreService.GetDataStore
+    
+    DataStoreService.GetDataStore = function(...)
+        local datastore = originalGetDataStore(...)
+        local oldSetAsync = datastore.SetAsync
+        local oldUpdateAsync = datastore.UpdateAsync
+        local oldRemoveAsync = datastore.RemoveAsync
+        
+        datastore.SetAsync = function(self, key, value)
+            warn("[DataStore Blocker] Blocked SetAsync for key:", key)
+            return nil
+        end
+        
+        datastore.UpdateAsync = function(self, key, transformFunction)
+            warn("[DataStore Blocker] Blocked UpdateAsync for key:", key)
+            return nil
+        end
+        
+        datastore.RemoveAsync = function(self, key)
+            warn("[DataStore Blocker] Blocked RemoveAsync for key:", key)
+            return nil
+        end
+        
+        return datastore
+    end
+    
+    isBlocking = true
+    statusLabel.Text = "Status: Blocking All Saves ✓"
+    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    toggleButton.Text = "Unblock Saves"
+    toggleButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+    
+    print("[DataStore Blocker] Save blocking is now ACTIVE")
+end
+
+-- Function to unblock saves
+local function unblockSaves()
+    if not isBlocking then return end
+    
+    if originalGetDataStore then
+        DataStoreService.GetDataStore = originalGetDataStore
+    end
+    
+    isBlocking = false
+    statusLabel.Text = "Status: Not Active"
+    statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    toggleButton.Text = "Block Saves"
+    toggleButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+    
+    print("[DataStore Blocker] Save blocking is now DISABLED")
+end
+
+-- Button click handler
+toggleButton.MouseButton1Click:Connect(function()
+    if isBlocking then
+        unblockSaves()
+    else
+        blockSaves()
+    end
+end)
+
+print("[DataStore Blocker] GUI Loaded Successfully")
+print("[DataStore Blocker] Drag the GUI to move it around")
