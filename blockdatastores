@@ -1,4 +1,4 @@
--- DataStore Save Blocker GUI (Delta Android Compatible)
+-- DataStore Save Blocker GUI (hookfunction version for Delta)
 -- Execute this script with Delta
 
 local Players = game:GetService("Players")
@@ -24,8 +24,8 @@ end
 -- Create Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 180)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
+mainFrame.Size = UDim2.new(0, 300, 0, 150)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
 mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -56,90 +56,114 @@ statusLabel.Name = "StatusLabel"
 statusLabel.Size = UDim2.new(1, -20, 0, 30)
 statusLabel.Position = UDim2.new(0, 10, 0, 55)
 statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "Status: Ready"
+statusLabel.Text = "Status: Not Active"
 statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 statusLabel.TextSize = 14
 statusLabel.Font = Enum.Font.Gotham
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
 statusLabel.Parent = mainFrame
 
--- Create Info Label
-local infoLabel = Instance.new("TextLabel")
-infoLabel.Name = "InfoLabel"
-infoLabel.Size = UDim2.new(1, -20, 0, 25)
-infoLabel.Position = UDim2.new(0, 10, 0, 85)
-infoLabel.BackgroundTransparency = 1
-infoLabel.Text = "Click button then leave game"
-infoLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-infoLabel.TextSize = 11
-infoLabel.Font = Enum.Font.Gotham
-infoLabel.TextXAlignment = Enum.TextXAlignment.Left
-infoLabel.Parent = mainFrame
-
--- Create Kick Button
-local kickButton = Instance.new("TextButton")
-kickButton.Name = "KickButton"
-kickButton.Size = UDim2.new(0, 260, 0, 45)
-kickButton.Position = UDim2.new(0, 20, 0, 120)
-kickButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-kickButton.Text = "Block Save & Leave"
-kickButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-kickButton.TextSize = 16
-kickButton.Font = Enum.Font.GothamBold
-kickButton.BorderSizePixel = 0
-kickButton.Parent = mainFrame
+-- Create Toggle Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 260, 0, 40)
+toggleButton.Position = UDim2.new(0, 20, 0, 95)
+toggleButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+toggleButton.Text = "Block Saves"
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextSize = 16
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.BorderSizePixel = 0
+toggleButton.Parent = mainFrame
 
 -- Button corner
 local buttonCorner = Instance.new("UICorner")
 buttonCorner.CornerRadius = UDim.new(0, 8)
-buttonCorner.Parent = kickButton
+buttonCorner.Parent = toggleButton
 
--- Function to disable network and kick
-local function blockAndLeave()
-    statusLabel.Text = "Status: Disconnecting..."
-    statusLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
+-- Variables
+local isBlocking = false
+local originalNamecall = nil
+
+-- Function to block saves using hookfunction
+local function blockSaves()
+    if isBlocking then return end
     
-    warn("[DataStore Blocker] Attempting to prevent save...")
+    -- Get the metatable
+    local mt = getrawmetatable(game)
+    local backup = mt.__namecall
     
-    -- Method 1: Try to disable network replication
-    pcall(function()
-        settings():GetService("NetworkSettings").IncomingReplicationLag = math.huge
-    end)
+    -- Make it writable
+    setreadonly(mt, false)
     
-    -- Method 2: Corrupt player data in memory (might prevent save)
-    pcall(function()
-        for _, v in pairs(player:GetChildren()) do
-            if v:IsA("Folder") or v:IsA("IntValue") or v:IsA("StringValue") then
-                v:Destroy()
+    -- Hook the __namecall metamethod
+    originalNamecall = hookfunction(mt.__namecall, function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+        
+        -- Check if it's a DataStore operation
+        if method == "SetAsync" or method == "UpdateAsync" or method == "RemoveAsync" or method == "IncrementAsync" then
+            -- Check if self is a DataStore
+            local success, result = pcall(function()
+                return tostring(self):match("DataStore")
+            end)
+            
+            if success and result then
+                warn("🛡️ [DataStore Blocker] Blocked " .. method)
+                warn("   Key: " .. tostring(args[1] or "unknown"))
+                warn("   Value: " .. tostring(args[2] or "N/A"))
+                
+                -- Return nil to block the operation
+                return nil
             end
         end
+        
+        -- Call original function for everything else
+        return originalNamecall(self, ...)
     end)
     
-    -- Method 3: Spam RemoteEvents to overload (might interrupt save)
-    pcall(function()
-        for i = 1, 100 do
-            game:GetService("ReplicatedStorage"):FindFirstChildOfClass("RemoteEvent"):FireServer()
-        end
-    end)
+    setreadonly(mt, true)
     
-    wait(0.5)
+    isBlocking = true
+    statusLabel.Text = "Status: Blocking All Saves ✓"
+    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    toggleButton.Text = "Unblock Saves"
+    toggleButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
     
-    statusLabel.Text = "Status: Kicking..."
-    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+    warn("🛡️ [DataStore Blocker] Save blocking is now ACTIVE")
+    warn("   Watch console (F9) when leaving to see blocked saves!")
+end
+
+-- Function to unblock saves
+local function unblockSaves()
+    if not isBlocking then return end
     
-    -- Kick after brief delay
-    wait(0.5)
-    player:Kick("🛡️ DataStore Save Blocked - Testing Mode")
+    if originalNamecall then
+        local mt = getrawmetatable(game)
+        setreadonly(mt, false)
+        mt.__namecall = originalNamecall
+        setreadonly(mt, true)
+    end
+    
+    isBlocking = false
+    statusLabel.Text = "Status: Not Active"
+    statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    toggleButton.Text = "Block Saves"
+    toggleButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+    
+    warn("❌ [DataStore Blocker] Save blocking is now DISABLED")
 end
 
 -- Button click handler
-kickButton.MouseButton1Click:Connect(function()
-    kickButton.Text = "Leaving..."
-    kickButton.BackgroundColor3 = Color3.fromRGB(150, 30, 30)
-    blockAndLeave()
+toggleButton.MouseButton1Click:Connect(function()
+    if isBlocking then
+        unblockSaves()
+    else
+        blockSaves()
+    end
 end)
 
-print("[DataStore Blocker] GUI Loaded Successfully")
-print("[DataStore Blocker] Delta Android Compatible Version")
-print("[DataStore Blocker] This will kick you to prevent saves")
-print("[DataStore Blocker] NOTE: May not work on all games!")
+print("✅ [DataStore Blocker] GUI Loaded Successfully")
+print("📱 [DataStore Blocker] Delta Android Compatible")
+print("ℹ️  [DataStore Blocker] Open console (F9) to see blocked saves")
+print("ℹ️  [DataStore Blocker] Click 'Block Saves' then leave normally")
