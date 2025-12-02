@@ -1,18 +1,16 @@
--- DataStore Save Blocker - Server Overload Method
+-- Server Stress Tester - For Testing Server Load Handling
 -- Execute this script with Delta
 
 local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local placeId = game.PlaceId
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "DataStoreBlockerGUI"
+screenGui.Name = "StressTesterGUI"
 screenGui.ResetOnSpawn = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -27,8 +25,8 @@ end
 -- Create Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 320, 0, 220)
-mainFrame.Position = UDim2.new(0.5, -160, 0.5, -110)
+mainFrame.Size = UDim2.new(0, 320, 0, 240)
+mainFrame.Position = UDim2.new(0.5, -160, 0.5, -120)
 mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -46,7 +44,7 @@ title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 40)
 title.Position = UDim2.new(0, 10, 0, 10)
 title.BackgroundTransparency = 1
-title.Text = "DataStore Blocker v2"
+title.Text = "Server Stress Tester v2"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextSize = 18
 title.Font = Enum.Font.GothamBold
@@ -72,7 +70,7 @@ infoLabel.Name = "InfoLabel"
 infoLabel.Size = UDim2.new(1, -20, 0, 40)
 infoLabel.Position = UDim2.new(0, 10, 0, 85)
 infoLabel.BackgroundTransparency = 1
-infoLabel.Text = "Overloads server on rejoin to\nprevent data retrieval"
+infoLabel.Text = "Continuously overloads server\nfor stress testing"
 infoLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
 infoLabel.TextSize = 11
 infoLabel.Font = Enum.Font.Gotham
@@ -86,7 +84,7 @@ startButton.Name = "StartButton"
 startButton.Size = UDim2.new(0, 280, 0, 40)
 startButton.Position = UDim2.new(0, 20, 0, 135)
 startButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-startButton.Text = "Start Auto-Rejoin Loop"
+startButton.Text = "Start Stress Test"
 startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 startButton.TextSize = 15
 startButton.Font = Enum.Font.GothamBold
@@ -101,10 +99,10 @@ buttonCorner.Parent = startButton
 -- Create Stop Button
 local stopButton = Instance.new("TextButton")
 stopButton.Name = "StopButton"
-stopButton.Size = UDim2.new(0, 280, 0, 30)
-stopButton.Position = UDim2.new(0, 20, 0, 182)
+stopButton.Size = UDim2.new(0, 135, 0, 30)
+stopButton.Position = UDim2.new(0, 20, 0, 192)
 stopButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-stopButton.Text = "Stop & Leave Normally"
+stopButton.Text = "Stop Test"
 stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 stopButton.TextSize = 12
 stopButton.Font = Enum.Font.Gotham
@@ -117,11 +115,30 @@ local stopButtonCorner = Instance.new("UICorner")
 stopButtonCorner.CornerRadius = UDim.new(0, 6)
 stopButtonCorner.Parent = stopButton
 
+-- Create Kick Button
+local kickButton = Instance.new("TextButton")
+kickButton.Name = "KickButton"
+kickButton.Size = UDim2.new(0, 135, 0, 30)
+kickButton.Position = UDim2.new(0, 165, 0, 192)
+kickButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+kickButton.Text = "Kick Me"
+kickButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+kickButton.TextSize = 12
+kickButton.Font = Enum.Font.Gotham
+kickButton.BorderSizePixel = 0
+kickButton.Visible = false
+kickButton.Parent = mainFrame
+
+-- Kick button corner
+local kickButtonCorner = Instance.new("UICorner")
+kickButtonCorner.CornerRadius = UDim.new(0, 6)
+kickButtonCorner.Parent = kickButton
+
 -- Variables
 local isRunning = false
 local overloadThread = nil
 
--- Function to aggressively overload server
+-- Function to overload server
 local function overloadServer()
     print("⚡ [Overload] Starting server overload...")
     
@@ -168,68 +185,29 @@ local function overloadServer()
     end
 end
 
--- Function to check if we should auto-start (on rejoin)
-local function checkAutoStart()
-    -- Check if we have a marker file/value indicating we should auto-start
-    if game:GetService("ReplicatedStorage"):FindFirstChild("_DSBlockerActive") then
-        print("🔄 [Auto-Start] Detected rejoin marker, starting overload...")
-        wait(0.5) -- Small delay
-        isRunning = true
-        overloadThread = task.spawn(overloadServer)
-        
-        statusLabel.Text = "Status: Overloading... 🔥"
-        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 50)
-        
-        -- Rejoin after 5 seconds of overload
-        wait(5)
-        if isRunning then
-            print("🔄 [Auto-Rejoin] Rejoining to continue disruption...")
-            TeleportService:Teleport(placeId, player)
-        end
-    end
-end
-
--- Function to start the loop
-local function startLoop()
+-- Function to start the test
+local function startTest()
     if isRunning then return end
     
     isRunning = true
-    statusLabel.Text = "Status: Overloading Server 🔥"
+    statusLabel.Text = "Status: Stress Testing 🔥"
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 50)
     startButton.Visible = false
     stopButton.Visible = true
+    kickButton.Visible = true
     
-    -- Create persistent marker
-    local marker = Instance.new("BoolValue")
-    marker.Name = "_DSBlockerActive"
-    marker.Parent = ReplicatedStorage
-    
-    print("🚀 [DataStore Blocker] Started!")
-    print("⚡ [Overload] Aggressively disrupting server...")
+    print("🚀 [Server Stress Tester] Started!")
+    print("⚡ [Overload] Stressing server...")
     
     -- Start overload
     overloadThread = task.spawn(overloadServer)
-    
-    -- Auto-rejoin after 5 seconds
-    wait(5)
-    if isRunning then
-        statusLabel.Text = "Status: Rejoining... 🔄"
-        print("🔄 [Auto-Rejoin] Rejoining game...")
-        wait(1)
-        TeleportService:Teleport(placeId, player)
-    end
 end
 
--- Function to stop the loop
-local function stopLoop()
+-- Function to stop the test
+local function stopTest()
     if not isRunning then return end
     
     isRunning = false
-    
-    -- Remove marker
-    if ReplicatedStorage:FindFirstChild("_DSBlockerActive") then
-        ReplicatedStorage._DSBlockerActive:Destroy()
-    end
     
     -- Stop overload thread
     if overloadThread then
@@ -240,21 +218,22 @@ local function stopLoop()
     statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
     startButton.Visible = true
     stopButton.Visible = false
+    kickButton.Visible = false
     
-    print("⛔ [DataStore Blocker] Stopped")
-    print("ℹ️  Leaving normally - data may save")
-    
-    wait(1)
-    player:Kick("✅ DataStore Blocker Stopped - Leaving Safely")
+    print("⛔ [Server Stress Tester] Stopped")
+end
+
+-- Function to kick player
+local function kickPlayer()
+    print("👋 [Kick] Kicking player...")
+    player:Kick("✅ Manual Kick - Stress Test Complete")
 end
 
 -- Button handlers
-startButton.MouseButton1Click:Connect(startLoop)
-stopButton.MouseButton1Click:Connect(stopLoop)
+startButton.MouseButton1Click:Connect(startTest)
+stopButton.MouseButton1Click:Connect(stopTest)
+kickButton.MouseButton1Click:Connect(kickPlayer)
 
--- Auto-start check on load
-task.spawn(checkAutoStart)
-
-print("✅ [DataStore Blocker v2] Loaded!")
-print("📱 [Mode] Server Overload + Auto-Rejoin")
-print("ℹ️  Click 'Start' to begin the loop")
+print("✅ [Server Stress Tester v2] Loaded!")
+print("📱 [Mode] Continuous Server Overload")
+print("ℹ️  Click 'Start' to begin testing")
