@@ -222,19 +222,56 @@ startTradeBtn.MouseButton1Click:Connect(function()
 			end)
 		end
 		
+		-- Make ExecutionTimer invisible
+		local executionTimer = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
+			and tradingMenu.Content.Content:FindFirstChild("Center")
+			and tradingMenu.Content.Content.Center:FindFirstChild("ExecutionTimer")
+		if executionTimer then
+			executionTimer.Visible = false
+		end
+		
+		-- Make Local.Value invisible
+		local localValue = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
+			and tradingMenu.Content.Content:FindFirstChild("Local")
+			and tradingMenu.Content.Content.Local:FindFirstChild("Value")
+		if localValue then
+			localValue.Visible = false
+		end
+		
+		-- Make Other.Value invisible
+		local otherValue = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
+			and tradingMenu.Content.Content:FindFirstChild("Other")
+			and tradingMenu.Content.Content.Other:FindFirstChild("Value")
+		if otherValue then
+			otherValue.Visible = false
+		end
+		
 		-- Setup add items button
-		local addBtn = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content") 
+		local localOffers = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content") 
 			and tradingMenu.Content.Content:FindFirstChild("Local") 
 			and tradingMenu.Content.Content.Local:FindFirstChild("Offers")
-			and tradingMenu.Content.Content.Local.Offers:FindFirstChild("Add")
 		
-		if addBtn then
-			addBtn.MouseButton1Click:Connect(function()
-				local backpack = PlayerGui:FindFirstChild("Menus") and PlayerGui.Menus:FindFirstChild("Backpack")
-				if backpack then
-					backpack.Visible = true
+		if localOffers then
+			local addBtn = localOffers:FindFirstChild("Add")
+			if addBtn then
+				-- Remove any existing connections
+				for _, connection in pairs(getconnections(addBtn.MouseButton1Click)) do
+					connection:Disable()
 				end
-			end)
+				
+				addBtn.MouseButton1Click:Connect(function()
+					local backpack = PlayerGui:FindFirstChild("Menus") and PlayerGui.Menus:FindFirstChild("Backpack")
+					if backpack then
+						backpack.Visible = true
+					else
+						warn("Backpack not found at PlayerGui.Menus.Backpack")
+					end
+				end)
+			else
+				warn("Add button not found")
+			end
+		else
+			warn("Local.Offers not found")
 		end
 	else
 		warn("Trading menu not found in PlayerGui.Menus.Trading")
