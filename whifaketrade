@@ -1,0 +1,242 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TradingHelper"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = PlayerGui
+
+-- Create main draggable frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 250, 0, 400)
+mainFrame.Position = UDim2.new(0.5, -125, 0.5, -200)
+mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = mainFrame
+
+-- Create title bar for dragging
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0, 30)
+titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 8)
+titleCorner.Parent = titleBar
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -10, 1, 0)
+title.Position = UDim2.new(0, 5, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "Trading Helper"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 16
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = titleBar
+
+-- Make frame draggable
+local dragging, dragInput, dragStart, startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+titleBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+titleBar.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
+-- Create Start Trade button
+local startTradeBtn = Instance.new("TextButton")
+startTradeBtn.Name = "StartTradeButton"
+startTradeBtn.Size = UDim2.new(1, -20, 0, 40)
+startTradeBtn.Position = UDim2.new(0, 10, 0, 40)
+startTradeBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+startTradeBtn.Text = "Start Trade"
+startTradeBtn.TextColor3 = Color3.new(1, 1, 1)
+startTradeBtn.TextSize = 18
+startTradeBtn.Font = Enum.Font.GothamBold
+startTradeBtn.BorderSizePixel = 0
+startTradeBtn.Parent = mainFrame
+
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 6)
+btnCorner.Parent = startTradeBtn
+
+-- Create player list
+local playerListLabel = Instance.new("TextLabel")
+playerListLabel.Size = UDim2.new(1, -20, 0, 20)
+playerListLabel.Position = UDim2.new(0, 10, 0, 90)
+playerListLabel.BackgroundTransparency = 1
+playerListLabel.Text = "Select Player:"
+playerListLabel.TextColor3 = Color3.new(1, 1, 1)
+playerListLabel.TextSize = 14
+playerListLabel.Font = Enum.Font.Gotham
+playerListLabel.TextXAlignment = Enum.TextXAlignment.Left
+playerListLabel.Parent = mainFrame
+
+local playerListFrame = Instance.new("ScrollingFrame")
+playerListFrame.Name = "PlayerList"
+playerListFrame.Size = UDim2.new(1, -20, 1, -120)
+playerListFrame.Position = UDim2.new(0, 10, 0, 110)
+playerListFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+playerListFrame.BorderSizePixel = 0
+playerListFrame.ScrollBarThickness = 6
+playerListFrame.Parent = mainFrame
+
+local listCorner = Instance.new("UICorner")
+listCorner.CornerRadius = UDim.new(0, 6)
+listCorner.Parent = playerListFrame
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.SortOrder = Enum.SortOrder.Name
+listLayout.Padding = UDim.new(0, 5)
+listLayout.Parent = playerListFrame
+
+local selectedPlayer = nil
+
+-- Function to create player button
+local function createPlayerButton(player)
+	if player == LocalPlayer then return end
+	
+	local playerBtn = Instance.new("TextButton")
+	playerBtn.Name = player.Name
+	playerBtn.Size = UDim2.new(1, -10, 0, 30)
+	playerBtn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+	playerBtn.Text = player.Name
+	playerBtn.TextColor3 = Color3.new(1, 1, 1)
+	playerBtn.TextSize = 14
+	playerBtn.Font = Enum.Font.Gotham
+	playerBtn.BorderSizePixel = 0
+	playerBtn.Parent = playerListFrame
+	
+	local playerCorner = Instance.new("UICorner")
+	playerCorner.CornerRadius = UDim.new(0, 4)
+	playerCorner.Parent = playerBtn
+	
+	playerBtn.MouseButton1Click:Connect(function()
+		selectedPlayer = player.Name
+		-- Highlight selected
+		for _, btn in pairs(playerListFrame:GetChildren()) do
+			if btn:IsA("TextButton") then
+				btn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+			end
+		end
+		playerBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+	end)
+	
+	return playerBtn
+end
+
+-- Populate player list
+local function updatePlayerList()
+	for _, btn in pairs(playerListFrame:GetChildren()) do
+		if btn:IsA("TextButton") then
+			btn:Destroy()
+		end
+	end
+	
+	for _, player in pairs(Players:GetPlayers()) do
+		createPlayerButton(player)
+	end
+	
+	playerListFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 5)
+end
+
+updatePlayerList()
+
+-- Update list when players join/leave
+Players.PlayerAdded:Connect(function(player)
+	wait(0.1)
+	updatePlayerList()
+end)
+
+Players.PlayerRemoving:Connect(function()
+	wait(0.1)
+	updatePlayerList()
+end)
+
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	playerListFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 5)
+end)
+
+-- Start Trade button functionality
+startTradeBtn.MouseButton1Click:Connect(function()
+	if not selectedPlayer then
+		startTradeBtn.Text = "Select a player first!"
+		wait(2)
+		startTradeBtn.Text = "Start Trade"
+		return
+	end
+	
+	local tradingMenu = PlayerGui:FindFirstChild("Menus") and PlayerGui.Menus:FindFirstChild("Trading")
+	
+	if tradingMenu then
+		tradingMenu.Visible = true
+		tradingMenu.Size = UDim2.new(0.7, 0, 0.7, 0)
+		
+		-- Update trading header
+		local headerTitle = tradingMenu:FindFirstChild("Header") and tradingMenu.Header:FindFirstChild("Title")
+		if headerTitle then
+			headerTitle.Text = "Trading with " .. selectedPlayer
+		end
+		
+		-- Setup decline button
+		local declineBtn = tradingMenu:FindFirstChild("Bottom") and tradingMenu.Bottom:FindFirstChild("Decline")
+		if declineBtn then
+			declineBtn.MouseButton1Click:Connect(function()
+				tradingMenu.Visible = false
+			end)
+		end
+		
+		-- Setup add items button
+		local addBtn = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content") 
+			and tradingMenu.Content.Content:FindFirstChild("Local") 
+			and tradingMenu.Content.Content.Local:FindFirstChild("Offers")
+			and tradingMenu.Content.Content.Local.Offers:FindFirstChild("Add")
+		
+		if addBtn then
+			addBtn.MouseButton1Click:Connect(function()
+				local backpack = PlayerGui:FindFirstChild("Menus") and PlayerGui.Menus:FindFirstChild("Backpack")
+				if backpack then
+					backpack.Visible = true
+				end
+			end)
+		end
+	else
+		warn("Trading menu not found in PlayerGui.Menus.Trading")
+	end
+end)
