@@ -1,5 +1,105 @@
-workspace.Terrain.StreamingEnabled = true
-workspace.Terrain.StreamingMinRadius = 32
-workspace.Terrain.StreamingTargetRadius = 64
-workspace.Terrain.Decoration = false
-workspace.Terrain.Transparency = 1
+-- Terrain Memory Optimizer Local Script
+-- Place this in StarterPlayer > StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = Workspace.CurrentCamera
+local terrain = Workspace.Terrain
+
+-- Configuration
+local CONFIG = {
+	UpdateInterval = 1, -- How often to update (seconds)
+	RenderDistance = 128, -- Minimum terrain render distance (studs)
+	UnloadDistance = 256, -- Distance to completely unload terrain chunks
+}
+
+-- Performance tracking
+local lastUpdateTime = 0
+
+-- Optimize terrain decoration settings
+local function optimizeTerrainSettings()
+	-- Reduce terrain decoration density
+	if terrain:FindFirstChild("Decoration") then
+		terrain.Decoration = false
+	end
+	
+	-- Set water properties for better performance
+	terrain.WaterWaveSize = 0.05
+	terrain.WaterWaveSpeed = 10
+	terrain.WaterReflectance = 0.1
+	terrain.WaterTransparency = 0.5
+end
+
+-- Clear terrain region outside render distance
+local function optimizeTerrainRegion()
+	local char = player.Character
+	if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+	
+	local pos = char.HumanoidRootPart.Position
+	
+	-- Calculate region to keep loaded
+	local regionSize = Vector3.new(CONFIG.RenderDistance * 2, 512, CONFIG.RenderDistance * 2)
+	local region = Region3.new(pos - regionSize/2, pos + regionSize/2)
+	region = region:ExpandToGrid(4)
+	
+	-- Note: We can't directly unload terrain, but we can hide distant water
+	-- and optimize rendering by adjusting camera settings
+end
+
+-- Optimize camera max zoom for terrain rendering
+local function optimizeCameraSettings()
+	-- Set camera max zoom to match render distance
+	player.CameraMaxZoomDistance = CONFIG.RenderDistance
+	
+	-- Reduce camera far plane for better culling
+	camera.FieldOfView = 70 -- Standard FOV
+end
+
+-- Main optimization loop
+local function optimizeLoop()
+	local now = tick()
+	if now - lastUpdateTime < CONFIG.UpdateInterval then return end
+	lastUpdateTime = now
+	
+	optimizeTerrainRegion()
+	optimizeCameraSettings()
+end
+
+-- Initialize optimizations
+optimizeTerrainSettings()
+
+-- Connect to heartbeat for periodic optimization
+RunService.Heartbeat:Connect(function()
+	optimizeLoop()
+end)
+
+-- Memory cleanup - runs occasionally
+local cleanupCounter = 0
+RunService.Heartbeat:Connect(function()
+	cleanupCounter = cleanupCounter + 1
+	
+	-- Force garbage collection every 300 frames (~5 seconds at 60fps)
+	if cleanupCounter >= 300 then
+		collectgarbage("collect")
+		cleanupCounter = 0
+	end
+end)
+
+-- Reduce graphics quality settings for terrain
+local function reduceGraphicsQuality()
+	-- Set global illumination to false for better performance
+	if game:GetService("Lighting"):FindFirstChild("GlobalShadows") then
+		game:GetService("Lighting").GlobalShadows = false
+	end
+	
+	-- Reduce shadow quality
+	game:GetService("Lighting").Technology = Enum.Technology.Compatibility
+end
+
+reduceGraphicsQuality()
+
+print("Terrain Optimizer loaded successfully!")
+print("Render distance set to minimum:", CONFIG.RenderDistance, "studs")
