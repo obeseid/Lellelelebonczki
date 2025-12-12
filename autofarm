@@ -133,30 +133,28 @@ local Button = Tab:CreateButton({
 
 -- MULTI ISLANDS FARM
 
+local Paragraph = Tab2:CreateParagraph({Title = "Instruction", Content = "Low - start on blizzard
+Mid - start on royal
+High - start on jungle"})
 
-local Toggle = Tab2:CreateToggle({
+
+local Button = Tab2:CreateButton({
    Name = "Low Islands",
-   CurrentValue = false,
-   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
+   Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/lowislands'))()
    end,
 })
 
-local Toggle = Tab2:CreateToggle({
+local Button = Tab2:CreateButton({
    Name = "Mid Islands",
-   CurrentValue = false,
-   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
+   Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/midislands'))()
    end,
 })
 
-local Toggle = Tab2:CreateToggle({
+local Button = Tab2:CreateButton({
    Name = "High Islands",
-   CurrentValue = false,
-   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
+   Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/highislands'))()
    end,
 })
@@ -176,24 +174,19 @@ local Toggle = Tab2:CreateToggle({
 
 -- MISCILENAUS OR SOMETHING
 
-local Toggle = Tab1:CreateToggle({
+local Button = Tab1:CreateButton({
    Name = "Volcanic Minerals",
-   CurrentValue = false,
-   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
+   Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcanic'))()
    end,
 })
 
-local Toggle = Tab1:CreateToggle({
+local Button = Tab1:CreateButton({
    Name = "Training Receipts BROKEN",
-   CurrentValue = false,
-   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
+   Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/training'))()
    end,
 })
-
 
 
 
