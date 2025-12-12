@@ -1,4 +1,4 @@
--- Terrain Memory Optimizer Local Script
+-- tetttt
 -- Place this in StarterPlayer > StarterPlayerScripts
 
 local Players = game:GetService("Players")
@@ -83,7 +83,7 @@ RunService.Heartbeat:Connect(function()
 	
 	-- Force garbage collection every 300 frames (~5 seconds at 60fps)
 	if cleanupCounter >= 300 then
-		collectgarbage("collect")
+		collectgarbage()
 		cleanupCounter = 0
 	end
 end)
