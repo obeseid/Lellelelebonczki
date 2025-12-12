@@ -4,19 +4,19 @@ local Window = Rayfield:CreateWindow({
    Name = "Farma Diega",
    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
    LoadingTitle = "Farma Diega",
-   LoadingSubtitle = "HowDoICatchAHorse is a pooron",
+   LoadingSubtitle = "All farms LOVE IT",
    ShowText = "Rayfield", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
    ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
 
-   DisableRayfieldPrompts = false,
+   DisableRayfieldPrompts = true,
    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
 
    ConfigurationSaving = {
-      Enabled = false,
+      Enabled = true,
       FolderName = Whifarma, -- Create a custom folder for your hub/game
-      FileName = "bonczki"
+      FileName = "WHIFARM"
    },
 
    Discord = {
@@ -41,12 +41,13 @@ local Tab = Window:CreateTab("Autofarma", 4483362458) -- Title, Image
 local Tab2 = Window:CreateTab("Multi Island", 4483362458) -- Title, Image
 local Tab1 = Window:CreateTab("Misc", 4483362458) -- Title, Image
 local Section = Tab:CreateSection("Island Autofarm")
-local Section = Tab1:CreateSection("Inne farmy ok")
+local Section = Tab1:CreateSection("Inne farmy")
 local Section = Tab2:CreateSection("Multipl islands farmy")
 
 -- MAIN FARMS
 
-local Paragraph = Tab:CreateParagraph({Title = "yes ng", Content = "Paragraph Example"})
+local Paragraph = Tab:CreateParagraph({Title = "Last update 12/12/25", Content = "Reset to stop farm
+ENABLE WEBHOOK NOTIFS IN MISC"})
 
 
 local Button = Tab:CreateButton({
@@ -130,52 +131,74 @@ local Button = Tab:CreateButton({
    end,
 })
 
--- OTHER FARMS
-
-local Button = Tab1:CreateButton({
-   Name = "Volcanic minerals",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcanic'))()
-   end,
-})
-
-local Button = Tab1:CreateButton({
-   Name = "Training receipts broken",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/training'))()
-   end,
-})
-
 
 -- MULTI ISLANDS FARM
 
-local Button = Tab2:CreateButton({
-   Name = "Low islands START ON BLIZZARD",
-   Callback = function()
+local Paragraph = Tab:CreateParagraph({Title = "IMPORTANT", Content = "Enable reduce memory useage in misc if you crash during Multi Island farm"})
+
+local Toggle = Tab2:CreateToggle({
+   Name = "Low Islands",
+   CurrentValue = false,
+   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/lowislands'))()
    end,
 })
 
-local Button = Tab2:CreateButton({
-   Name = "Mid islands START ON ROYAL",
-   Callback = function()
+local Toggle = Tab2:CreateToggle({
+   Name = "Mid Islands",
+   CurrentValue = false,
+   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/midislands'))()
    end,
 })
 
-local Button = Tab2:CreateButton({
-   Name = "High islands START ON JUGNLE",
-   Callback = function()
+local Toggle = Tab2:CreateToggle({
+   Name = "High Islands",
+   CurrentValue = false,
+   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/highislands'))()
    end,
 })
 
-local Divider = Tab2:CreateDivider()
 
-local Toggle = Tab:CreateToggle({
-   Name = "Reduce memory usage",
+-- MISCILENAUS OR SOMETHING
+
+local Toggle = Tab1:CreateToggle({
+   Name = "Volcanic Minerals",
    CurrentValue = false,
-   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcanic'))()
+   end,
+})
+
+local Toggle = Tab1:CreateToggle({
+   Name = "Training Receipts BROKEN",
+   CurrentValue = false,
+   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/training'))()
+   end,
+})
+
+local Divider = Tab1:CreateDivider()
+
+local Toggle = Tab1:CreateToggle({
+   Name = "Discord Webhook notifs",
+   CurrentValue = false,
+   Flag = "webhook", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
+   end,
+})
+
+local Toggle = Tab1:CreateToggle({
+   Name = "Reduce memory useage",
+   CurrentValue = false,
+   Flag = "memory", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
    end,
@@ -184,7 +207,3 @@ local Toggle = Tab:CreateToggle({
 
 
 Rayfield:LoadConfiguration()
-
-
-
-loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
