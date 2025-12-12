@@ -14,7 +14,7 @@ local Window = Rayfield:CreateWindow({
    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
 
    ConfigurationSaving = {
-      Enabled = true,
+      Enabled = false,
       FolderName = Whifarma, -- Create a custom folder for your hub/game
       FileName = "WHIFARM"
    },
@@ -46,8 +46,7 @@ local Section = Tab2:CreateSection("Multipl islands farmy")
 
 -- MAIN FARMS
 
-local Paragraph = Tab:CreateParagraph({Title = "Last update 12/12/25", Content = "Reset to stop farm
-ENABLE WEBHOOK NOTIFS IN MISC"})
+local Paragraph = Tab:CreateParagraph({Title = "Last update 12/12/25", Content = "HowDoICatchAHorse is a pooron that pays 25€/week for an auto farm LMAO"})
 
 
 local Button = Tab:CreateButton({
@@ -134,12 +133,11 @@ local Button = Tab:CreateButton({
 
 -- MULTI ISLANDS FARM
 
-local Paragraph = Tab:CreateParagraph({Title = "IMPORTANT", Content = "Enable reduce memory useage in misc if you crash during Multi Island farm"})
 
 local Toggle = Tab2:CreateToggle({
    Name = "Low Islands",
    CurrentValue = false,
-   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/lowislands'))()
    end,
@@ -148,7 +146,7 @@ local Toggle = Tab2:CreateToggle({
 local Toggle = Tab2:CreateToggle({
    Name = "Mid Islands",
    CurrentValue = false,
-   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/midislands'))()
    end,
@@ -157,11 +155,23 @@ local Toggle = Tab2:CreateToggle({
 local Toggle = Tab2:CreateToggle({
    Name = "High Islands",
    CurrentValue = false,
-   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/highislands'))()
    end,
 })
+
+local Divider = Tab2:CreateDivider()
+
+local Toggle = Tab2:CreateToggle({
+   Name = "Reduce memory useage",
+   CurrentValue = false,
+   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
+   end,
+})
+
 
 
 -- MISCILENAUS OR SOMETHING
@@ -169,7 +179,7 @@ local Toggle = Tab2:CreateToggle({
 local Toggle = Tab1:CreateToggle({
    Name = "Volcanic Minerals",
    CurrentValue = false,
-   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcanic'))()
    end,
@@ -178,31 +188,12 @@ local Toggle = Tab1:CreateToggle({
 local Toggle = Tab1:CreateToggle({
    Name = "Training Receipts BROKEN",
    CurrentValue = false,
-   Flag = "", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/training'))()
    end,
 })
 
-local Divider = Tab1:CreateDivider()
-
-local Toggle = Tab1:CreateToggle({
-   Name = "Discord Webhook notifs",
-   CurrentValue = false,
-   Flag = "webhook", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
-   end,
-})
-
-local Toggle = Tab1:CreateToggle({
-   Name = "Reduce memory useage",
-   CurrentValue = false,
-   Flag = "memory", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
-   end,
-})
 
 
 
