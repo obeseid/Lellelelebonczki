@@ -1,0 +1,5 @@
+workspace.Terrain.StreamingEnabled = true
+workspace.Terrain.StreamingMinRadius = 32
+workspace.Terrain.StreamingTargetRadius = 64
+workspace.Terrain.Decoration = false
+workspace.Terrain.Transparency = 1
