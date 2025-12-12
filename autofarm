@@ -133,10 +133,6 @@ local Button = Tab:CreateButton({
 
 -- MULTI ISLANDS FARM
 
-local Paragraph = Tab2:CreateParagraph({Title = "Instruction", Content = "Low - start on blizzard
-Mid - start on royal
-High - start on jungle"})
-
 
 local Button = Tab2:CreateButton({
    Name = "Low Islands",
