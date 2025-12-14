@@ -1,105 +1,146 @@
--- tetttt
--- Place this in StarterPlayer > StarterPlayerScripts
+-- Rendering Toggle Script with GUI Button
+-- Run this via executor or place in StarterPlayerScripts
 
 local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-local camera = Workspace.CurrentCamera
-local terrain = Workspace.Terrain
+local renderingEnabled = true
 
--- Configuration
-local CONFIG = {
-	UpdateInterval = 1, -- How often to update (seconds)
-	RenderDistance = 128, -- Minimum terrain render distance (studs)
-	UnloadDistance = 256, -- Distance to completely unload terrain chunks
-}
-
--- Performance tracking
-local lastUpdateTime = 0
-
--- Optimize terrain decoration settings
-local function optimizeTerrainSettings()
-	-- Reduce terrain decoration density
-	if terrain:FindFirstChild("Decoration") then
-		terrain.Decoration = false
+-- Create GUI
+local function createToggleButton()
+	local screenGui = Instance.new("ScreenGui")
+	screenGui.Name = "RenderingToggle"
+	screenGui.ResetOnSpawn = false
+	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	
+	-- Make sure it stays on top
+	pcall(function()
+		screenGui.Parent = game:GetService("CoreGui")
+	end)
+	
+	-- Fallback to PlayerGui if CoreGui fails
+	if not screenGui.Parent then
+		screenGui.Parent = player:WaitForChild("PlayerGui")
 	end
 	
-	-- Set water properties for better performance
-	terrain.WaterWaveSize = 0.05
-	terrain.WaterWaveSpeed = 10
-	terrain.WaterReflectance = 0.1
-	terrain.WaterTransparency = 0.5
+	-- Main button frame
+	local button = Instance.new("TextButton")
+	button.Name = "RenderToggleButton"
+	button.Size = UDim2.new(0, 180, 0, 50)
+	button.Position = UDim2.new(1, -190, 0, 10)
+	button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	button.BorderSizePixel = 2
+	button.BorderColor3 = Color3.fromRGB(0, 255, 0)
+	button.Font = Enum.Font.GothamBold
+	button.TextSize = 16
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.Text = "🎥 Rendering: ON"
+	button.AutoButtonColor = false
+	button.Parent = screenGui
+	
+	-- Add rounded corners
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 8)
+	corner.Parent = button
+	
+	-- Add shadow effect
+	local shadow = Instance.new("Frame")
+	shadow.Name = "Shadow"
+	shadow.Size = UDim2.new(1, 4, 1, 4)
+	shadow.Position = UDim2.new(0, -2, 0, 2)
+	shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	shadow.BackgroundTransparency = 0.7
+	shadow.ZIndex = button.ZIndex - 1
+	shadow.BorderSizePixel = 0
+	shadow.Parent = button
+	
+	local shadowCorner = Instance.new("UICorner")
+	shadowCorner.CornerRadius = UDim.new(0, 8)
+	shadowCorner.Parent = shadow
+	
+	-- Status indicator
+	local indicator = Instance.new("Frame")
+	indicator.Name = "Indicator"
+	indicator.Size = UDim2.new(0, 10, 0, 10)
+	indicator.Position = UDim2.new(0, 10, 0.5, -5)
+	indicator.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+	indicator.BorderSizePixel = 0
+	indicator.Parent = button
+	
+	local indicatorCorner = Instance.new("UICorner")
+	indicatorCorner.CornerRadius = UDim.new(1, 0)
+	indicatorCorner.Parent = indicator
+	
+	return screenGui, button, indicator
 end
 
--- Clear terrain region outside render distance
-local function optimizeTerrainRegion()
-	local char = player.Character
-	if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+-- Toggle rendering function
+local function toggleRendering()
+	renderingEnabled = not renderingEnabled
 	
-	local pos = char.HumanoidRootPart.Position
+	pcall(function()
+		RunService:Set3dRenderingEnabled(renderingEnabled)
+	end)
 	
-	-- Calculate region to keep loaded
-	local regionSize = Vector3.new(CONFIG.RenderDistance * 2, 512, CONFIG.RenderDistance * 2)
-	local region = Region3.new(pos - regionSize/2, pos + regionSize/2)
-	region = region:ExpandToGrid(4)
-	
-	-- Note: We can't directly unload terrain, but we can hide distant water
-	-- and optimize rendering by adjusting camera settings
+	return renderingEnabled
 end
 
--- Optimize camera max zoom for terrain rendering
-local function optimizeCameraSettings()
-	-- Set camera max zoom to match render distance
-	player.CameraMaxZoomDistance = CONFIG.RenderDistance
-	
-	-- Reduce camera far plane for better culling
-	camera.FieldOfView = 70 -- Standard FOV
+-- Update button appearance
+local function updateButton(button, indicator, enabled)
+	if enabled then
+		button.Text = "🎥 Rendering: ON"
+		button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		button.BorderColor3 = Color3.fromRGB(0, 255, 0)
+		indicator.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+	else
+		button.Text = "🎥 Rendering: OFF"
+		button.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
+		button.BorderColor3 = Color3.fromRGB(255, 0, 0)
+		indicator.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+	end
 end
 
--- Main optimization loop
-local function optimizeLoop()
-	local now = tick()
-	if now - lastUpdateTime < CONFIG.UpdateInterval then return end
-	lastUpdateTime = now
+-- Add hover effect
+local function addHoverEffect(button)
+	button.MouseEnter:Connect(function()
+		button.BackgroundTransparency = 0.2
+	end)
 	
-	optimizeTerrainRegion()
-	optimizeCameraSettings()
+	button.MouseLeave:Connect(function()
+		button.BackgroundTransparency = 0
+	end)
 end
 
--- Initialize optimizations
-optimizeTerrainSettings()
+-- Initialize
+local screenGui, button, indicator = createToggleButton()
+addHoverEffect(button)
 
--- Connect to heartbeat for periodic optimization
-RunService.Heartbeat:Connect(function()
-	optimizeLoop()
+-- Button click event
+button.MouseButton1Click:Connect(function()
+	local enabled = toggleRendering()
+	updateButton(button, indicator, enabled)
+	
+	-- Play click sound
+	local sound = Instance.new("Sound")
+	sound.SoundId = "rbxasset://sounds/button.wav"
+	sound.Volume = 0.5
+	sound.Parent = screenGui
+	sound:Play()
+	game:GetService("Debris"):AddItem(sound, 1)
+	
+	-- Visual feedback
+	local originalSize = button.Size
+	button.Size = UDim2.new(0, 175, 0, 48)
+	wait(0.1)
+	button.Size = originalSize
 end)
 
--- Memory cleanup - runs occasionally
-local cleanupCounter = 0
-RunService.Heartbeat:Connect(function()
-	cleanupCounter = cleanupCounter + 1
-	
-	-- Force garbage collection every 300 frames (~5 seconds at 60fps)
-	if cleanupCounter >= 300 then
-		collectgarbage()
-		cleanupCounter = 0
-	end
-end)
+-- Disable rendering on start
+wait(0.5) -- Small delay to ensure everything loads
+renderingEnabled = toggleRendering()
+updateButton(button, indicator, renderingEnabled)
 
--- Reduce graphics quality settings for terrain
-local function reduceGraphicsQuality()
-	-- Set global illumination to false for better performance
-	if game:GetService("Lighting"):FindFirstChild("GlobalShadows") then
-		game:GetService("Lighting").GlobalShadows = false
-	end
-	
-	-- Reduce shadow quality
-	game:GetService("Lighting").Technology = Enum.Technology.Compatibility
-end
-
-reduceGraphicsQuality()
-
-print("Terrain Optimizer loaded successfully!")
-print("Render distance set to minimum:", CONFIG.RenderDistance, "studs")
+print("Rendering Toggle loaded!")
+print("Rendering is now DISABLED - Click the button in the top-right to enable it")
+print("Memory saved by disabling 3D rendering!")
