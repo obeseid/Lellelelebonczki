@@ -46,8 +46,16 @@ local Section = Tab2:CreateSection("Multipl islands farmy")
 
 -- MAIN FARMS
 
-local Paragraph = Tab:CreateParagraph({Title = "Last update 12/12/25", Content = "HowDoICatchAHorse is a pooron that pays 25€/week for an auto farm LMAO"})
+local Paragraph = Tab:CreateParagraph({Title = "Last update 15/12/25", Content = "HowDoICatchAHorse is a pooron that pays 25€/week for an auto farm LMAO"})
 
+local Button = Tab:CreateButton({
+   Name = "Enable auto clicker",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/autoclick'))()
+   end,
+})
+
+local Divider = Tab:CreateDivider()
 
 local Button = Tab:CreateButton({
    Name = "Mainland",
