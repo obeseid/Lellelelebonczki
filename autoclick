@@ -1,4 +1,4 @@
--- Auto Clicker Script with GUI gggggg
+-- Auto Clicker Script with GUI Toggle
 -- Clicks at top-right corner with 30px offset to the left
 
 local VIM = game:GetService("VirtualInputManager")
@@ -14,11 +14,11 @@ local function getScreenSize()
     return Camera.ViewportSize
 end
 
--- Calculate click position (top-right with 30px left offset)
+-- Calculate click position (top-right with 300px left offset)
 local function getClickPosition()
     local screenSize = getScreenSize()
-    local x = screenSize.X - 30  -- 30 pixels from right edge
-    local y = 30                  -- 30 pixels from top
+    local x = screenSize.X - 300  -- 300 pixels from right edge
+    local y = 30                   -- 30 pixels from top
     return x, y
 end
 
@@ -98,7 +98,7 @@ toggleButton.Size = UDim2.new(0, 160, 0, 35)
 toggleButton.Position = UDim2.new(0.5, -80, 1, -45)
 toggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 toggleButton.BorderSizePixel = 0
-toggleButton.Text = "Start Clicking"
+toggleButton.Text = "Start auto clickr"
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.TextSize = 14
 toggleButton.Font = Enum.Font.GothamBold
@@ -170,4 +170,4 @@ screenGui.Destroying:Connect(function()
 end)
 
 print("Auto Clicker loaded! Click the button to start/stop clicking.")
-print("Clicking at top-right corner (30px from right, 30px from top)")
+print("Clicking at top-right corner (300px from right, 30px from top)")
