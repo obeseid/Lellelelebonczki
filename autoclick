@@ -1,4 +1,4 @@
--- Auto Clicker Script with GUI Toggle
+-- Auto Clicker Script with GUI gggggg
 -- Clicks at top-right corner with 30px offset to the left
 
 local VIM = game:GetService("VirtualInputManager")
@@ -74,7 +74,7 @@ local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "Auto Clicker"
+title.Text = "click szczoszek"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextSize = 16
 title.Font = Enum.Font.GothamBold
@@ -133,14 +133,16 @@ toggleButton.MouseButton1Click:Connect(function()
 end)
 
 -- Make GUI draggable
+local UserInputService = game:GetService("UserInputService")
 local dragging = false
-local dragInput, mousePos, framePos
+local dragStart = nil
+local startPos = nil
 
-frame.InputBegan:Connect(function(input)
+title.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
-        mousePos = input.Position
-        framePos = frame.Position
+        dragStart = input.Position
+        startPos = frame.Position
         
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
@@ -150,20 +152,14 @@ frame.InputBegan:Connect(function(input)
     end
 end)
 
-frame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - mousePos
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
         frame.Position = UDim2.new(
-            framePos.X.Scale,
-            framePos.X.Offset + delta.X,
-            framePos.Y.Scale,
-            framePos.Y.Offset + delta.Y
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
         )
     end
 end)
