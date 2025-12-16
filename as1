@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Create GUI
+-- test test
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ClickerStatusGui"
 ScreenGui.ResetOnSpawn = false
@@ -68,8 +68,8 @@ for _, child in pairs(List:GetChildren()) do
 				for _, button in ipairs(textButtons) do
 					print("Clicking button: " .. button.Name)
 					
-					-- Simply fire the click event
-					button.MouseButton1Click:Fire()
+					-- Use firesignal to trigger the click
+					firesignal(button.MouseButton1Click)
 					totalButtonsClicked = totalButtonsClicked + 1
 					
 					wait(0.5)
