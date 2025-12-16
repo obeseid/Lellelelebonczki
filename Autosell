@@ -39,34 +39,33 @@ local List = Content:WaitForChild("List")
 
 print("Found List, searching for CategoryContainers...")
 
--- Go through every frame in List
-for _, frame in pairs(List:GetChildren()) do
-	if frame:IsA("Frame") then
-		local categoryContainer = frame:FindFirstChild("CategoryContainer")
-		if categoryContainer then
-			local categoryList = categoryContainer:FindFirstChild("List")
-			if categoryList then
-				local textButtons = {}
-				for _, child in pairs(categoryList:GetChildren()) do
-					if child:IsA("TextButton") then
-						table.insert(textButtons, child)
-					end
+-- Go through every child in List looking for CategoryContainers
+for _, child in pairs(List:GetChildren()) do
+	if child.Name == "CategoryContainer" then
+		local categoryList = child:FindFirstChild("List")
+		if categoryList then
+			-- Look for TextButtons in this List
+			local textButtons = {}
+			for _, button in pairs(categoryList:GetChildren()) do
+				if button:IsA("TextButton") then
+					table.insert(textButtons, button)
+				end
+			end
+			
+			-- If we found at least 1 TextButton, start clicking
+			if #textButtons > 0 then
+				print("Found " .. #textButtons .. " TextButtons in CategoryContainer")
+				
+				for _, button in ipairs(textButtons) do
+					print("Clicking button: " .. button.Name)
+					
+					-- Simply fire the click event
+					button.MouseButton1Click:Fire()
+					
+					wait(0.5)
 				end
 				
-				if #textButtons > 0 then
-					print("Found " .. #textButtons .. " TextButtons in " .. frame.Name)
-					
-					for _, button in ipairs(textButtons) do
-						print("Clicking button: " .. button.Name)
-						
-						-- Simply fire the click event
-						button.MouseButton1Click:Fire()
-						
-						wait(0.5)
-					end
-					
-					break
-				end
+				break
 			end
 		end
 	end
