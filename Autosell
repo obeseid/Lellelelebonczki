@@ -39,14 +39,23 @@ local List = Content:WaitForChild("List")
 
 print("Found List, searching for CategoryContainers...")
 
+local totalButtonsClicked = 0
+
 -- Go through every child in List looking for CategoryContainers
 for _, child in pairs(List:GetChildren()) do
+	print("Checking child: " .. child.Name .. " (ClassName: " .. child.ClassName .. ")")
+	
 	if child.Name == "CategoryContainer" then
+		print("Found CategoryContainer!")
 		local categoryList = child:FindFirstChild("List")
+		
 		if categoryList then
+			print("Found List inside CategoryContainer!")
+			
 			-- Look for TextButtons in this List
 			local textButtons = {}
 			for _, button in pairs(categoryList:GetChildren()) do
+				print("  Checking: " .. button.Name .. " (ClassName: " .. button.ClassName .. ")")
 				if button:IsA("TextButton") then
 					table.insert(textButtons, button)
 				end
@@ -54,27 +63,33 @@ for _, child in pairs(List:GetChildren()) do
 			
 			-- If we found at least 1 TextButton, start clicking
 			if #textButtons > 0 then
-				print("Found " .. #textButtons .. " TextButtons in CategoryContainer")
+				print("Found " .. #textButtons .. " TextButtons in this CategoryContainer")
 				
 				for _, button in ipairs(textButtons) do
 					print("Clicking button: " .. button.Name)
 					
-					-- Simply fire the click event
-					button.MouseButton1Click:Fire()
+					-- Use getconnections to fire all connections on MouseButton1Click
+					for _, connection in pairs(getconnections(button.MouseButton1Click)) do
+						connection:Fire()
+					end
+					
+					totalButtonsClicked = totalButtonsClicked + 1
 					
 					wait(0.5)
 				end
-				
-				break
+			else
+				print("No TextButtons found in this CategoryContainer")
 			end
+		else
+			print("No List found inside CategoryContainer")
 		end
 	end
 end
 
-print("Script finished!")
+print("Script finished! Total buttons clicked: " .. totalButtonsClicked)
 
 -- Update GUI to show "Done"
-StatusLabel.Text = "Done!"
+StatusLabel.Text = "Done! (" .. totalButtonsClicked .. " clicks)"
 StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
 
 -- Wait 2 seconds then remove the GUI
