@@ -39,7 +39,7 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
 local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
-local Section = Tab:CreateSection("Mystery Scripts")
+local Section = Misc:CreateSection("Mystery Scripts")
 
 
 local Paragraph = Tab:CreateParagraph({Title = "Last update 18/12/25", Content = "One island farm detects which island the player is on"})
