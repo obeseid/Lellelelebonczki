@@ -37,158 +37,83 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local Tab = Window:CreateTab("Autofarma", 4483362458) -- Title, Image
-local Tab2 = Window:CreateTab("Multi Island", 4483362458) -- Title, Image
-local Tab1 = Window:CreateTab("Misc", 4483362458) -- Title, Image
-local Section = Tab:CreateSection("Island Autofarm")
-local Section = Tab1:CreateSection("Inne farmy")
-local Section = Tab2:CreateSection("Multipl islands farmy")
+local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
+local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
+local Section = Tab:CreateSection("Mystery Scripts")
 
--- MAIN FARMS
 
-local Paragraph = Tab:CreateParagraph({Title = "Last update 15/12/25", Content = "HowDoICatchAHorse is a pooron that pays 25€/week for an auto farm LMAO"})
+local Paragraph = Tab:CreateParagraph({Title = "Last update 18/12/25", Content = "One island farm detects which island the player is on"})
+
+local Section = Tab:CreateSection("One Island Farm")
 
 local Button = Tab:CreateButton({
-   Name = "Enable auto clicker",
+   Name = "One island farm",
    Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/autoclick'))()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/oneisland'))()
    end,
 })
 
 local Divider = Tab:CreateDivider()
 
-local Button = Tab:CreateButton({
-   Name = "Mainland",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/mainland'))()
-   end,
-})
+local Section = Tab:CreateSection("Multiple Island Farms")
 
 local Button = Tab:CreateButton({
-   Name = "Blizzard Island",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/blizzard'))()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Forest Island",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/forest'))()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "The Magical Forest",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/magical'))()
-   end,
-})
-
-local Divider = Tab:CreateDivider()
-
-local Button = Tab:CreateButton({
-   Name = "Royal Island",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/royal'))()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Desert Island",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/desert'))()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Glacier Island",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/glacier'))()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Mountain Island",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/mountain'))()
-   end,
-})
-
-local Divider = Tab:CreateDivider()
-
-local Button = Tab:CreateButton({
-   Name = "Jungle Island",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/jungle'))()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Lunar Islands",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/lunar'))()
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Volcano Island",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcano'))()
-   end,
-})
-
-
--- MULTI ISLANDS FARM
-
-
-local Button = Tab2:CreateButton({
    Name = "Low Islands",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/lowislands'))()
    end,
 })
 
-local Button = Tab2:CreateButton({
+local Button = Tab:CreateButton({
    Name = "Mid Islands",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/midislands'))()
    end,
 })
 
-local Button = Tab2:CreateButton({
+local Button = Tab:CreateButton({
    Name = "High Islands",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/highislands'))()
    end,
 })
 
-local Divider = Tab2:CreateDivider()
+local Divider = Tab:CreateDivider()
 
-local Button = Tab2:CreateButton({
-   Name = "Reduce memory useage",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
-   end,
-})
+local Section = Tab:CreateSection("Different Auto farms")
 
-
-
--- MISCILENAUS OR SOMETHING
-
-local Button = Tab1:CreateButton({
+local Button = Tab:CreateButton({
    Name = "Volcanic Minerals",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcanic'))()
    end,
 })
 
-local Button = Tab1:CreateButton({
+local Button = Tab:CreateButton({
    Name = "Training Receipts BROKEN",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/training'))()
    end,
 })
+
+
+local Button = Misc:CreateButton({
+   Name = "Reduce memory usage",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
+   end,
+})
+
+local Divider = Misc:CreateDivider()
+
+local Button = Misc:CreateButton({
+   Name = "Who is this??",
+   Callback = function()
+   -- add thearchy moveable gui tysm
+   end,
+})
+
+
 
 
 
