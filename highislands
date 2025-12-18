@@ -1,16 +1,100 @@
--- ✅ Follow Logic with Island Switching (Fixed)
+-- Services
+local players = game:GetService("Players")
+local lp = players.LocalPlayer
+local playerGui = lp:WaitForChild("PlayerGui")
+local VIM = game:GetService("VirtualInputManager")
+local Camera = workspace.CurrentCamera
+
+-- State
 local currentTask
 local shouldStop = false
+local isPaused = false
 local currentIslandIndex = 1
+local clickLoop = nil
 local islands = {
 	"Jungle Island",
 	"Lunar Islands",
 	"Volcano Island"
 }
 
+-- Virtual Input Manager Functions
+local function getScreenSize()
+	return Camera.ViewportSize
+end
+
+local function getClickPosition()
+	local screenSize = getScreenSize()
+	local x = screenSize.X - 300  -- 300 pixels from right edge
+	local y = 30                   -- 30 pixels from top
+	return x, y
+end
+
+local function clickAt(x, y)
+	VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)  -- Mouse down
+	task.wait(0.05)
+	VIM:SendMouseButtonEvent(x, y, 0, false, game, 0) -- Mouse up
+end
+
+local function startAutoClicker()
+	if clickLoop then
+		task.cancel(clickLoop)
+	end
+	
+	clickLoop = task.spawn(function()
+		while true do
+			if not isPaused then
+				local x, y = getClickPosition()
+				clickAt(x, y)
+			end
+			task.wait(0.5)
+		end
+	end)
+end
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "HorseCatcherGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 220, 0, 80)
+frame.Position = UDim2.new(0, 10, 0, 10)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = frame
+
+local islandLabel = Instance.new("TextLabel")
+islandLabel.Size = UDim2.new(1, -20, 0, 30)
+islandLabel.Position = UDim2.new(0, 10, 0, 10)
+islandLabel.BackgroundTransparency = 1
+islandLabel.Text = "High Islands"
+islandLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+islandLabel.TextSize = 14
+islandLabel.Font = Enum.Font.GothamBold
+islandLabel.TextXAlignment = Enum.TextXAlignment.Left
+islandLabel.Parent = frame
+
+local pauseButton = Instance.new("TextButton")
+pauseButton.Size = UDim2.new(1, -20, 0, 30)
+pauseButton.Position = UDim2.new(0, 10, 0, 45)
+pauseButton.BackgroundColor3 = Color3.fromRGB(60, 180, 75)
+pauseButton.Text = "Pause"
+pauseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+pauseButton.TextSize = 14
+pauseButton.Font = Enum.Font.GothamBold
+pauseButton.Parent = frame
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 6)
+buttonCorner.Parent = pauseButton
+
+-- Island Travel Function
 local function movePlayerToIsland(islandName)
-	local players = game:GetService("Players")
-	local lp = players.LocalPlayer
 	local char = lp.Character or lp.CharacterAdded:Wait()
 	
 	local islandFolder = workspace.Islands:FindFirstChild(islandName)
@@ -49,14 +133,12 @@ local function movePlayerToIsland(islandName)
 	end
 end
 
+-- Follow Logic
 local function followLoopFrom(folder)
 	-- Signal the old task to stop
 	shouldStop = true
 	task.wait(0.3) -- Give it time to stop
 	shouldStop = false
-	
-	local players = game:GetService("Players")
-	local lp = players.LocalPlayer
 	
 	local function getValidTargets()
 		local targets = {}
@@ -74,6 +156,11 @@ local function followLoopFrom(folder)
 		local noTargetChecks = 0
 		
 		while not shouldStop do
+			if isPaused then
+				task.wait(0.5)
+				continue
+			end
+			
 			-- Refresh character and hrp references each loop
 			local char = lp.Character
 			if not char then
@@ -158,7 +245,20 @@ local function followLoopFrom(folder)
 	end)
 end
 
--- ✅ Auto-start scanning Jungle Island
-followLoopFrom(workspace.Islands["Jungle Island"])
+-- Pause/Resume button
+pauseButton.MouseButton1Click:Connect(function()
+	isPaused = not isPaused
+	if isPaused then
+		pauseButton.Text = "Resume"
+		pauseButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+	else
+		pauseButton.Text = "Pause"
+		pauseButton.BackgroundColor3 = Color3.fromRGB(60, 180, 75)
+	end
+end)
 
-workspace.Islands["Volcano Island"].LavaParts:Destroy()
+-- Start auto-clicker
+startAutoClicker()
+
+-- Auto-start scanning Royal Island
+followLoopFrom(workspace.Islands["Jungle Island"])
