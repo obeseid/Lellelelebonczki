@@ -106,7 +106,7 @@ local Button = Misc:CreateButton({
 })
 
 local Button = Misc:CreateButton({
-   Name = "Auto quick sale",
+   Name = "Auto quick sale (open horse menu before running)",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/quicksale'))()
    end,
