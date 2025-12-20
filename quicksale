@@ -1,0 +1,88 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local itemInfoFrame = playerGui:WaitForChild("SubMenus"):WaitForChild("Item Information")
+local indicatorLabel = itemInfoFrame.Animals.Main.Content.Top.Labels.IndicatorLabel
+local closeButton = itemInfoFrame.Animals.Main.CloseMenu
+local buttonsContainer = itemInfoFrame.Animals.Main.Content.Buttons
+
+local TARGET_IMAGE_ID = "rbxassetid://13116451197"
+
+-- Function to click a button using the executor logic
+local function clickButton(button)
+	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
+		return
+	end
+	
+	-- Fire MouseButton1Down
+	for _, connection in pairs(getconnections(button.MouseButton1Down)) do
+		connection:Fire()
+	end
+	task.wait(0.05)
+	
+	-- Fire MouseButton1Up
+	for _, connection in pairs(getconnections(button.MouseButton1Up)) do
+		connection:Fire()
+	end
+	task.wait(0.05)
+	
+	-- Fire Activated
+	for _, connection in pairs(getconnections(button.Activated)) do
+		connection:Fire()
+	end
+end
+
+-- Function to handle when Item Information frame opens
+local function onItemInfoOpened()
+	-- Check if the frame is actually visible
+	if not itemInfoFrame.Visible then
+		return
+	end
+	
+	-- Wait a brief moment for content to load
+	task.wait(0.1)
+	
+	-- Check if IndicatorLabel contains "Unbreedable"
+	local labelText = indicatorLabel.Text
+	
+	if string.find(labelText, "Unbreedable") then
+		-- Contains "Unbreedable" - just close the menu
+		print("Item is Unbreedable, closing menu")
+		clickButton(closeButton)
+	else
+		-- Does NOT contain "Unbreedable" - proceed with breeding logic
+		print("Item is breedable, looking for breed button")
+		
+		-- Look through all OptionButtons in the Buttons container
+		for _, child in ipairs(buttonsContainer:GetChildren()) do
+			if child.Name == "OptionButton" then
+				-- Check if it has an ImageLabel child
+				local imageLabel = child:FindFirstChildWhichIsA("ImageLabel")
+				if imageLabel and imageLabel.Image == TARGET_IMAGE_ID then
+					print("Found breeding button, clicking it")
+					clickButton(child)
+					
+					-- Wait 1 second
+					task.wait(1)
+					
+					-- Click the Yes button in the confirmation prompt
+					local yesButton = playerGui:WaitForChild("Prompts"):WaitForChild("YesNo").Content.Frame.Yes
+					print("Clicking Yes button")
+					clickButton(yesButton)
+					
+					break
+				end
+			end
+		end
+	end
+end
+
+-- Monitor when the Item Information frame becomes visible
+itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+	if itemInfoFrame.Visible then
+		onItemInfoOpened()
+	end
+end)
+
+print("Roblox breeding automation script loaded")
