@@ -96,17 +96,28 @@ local Button = Tab:CreateButton({
    end,
 })
 
-local Button = Misc:CreateButton({
-   Name = "Reduce memory usage",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
-   end,
-})
+-- misc buttons alright
 
 local Button = Misc:CreateButton({
    Name = "Auto sell (must be at Larry)",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/Autosell'))()
+   end,
+})
+
+local Button = Misc:CreateButton({
+   Name = "Auto quick sale",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/quicksale'))()
+   end,
+})
+
+local Divider = Misc:CreateDivider()
+
+local Button = Misc:CreateButton({
+   Name = "Reduce memory usage",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
    end,
 })
 
