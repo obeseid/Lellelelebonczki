@@ -1,3 +1,5 @@
+-- okok
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -40,8 +42,8 @@ local function onItemInfoOpened()
 		return
 	end
 	
-	-- Wait a brief moment for content to load
-	task.wait(0.1)
+	-- Wait 0.5 seconds before doing anything to avoid bugs
+	task.wait(0.5)
 	
 	-- Check if IndicatorLabel contains "Unbreedable"
 	local labelText = indicatorLabel.Text
