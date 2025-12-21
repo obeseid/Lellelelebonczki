@@ -1,5 +1,4 @@
--- Rendering Toggle + Aggressive Memory Cleanup Script
--- Place in StarterPlayerScripts or run via executor
+-- eeeeeeeeeeeeeeeeeeeeeeee
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -145,7 +144,7 @@ local function aggressiveCleanup()
 	
 	-- Multiple passes of garbage collection
 	for i = 1, 5 do
-		collectgarbage("collect")
+		collectgarbage("count")
 		task.wait(0.1)
 	end
 	
@@ -175,7 +174,7 @@ local function aggressiveCleanup()
 	
 	-- Final garbage collection passes
 	for i = 1, 3 do
-		collectgarbage("collect")
+		collectgarbage("count")
 		task.wait(0.1)
 	end
 	
@@ -321,7 +320,7 @@ end)
 -- Cleanup when player is leaving
 Players.PlayerRemoving:Connect(function(leavingPlayer)
 	if leavingPlayer == player then
-		collectgarbage("collect")
+		collectgarbage("count")
 	end
 end)
 
