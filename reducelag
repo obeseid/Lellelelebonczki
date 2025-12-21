@@ -1,11 +1,18 @@
--- Rendering Toggle Script with GUI Button
--- Run this via executor or place in StarterPlayerScripts
+-- Rendering Toggle + Aggressive Memory Cleanup Script
+-- Place in StarterPlayerScripts or run via executor
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local ContentProvider = game:GetService("ContentProvider")
 
 local player = Players.LocalPlayer
+local terrain = workspace.Terrain
 local renderingEnabled = true
+
+-- Memory Cleanup Configuration
+local CLEANUP_INTERVAL = 60 -- seconds (every minute)
+local ENABLE_LOGGING = true
+local AGGRESSIVE_MODE = true
 
 -- Create GUI
 local function createToggleButton()
@@ -14,12 +21,10 @@ local function createToggleButton()
 	screenGui.ResetOnSpawn = false
 	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	
-	-- Make sure it stays on top
 	pcall(function()
 		screenGui.Parent = game:GetService("CoreGui")
 	end)
 	
-	-- Fallback to PlayerGui if CoreGui fails
 	if not screenGui.Parent then
 		screenGui.Parent = player:WaitForChild("PlayerGui")
 	end
@@ -39,12 +44,10 @@ local function createToggleButton()
 	button.AutoButtonColor = false
 	button.Parent = screenGui
 	
-	-- Add rounded corners
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 8)
 	corner.Parent = button
 	
-	-- Add shadow effect
 	local shadow = Instance.new("Frame")
 	shadow.Name = "Shadow"
 	shadow.Size = UDim2.new(1, 4, 1, 4)
@@ -59,7 +62,6 @@ local function createToggleButton()
 	shadowCorner.CornerRadius = UDim.new(0, 8)
 	shadowCorner.Parent = shadow
 	
-	-- Status indicator
 	local indicator = Instance.new("Frame")
 	indicator.Name = "Indicator"
 	indicator.Size = UDim2.new(0, 10, 0, 10)
@@ -72,7 +74,25 @@ local function createToggleButton()
 	indicatorCorner.CornerRadius = UDim.new(1, 0)
 	indicatorCorner.Parent = indicator
 	
-	return screenGui, button, indicator
+	-- Memory display label
+	local memoryLabel = Instance.new("TextLabel")
+	memoryLabel.Name = "MemoryLabel"
+	memoryLabel.Size = UDim2.new(0, 180, 0, 25)
+	memoryLabel.Position = UDim2.new(1, -190, 0, 70)
+	memoryLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	memoryLabel.BorderSizePixel = 2
+	memoryLabel.BorderColor3 = Color3.fromRGB(100, 100, 100)
+	memoryLabel.Font = Enum.Font.Gotham
+	memoryLabel.TextSize = 12
+	memoryLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	memoryLabel.Text = "Memory: -- MB"
+	memoryLabel.Parent = screenGui
+	
+	local memCorner = Instance.new("UICorner")
+	memCorner.CornerRadius = UDim.new(0, 6)
+	memCorner.Parent = memoryLabel
+	
+	return screenGui, button, indicator, memoryLabel
 end
 
 -- Toggle rendering function
@@ -112,8 +132,110 @@ local function addHoverEffect(button)
 	end)
 end
 
--- Initialize
-local screenGui, button, indicator = createToggleButton()
+-- MEMORY CLEANUP FUNCTIONS
+
+-- Aggressive memory cleanup function
+local function aggressiveCleanup()
+	local startTime = tick()
+	local startMemory = gcinfo()
+	
+	if ENABLE_LOGGING then
+		print("[Memory Cleanup] Starting aggressive cleanup...")
+	end
+	
+	-- Multiple passes of garbage collection
+	for i = 1, 5 do
+		collectgarbage("collect")
+		task.wait(0.1)
+	end
+	
+	-- Force clear all cached content (terrain data, textures, meshes)
+	pcall(function()
+		ContentProvider:ClearContent()
+	end)
+	
+	task.wait(0.2)
+	
+	-- Additional terrain-specific cleanup
+	if AGGRESSIVE_MODE then
+		pcall(function()
+			local pos = terrain.MaxExtents.Max
+			terrain:ReadVoxels(Region3.new(pos, pos + Vector3.new(1,1,1)), 4)
+		end)
+		
+		-- Clear any disconnected instances
+		pcall(function()
+			for _, obj in pairs(game:GetDescendants()) do
+				if not obj.Parent and (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") or obj:IsA("Part")) then
+					pcall(function() obj:Destroy() end)
+				end
+			end
+		end)
+	end
+	
+	-- Final garbage collection passes
+	for i = 1, 3 do
+		collectgarbage("collect")
+		task.wait(0.1)
+	end
+	
+	local endMemory = gcinfo()
+	local memoryFreed = startMemory - endMemory
+	local timeTaken = tick() - startTime
+	
+	if ENABLE_LOGGING then
+		print(string.format(
+			"[Memory Cleanup] ✓ Freed %.2f MB in %.2f seconds",
+			memoryFreed / 1024,
+			timeTaken
+		))
+		print(string.format(
+			"[Memory Cleanup] Current memory: %.2f MB",
+			endMemory / 1024
+		))
+	end
+	
+	return endMemory / 1024
+end
+
+-- Monitor and track memory trends
+local memoryHistory = {}
+local function monitorMemory()
+	local currentMemory = gcinfo() / 1024
+	table.insert(memoryHistory, currentMemory)
+	
+	if #memoryHistory > 10 then
+		table.remove(memoryHistory, 1)
+	end
+	
+	if #memoryHistory >= 3 then
+		local recent = memoryHistory[#memoryHistory]
+		local older = memoryHistory[#memoryHistory - 2]
+		local growth = recent - older
+		
+		if growth > 50 then
+			warn(string.format(
+				"[Memory Monitor] ⚠ Memory growing rapidly! +%.2f MB in last 2 minutes",
+				growth
+			))
+		end
+	end
+	
+	if ENABLE_LOGGING then
+		print(string.format("[Memory Monitor] Current: %.2f MB", currentMemory))
+	end
+	
+	-- Emergency cleanup at high memory
+	if currentMemory > 1300 then
+		warn("[Memory Monitor] 🚨 HIGH MEMORY! Running emergency cleanup...")
+		aggressiveCleanup()
+	end
+	
+	return currentMemory
+end
+
+-- Initialize GUI
+local screenGui, button, indicator, memoryLabel = createToggleButton()
 addHoverEffect(button)
 
 -- Button click event
@@ -121,7 +243,6 @@ button.MouseButton1Click:Connect(function()
 	local enabled = toggleRendering()
 	updateButton(button, indicator, enabled)
 	
-	-- Play click sound
 	local sound = Instance.new("Sound")
 	sound.SoundId = "rbxasset://sounds/button.wav"
 	sound.Volume = 0.5
@@ -129,18 +250,82 @@ button.MouseButton1Click:Connect(function()
 	sound:Play()
 	game:GetService("Debris"):AddItem(sound, 1)
 	
-	-- Visual feedback
 	local originalSize = button.Size
 	button.Size = UDim2.new(0, 175, 0, 48)
 	wait(0.1)
 	button.Size = originalSize
 end)
 
--- Disable rendering on start
-wait(0.5) -- Small delay to ensure everything loads
+-- Update memory display continuously
+task.spawn(function()
+	while task.wait(2) do
+		local currentMem = gcinfo() / 1024
+		memoryLabel.Text = string.format("Memory: %.0f MB", currentMem)
+		
+		-- Color code memory label
+		if currentMem < 1000 then
+			memoryLabel.BorderColor3 = Color3.fromRGB(0, 255, 0)
+		elseif currentMem < 1300 then
+			memoryLabel.BorderColor3 = Color3.fromRGB(255, 165, 0)
+		else
+			memoryLabel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+		end
+	end
+end)
+
+-- Initial cleanup and disable rendering
+task.wait(5)
+print("[Memory Manager] Initializing...")
+aggressiveCleanup()
+
+wait(0.5)
 renderingEnabled = toggleRendering()
 updateButton(button, indicator, renderingEnabled)
 
-print("Rendering Toggle loaded!")
-print("Rendering is now DISABLED - Click the button in the top-right to enable it")
-print("Memory saved by disabling 3D rendering!")
+-- Run cleanup every minute
+local cleanupCount = 0
+task.spawn(function()
+	while task.wait(CLEANUP_INTERVAL) do
+		cleanupCount = cleanupCount + 1
+		print(string.format("[Memory Manager] === Cleanup #%d ===", cleanupCount))
+		aggressiveCleanup()
+		task.wait(1)
+		monitorMemory()
+	end
+end)
+
+-- Teleport detection and cleanup
+local lastPosition = nil
+local TELEPORT_THRESHOLD = 500
+
+task.spawn(function()
+	while task.wait(2) do
+		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			local currentPos = player.Character.HumanoidRootPart.Position
+			
+			if lastPosition then
+				local distance = (currentPos - lastPosition).Magnitude
+				
+				if distance > TELEPORT_THRESHOLD then
+					print("[Memory Manager] Large teleport detected, cleaning up...")
+					task.wait(2)
+					aggressiveCleanup()
+				end
+			end
+			
+			lastPosition = currentPos
+		end
+	end
+end)
+
+-- Cleanup when player is leaving
+Players.PlayerRemoving:Connect(function(leavingPlayer)
+	if leavingPlayer == player then
+		collectgarbage("collect")
+	end
+end)
+
+print("✓ Rendering Toggle + Memory Manager loaded!")
+print("✓ Rendering is now DISABLED")
+print("✓ Memory cleanup running every " .. CLEANUP_INTERVAL .. " seconds")
+print("✓ Teleport detection active")
