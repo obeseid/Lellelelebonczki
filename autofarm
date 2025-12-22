@@ -90,7 +90,7 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-   Name = "Training Receipts BROKEN",
+   Name = "Auto Training (only with Standard Racetrack)",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/training'))()
    end,
