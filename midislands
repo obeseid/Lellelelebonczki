@@ -279,4 +279,4 @@ end)
 startAutoClicker()
 
 -- Auto-start scanning Royal Island
-followLoopFrom(workspace.Islands["Blizzard Island"])
+followLoopFrom(workspace.Islands["Royal Island"])
