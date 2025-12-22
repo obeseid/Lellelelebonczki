@@ -42,7 +42,7 @@ local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 local Section = Misc:CreateSection("Mystery Scripts")
 
 
-local Paragraph = Tab:CreateParagraph({Title = "Last update 20/12/25", Content = "The farm is now fully finished <3 No leaking"})
+local Paragraph = Tab:CreateParagraph({Title = "Last update 22/12/25", Content = "Farmy lubia juz renifery <3 No leaking"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
