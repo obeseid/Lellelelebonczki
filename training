@@ -6,33 +6,26 @@ local RunService = game:GetService("RunService")
 local SPEED = 50
 local ROTATION_SPEED = 5
 
+-- Model list
+local modelList = {
+    {name = "{6042dc5b-0335-4047-8248-f9633ada55e7}", displayName = "karolina"},
+    {name = "{adac3b42-a4c8-4008-b3eb-3326a8c333ec}", displayName = "szchoch"},
+    {name = "{ff8c36e8-ad2d-4a8e-bf6a-3444f7113351}", displayName = "diego"},
+    {name = "{dbb2a7c6-9b77-45b9-8e2d-20c5a8dd1dac}", displayName = "siostra"}
+}
+
 -- State variables
 local isRunning = false
 local isPaused = false
-local currentFolder = 1
-local currentPartIndex = 1
-
--- Find the model
-local model = workspace.Islands["Training Island"]:FindFirstChild("{4ecb439c-9f5e-4633-912f-ec59935a6cfe}")
-
-if not model then
-    warn("Model not found!")
-    return
-end
+local selectedModel = nil
+local selectedModelName = modelList[1].displayName
+local dropdownOpen = false
 
 -- Get the checkpoints path
 local checkpointsPath = workspace.Islands["Training Island"]["Race Track"].DynamicArena._LAYOUT.CheckpointActivity.Routes.Checkpoints
 
 if not checkpointsPath then
     warn("Checkpoints path not found!")
-    return
-end
-
--- Get the primary part
-local primaryPart = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
-
-if not primaryPart then
-    warn("Model has no parts!")
     return
 end
 
@@ -44,8 +37,8 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 
 -- Main Frame
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 250, 0, 150)
-mainFrame.Position = UDim2.new(0.5, -125, 0.05, 0)
+mainFrame.Size = UDim2.new(0, 250, 0, 200)
+mainFrame.Position = UDim2.new(0, 10, 0, 10)
 mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -69,34 +62,122 @@ local titleCorner = Instance.new("UICorner")
 titleCorner.CornerRadius = UDim.new(0, 10)
 titleCorner.Parent = titleLabel
 
+-- Model Selection Label
+local modelLabel = Instance.new("TextLabel")
+modelLabel.Size = UDim2.new(1, -20, 0, 20)
+modelLabel.Position = UDim2.new(0, 10, 0, 45)
+modelLabel.BackgroundTransparency = 1
+modelLabel.Text = "Select Model:"
+modelLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+modelLabel.TextSize = 12
+modelLabel.Font = Enum.Font.GothamBold
+modelLabel.TextXAlignment = Enum.TextXAlignment.Left
+modelLabel.Parent = mainFrame
+
+-- Dropdown Button
+local dropdownButton = Instance.new("TextButton")
+dropdownButton.Size = UDim2.new(1, -20, 0, 35)
+dropdownButton.Position = UDim2.new(0, 10, 0, 65)
+dropdownButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+dropdownButton.BorderSizePixel = 0
+dropdownButton.Text = selectedModelName .. " ▼"
+dropdownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+dropdownButton.TextSize = 14
+dropdownButton.Font = Enum.Font.Gotham
+dropdownButton.Parent = mainFrame
+
+local dropdownCorner = Instance.new("UICorner")
+dropdownCorner.CornerRadius = UDim.new(0, 6)
+dropdownCorner.Parent = dropdownButton
+
+-- Dropdown Frame (hidden by default)
+local dropdownFrame = Instance.new("Frame")
+dropdownFrame.Size = UDim2.new(1, -20, 0, #modelList * 32)
+dropdownFrame.Position = UDim2.new(0, 10, 0, 102)
+dropdownFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+dropdownFrame.BorderSizePixel = 0
+dropdownFrame.Visible = false
+dropdownFrame.ZIndex = 10
+dropdownFrame.Parent = mainFrame
+
+local dropdownFrameCorner = Instance.new("UICorner")
+dropdownFrameCorner.CornerRadius = UDim.new(0, 6)
+dropdownFrameCorner.Parent = dropdownFrame
+
+-- Create dropdown options
+for i, modelData in ipairs(modelList) do
+    local optionButton = Instance.new("TextButton")
+    optionButton.Size = UDim2.new(1, 0, 0, 30)
+    optionButton.Position = UDim2.new(0, 0, 0, (i-1) * 32)
+    optionButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    optionButton.BorderSizePixel = 0
+    optionButton.Text = modelData.displayName
+    optionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    optionButton.TextSize = 13
+    optionButton.Font = Enum.Font.Gotham
+    optionButton.ZIndex = 11
+    optionButton.Parent = dropdownFrame
+    
+    optionButton.MouseButton1Click:Connect(function()
+        selectedModelName = modelData.displayName
+        dropdownButton.Text = selectedModelName .. " ▼"
+        dropdownFrame.Visible = false
+        dropdownOpen = false
+        
+        -- Find and set the selected model
+        selectedModel = workspace.Islands["Training Island"]:FindFirstChild(modelData.name)
+        if selectedModel then
+            print("Selected model: " .. modelData.displayName)
+        else
+            warn("Model " .. modelData.displayName .. " not found!")
+        end
+    end)
+    
+    -- Hover effect
+    optionButton.MouseEnter:Connect(function()
+        optionButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    end)
+    
+    optionButton.MouseLeave:Connect(function()
+        optionButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    end)
+end
+
+-- Dropdown button click
+dropdownButton.MouseButton1Click:Connect(function()
+    dropdownOpen = not dropdownOpen
+    dropdownFrame.Visible = dropdownOpen
+    dropdownButton.Text = selectedModelName .. (dropdownOpen and " ▲" or " ▼")
+end)
+
 -- Status Label
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, -20, 0, 30)
-statusLabel.Position = UDim2.new(0, 10, 0, 45)
+statusLabel.Size = UDim2.new(1, -20, 0, 25)
+statusLabel.Position = UDim2.new(0, 10, 0, 110)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Text = "Status: Stopped"
 statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-statusLabel.TextSize = 14
+statusLabel.TextSize = 13
 statusLabel.Font = Enum.Font.Gotham
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
 statusLabel.Parent = mainFrame
 
 -- Progress Label
 local progressLabel = Instance.new("TextLabel")
-progressLabel.Size = UDim2.new(1, -20, 0, 25)
-progressLabel.Position = UDim2.new(0, 10, 0, 75)
+progressLabel.Size = UDim2.new(1, -20, 0, 22)
+progressLabel.Position = UDim2.new(0, 10, 0, 135)
 progressLabel.BackgroundTransparency = 1
 progressLabel.Text = "Folder: 0/6 | Part: 0/0"
 progressLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-progressLabel.TextSize = 12
+progressLabel.TextSize = 11
 progressLabel.Font = Enum.Font.Gotham
 progressLabel.TextXAlignment = Enum.TextXAlignment.Left
 progressLabel.Parent = mainFrame
 
 -- Start Button
 local startButton = Instance.new("TextButton")
-startButton.Size = UDim2.new(0.45, 0, 0, 35)
-startButton.Position = UDim2.new(0.05, 0, 1, -45)
+startButton.Size = UDim2.new(1, -20, 0, 35)
+startButton.Position = UDim2.new(0, 10, 1, -45)
 startButton.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
 startButton.BorderSizePixel = 0
 startButton.Text = "Start"
@@ -109,21 +190,8 @@ local startCorner = Instance.new("UICorner")
 startCorner.CornerRadius = UDim.new(0, 8)
 startCorner.Parent = startButton
 
--- Pause Button
-local pauseButton = Instance.new("TextButton")
-pauseButton.Size = UDim2.new(0.45, 0, 0, 35)
-pauseButton.Position = UDim2.new(0.5, 0, 1, -45)
-pauseButton.BackgroundColor3 = Color3.fromRGB(231, 76, 60)
-pauseButton.BorderSizePixel = 0
-pauseButton.Text = "Stop"
-pauseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-pauseButton.TextSize = 16
-pauseButton.Font = Enum.Font.GothamBold
-pauseButton.Parent = mainFrame
-
-local pauseCorner = Instance.new("UICorner")
-pauseCorner.CornerRadius = UDim.new(0, 8)
-pauseCorner.Parent = pauseButton
+-- Initialize first model
+selectedModel = workspace.Islands["Training Island"]:FindFirstChild(modelList[1].name)
 
 -- Function to update status display
 local function updateStatus()
@@ -143,18 +211,21 @@ end
 
 -- Function to move model to a target position
 local function moveToPosition(targetPos)
+    if not selectedModel then return false end
+    
+    local primaryPart = selectedModel.PrimaryPart or selectedModel:FindFirstChildWhichIsA("BasePart")
+    if not primaryPart then return false end
+    
     local startPos = primaryPart.Position
     local distance = (targetPos - startPos).Magnitude
     local duration = distance / SPEED
     local startTime = tick()
     
     while tick() - startTime < duration do
-        -- Check if paused
         while isPaused and isRunning do
             wait(0.1)
         end
         
-        -- Check if stopped
         if not isRunning then
             return false
         end
@@ -165,8 +236,8 @@ local function moveToPosition(targetPos)
         local direction = (targetPos - currentPos).Unit
         local lookCFrame = CFrame.lookAt(currentPos, currentPos + direction)
         
-        if model.PrimaryPart then
-            model:SetPrimaryPartCFrame(lookCFrame)
+        if selectedModel.PrimaryPart then
+            selectedModel:SetPrimaryPartCFrame(lookCFrame)
         else
             primaryPart.CFrame = lookCFrame
         end
@@ -175,8 +246,8 @@ local function moveToPosition(targetPos)
     end
     
     local finalCFrame = CFrame.lookAt(targetPos, targetPos + (targetPos - startPos).Unit)
-    if model.PrimaryPart then
-        model:SetPrimaryPartCFrame(finalCFrame)
+    if selectedModel.PrimaryPart then
+        selectedModel:SetPrimaryPartCFrame(finalCFrame)
     else
         primaryPart.CFrame = finalCFrame
     end
@@ -212,10 +283,8 @@ local function startFlight()
                 for i, part in ipairs(parts) do
                     if not isRunning then break end
                     
-                    -- Update progress
                     progressLabel.Text = "Folder: " .. folderNum .. "/6 | Part: " .. i .. "/" .. #parts
                     
-                    -- Wait if paused
                     while isPaused and isRunning do
                         wait(0.1)
                     end
@@ -238,33 +307,30 @@ end
 
 -- Button handlers
 startButton.MouseButton1Click:Connect(function()
+    if not selectedModel then
+        warn("Please select a valid model first!")
+        return
+    end
+    
     if not isRunning then
+        -- Start the script
         isRunning = true
         isPaused = false
-        startButton.Text = "Resume"
-        pauseButton.Text = "Pause"
+        startButton.Text = "Pause"
+        startButton.BackgroundColor3 = Color3.fromRGB(241, 196, 15)
         updateStatus()
         coroutine.wrap(startFlight)()
     elseif isPaused then
+        -- Resume from pause
         isPaused = false
-        startButton.Text = "Resume"
-        pauseButton.Text = "Pause"
-        updateStatus()
-    end
-end)
-
-pauseButton.MouseButton1Click:Connect(function()
-    if isRunning and not isPaused then
-        isPaused = true
-        startButton.Text = "Resume"
-        pauseButton.Text = "Pause"
+        startButton.Text = "Pause"
+        startButton.BackgroundColor3 = Color3.fromRGB(241, 196, 15)
         updateStatus()
     else
-        isRunning = false
-        isPaused = false
-        startButton.Text = "Start"
-        pauseButton.Text = "Stop"
-        progressLabel.Text = "Folder: 0/6 | Part: 0/0"
+        -- Pause
+        isPaused = true
+        startButton.Text = "Resume"
+        startButton.BackgroundColor3 = Color3.fromRGB(52, 152, 219)
         updateStatus()
     end
 end)
