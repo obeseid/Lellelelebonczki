@@ -1,121 +1,272 @@
---// Player setup
-local player = game.Players.LocalPlayer
-local teleporting = true -- Set to true to start immediately
-local teleportCoroutine
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local RunService = game:GetService("RunService")
 
---// Function to find the model with HumanoidRootPart and tailMesh
-local function findTargetModel()
-	local trainingIsland = workspace:WaitForChild("Islands"):WaitForChild("Training Island")
-	
-	for _, model in ipairs(trainingIsland:GetDescendants()) do
-		if model:IsA("Model") then
-			local hasHRP = model:FindFirstChild("HumanoidRootPart")
-			local hasTailMesh = model:FindFirstChild("tailMesh", true) -- Recursive search
-			
-			if hasHRP and hasTailMesh then
-				return model
-			end
-		end
-	end
-	
-	return nil
+-- Configuration
+local SPEED = 50
+local ROTATION_SPEED = 5
+
+-- State variables
+local isRunning = false
+local isPaused = false
+local currentFolder = 1
+local currentPartIndex = 1
+
+-- Find the model
+local model = workspace.Islands["Training Island"]:FindFirstChild("{4ecb439c-9f5e-4633-912f-ec59935a6cfe}")
+
+if not model then
+    warn("Model not found!")
+    return
 end
 
---// Teleport Function
-local function teleportLoop()
-	local character = player.Character or player.CharacterAdded:Wait()
-	local hrp = character:WaitForChild("HumanoidRootPart")
-	local humanoid = character:WaitForChild("Humanoid")
-	
-	-- Target checkpoint
-	local checkpoint = workspace:WaitForChild("CheckpointMarker"):WaitForChild("Neon")
-	
-	-- Find the target model
-	local targetModel = findTargetModel()
-	if targetModel then
-		print("Found target model: " .. targetModel.Name)
-	else
-		warn("Could not find model with HumanoidRootPart and tailMesh")
-	end
-	
-	while teleporting do
-		if checkpoint and checkpoint:IsA("BasePart") then
-			local seatPart = humanoid.SeatPart
-			
-			if seatPart and seatPart:IsDescendantOf(workspace) then
-				-- Player is on a mount or vehicle
-				local mountModel = seatPart:FindFirstAncestorWhichIsA("Model")
-				
-				if mountModel then
-					-- Temporarily anchor all parts to avoid physics glitch
-					for _, part in ipairs(mountModel:GetDescendants()) do
-						if part:IsA("BasePart") then
-							part.Anchored = true
-						end
-					end
-					
-					local targetCFrame = checkpoint.CFrame
-					if mountModel.PrimaryPart then
-						mountModel:SetPrimaryPartCFrame(targetCFrame)
-					else
-						seatPart.CFrame = targetCFrame
-					end
-					
-					task.wait(0.1)
-					
-					-- Unanchor after teleport
-					for _, part in ipairs(mountModel:GetDescendants()) do
-						if part:IsA("BasePart") then
-							part.Anchored = false
-						end
-					end
-				else
-					-- Fallback: just move seat
-					seatPart.Anchored = true
-					seatPart.CFrame = checkpoint.CFrame
-					task.wait(0.1)
-					seatPart.Anchored = false
-				end
-			else
-				-- Player on foot
-				hrp.CFrame = checkpoint.CFrame
-			end
-			
-			-- Teleport the target model if it exists
-			if targetModel and targetModel:FindFirstChild("HumanoidRootPart") then
-				local modelHRP = targetModel.HumanoidRootPart
-				
-				-- Anchor all parts temporarily
-				for _, part in ipairs(targetModel:GetDescendants()) do
-					if part:IsA("BasePart") then
-						part.Anchored = true
-					end
-				end
-				
-				-- Teleport the model to checkpoint
-				if targetModel.PrimaryPart then
-					targetModel:SetPrimaryPartCFrame(checkpoint.CFrame)
-				else
-					modelHRP.CFrame = checkpoint.CFrame
-				end
-				
-				task.wait(0.1)
-				
-				-- Unanchor all parts
-				for _, part in ipairs(targetModel:GetDescendants()) do
-					if part:IsA("BasePart") then
-						part.Anchored = false
-					end
-				end
-			end
-		else
-			warn("CheckpointMarker.Neon not found or is not a part")
-		end
-		
-		task.wait(5) -- Wait 5 seconds between teleports
-	end
+-- Get the checkpoints path
+local checkpointsPath = workspace.Islands["Training Island"]["Race Track"].DynamicArena._LAYOUT.CheckpointActivity.Routes.Checkpoints
+
+if not checkpointsPath then
+    warn("Checkpoints path not found!")
+    return
 end
 
---// Start teleport automatically
-teleportCoroutine = coroutine.create(teleportLoop)
-coroutine.resume(teleportCoroutine)
+-- Get the primary part
+local primaryPart = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+
+if not primaryPart then
+    warn("Model has no parts!")
+    return
+end
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CheckpointFlightGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 250, 0, 150)
+mainFrame.Position = UDim2.new(0.5, -125, 0.05, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = mainFrame
+
+-- Title
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 35)
+titleLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+titleLabel.BorderSizePixel = 0
+titleLabel.Text = "Checkpoint Flight"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 18
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 10)
+titleCorner.Parent = titleLabel
+
+-- Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -20, 0, 30)
+statusLabel.Position = UDim2.new(0, 10, 0, 45)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: Stopped"
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.TextSize = 14
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+statusLabel.Parent = mainFrame
+
+-- Progress Label
+local progressLabel = Instance.new("TextLabel")
+progressLabel.Size = UDim2.new(1, -20, 0, 25)
+progressLabel.Position = UDim2.new(0, 10, 0, 75)
+progressLabel.BackgroundTransparency = 1
+progressLabel.Text = "Folder: 0/6 | Part: 0/0"
+progressLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+progressLabel.TextSize = 12
+progressLabel.Font = Enum.Font.Gotham
+progressLabel.TextXAlignment = Enum.TextXAlignment.Left
+progressLabel.Parent = mainFrame
+
+-- Start Button
+local startButton = Instance.new("TextButton")
+startButton.Size = UDim2.new(0.45, 0, 0, 35)
+startButton.Position = UDim2.new(0.05, 0, 1, -45)
+startButton.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+startButton.BorderSizePixel = 0
+startButton.Text = "Start"
+startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+startButton.TextSize = 16
+startButton.Font = Enum.Font.GothamBold
+startButton.Parent = mainFrame
+
+local startCorner = Instance.new("UICorner")
+startCorner.CornerRadius = UDim.new(0, 8)
+startCorner.Parent = startButton
+
+-- Pause Button
+local pauseButton = Instance.new("TextButton")
+pauseButton.Size = UDim2.new(0.45, 0, 0, 35)
+pauseButton.Position = UDim2.new(0.5, 0, 1, -45)
+pauseButton.BackgroundColor3 = Color3.fromRGB(231, 76, 60)
+pauseButton.BorderSizePixel = 0
+pauseButton.Text = "Stop"
+pauseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+pauseButton.TextSize = 16
+pauseButton.Font = Enum.Font.GothamBold
+pauseButton.Parent = mainFrame
+
+local pauseCorner = Instance.new("UICorner")
+pauseCorner.CornerRadius = UDim.new(0, 8)
+pauseCorner.Parent = pauseButton
+
+-- Function to update status display
+local function updateStatus()
+    if isRunning then
+        if isPaused then
+            statusLabel.Text = "Status: Paused"
+            statusLabel.TextColor3 = Color3.fromRGB(241, 196, 15)
+        else
+            statusLabel.Text = "Status: Running"
+            statusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
+        end
+    else
+        statusLabel.Text = "Status: Stopped"
+        statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    end
+end
+
+-- Function to move model to a target position
+local function moveToPosition(targetPos)
+    local startPos = primaryPart.Position
+    local distance = (targetPos - startPos).Magnitude
+    local duration = distance / SPEED
+    local startTime = tick()
+    
+    while tick() - startTime < duration do
+        -- Check if paused
+        while isPaused and isRunning do
+            wait(0.1)
+        end
+        
+        -- Check if stopped
+        if not isRunning then
+            return false
+        end
+        
+        local alpha = (tick() - startTime) / duration
+        local currentPos = startPos:Lerp(targetPos, alpha)
+        
+        local direction = (targetPos - currentPos).Unit
+        local lookCFrame = CFrame.lookAt(currentPos, currentPos + direction)
+        
+        if model.PrimaryPart then
+            model:SetPrimaryPartCFrame(lookCFrame)
+        else
+            primaryPart.CFrame = lookCFrame
+        end
+        
+        RunService.Heartbeat:Wait()
+    end
+    
+    local finalCFrame = CFrame.lookAt(targetPos, targetPos + (targetPos - startPos).Unit)
+    if model.PrimaryPart then
+        model:SetPrimaryPartCFrame(finalCFrame)
+    else
+        primaryPart.CFrame = finalCFrame
+    end
+    
+    return true
+end
+
+-- Main flight function
+local function startFlight()
+    while isRunning do
+        for folderNum = 1, 6 do
+            if not isRunning then break end
+            
+            local folder = checkpointsPath:FindFirstChild(tostring(folderNum))
+            
+            if folder then
+                local parts = {}
+                for _, child in ipairs(folder:GetChildren()) do
+                    if child:IsA("BasePart") then
+                        table.insert(parts, child)
+                    end
+                end
+                
+                table.sort(parts, function(a, b)
+                    local numA = tonumber(a.Name)
+                    local numB = tonumber(b.Name)
+                    if numA and numB then
+                        return numA < numB
+                    end
+                    return a.Name < b.Name
+                end)
+                
+                for i, part in ipairs(parts) do
+                    if not isRunning then break end
+                    
+                    -- Update progress
+                    progressLabel.Text = "Folder: " .. folderNum .. "/6 | Part: " .. i .. "/" .. #parts
+                    
+                    -- Wait if paused
+                    while isPaused and isRunning do
+                        wait(0.1)
+                    end
+                    
+                    if not isRunning then break end
+                    
+                    local success = moveToPosition(part.Position)
+                    if not success then break end
+                    
+                    wait(0.5)
+                end
+            end
+        end
+        
+        if isRunning then
+            wait(1)
+        end
+    end
+end
+
+-- Button handlers
+startButton.MouseButton1Click:Connect(function()
+    if not isRunning then
+        isRunning = true
+        isPaused = false
+        startButton.Text = "Resume"
+        pauseButton.Text = "Pause"
+        updateStatus()
+        coroutine.wrap(startFlight)()
+    elseif isPaused then
+        isPaused = false
+        startButton.Text = "Resume"
+        pauseButton.Text = "Pause"
+        updateStatus()
+    end
+end)
+
+pauseButton.MouseButton1Click:Connect(function()
+    if isRunning and not isPaused then
+        isPaused = true
+        startButton.Text = "Resume"
+        pauseButton.Text = "Pause"
+        updateStatus()
+    else
+        isRunning = false
+        isPaused = false
+        startButton.Text = "Start"
+        pauseButton.Text = "Stop"
+        progressLabel.Text = "Folder: 0/6 | Part: 0/0"
+        updateStatus()
+    end
+end)
+
+updateStatus()
