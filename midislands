@@ -144,8 +144,25 @@ local function followLoopFrom(folder)
 	local function getValidTargets()
 		local targets = {}
 		for _, model in ipairs(folder:GetChildren()) do
-			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model:FindFirstChild("maneMesh") then
-				table.insert(targets, model)
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") then
+				local hasManeMesh = model:FindFirstChild("maneMesh")
+				local isReindeer = false
+				
+				-- Check for Reindeer breed
+				local overheadPart = model:FindFirstChild("OverheadPart")
+				if overheadPart then
+					local overHead = overheadPart:FindFirstChild("OverHead")
+					if overHead then
+						local breedLabel = overHead:FindFirstChild("BreedLabel")
+						if breedLabel and breedLabel.Text == "Reindeer" then
+							isReindeer = true
+						end
+					end
+				end
+				
+				if hasManeMesh or isReindeer then
+					table.insert(targets, model)
+				end
 			end
 		end
 		return targets
@@ -262,4 +279,4 @@ end)
 startAutoClicker()
 
 -- Auto-start scanning Royal Island
-followLoopFrom(workspace.Islands["Royal Island"])
+followLoopFrom(workspace.Islands["Blizzard Island"])
