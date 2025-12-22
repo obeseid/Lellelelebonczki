@@ -21,6 +21,26 @@ local selectedModel = nil
 local selectedModelName = modelList[1].displayName
 local dropdownOpen = false
 
+-- Anti-AFK Function (always active)
+local VirtualUser = game:GetService("VirtualUser")
+
+player.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+    print("Anti-AFK: Prevented idle kick")
+end)
+
+-- Additional anti-afk measures
+spawn(function()
+    while true do
+        wait(300) -- Every 5 minutes
+        VirtualUser:CaptureController()
+        VirtualUser:Button1Down(Vector2.new(0, 0))
+        wait(0.1)
+        VirtualUser:Button1Up(Vector2.new(0, 0))
+    end
+end)
+
 -- Get the checkpoints path
 local checkpointsPath = workspace.Islands["Training Island"]["Race Track"].DynamicArena._LAYOUT.CheckpointActivity.Routes.Checkpoints
 
