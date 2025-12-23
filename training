@@ -1,3 +1,5 @@
+-- eeeeeeeeeeeeeeeee
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local RunService = game:GetService("RunService")
@@ -258,7 +260,7 @@ end
 local function getCheckpointMarkers()
     local markers = {}
     for _, child in ipairs(workspace:GetChildren()) do
-        if child.Name == "CheckpointMarker" then
+        if child.Name == "CheckpointMarker" and child:FindFirstChild("Neon") then
             table.insert(markers, child)
         end
     end
@@ -375,9 +377,12 @@ local function flyCheckpointsWithLog(logModel)
         
         progressLabel.Text = "Checkpoint: " .. i .. "/" .. #markers
         
-        local targetPos = marker.Position
-        local success = moveToPosition(targetPos)
-        if not success then break end
+        local neonPart = marker:FindFirstChild("Neon")
+        if neonPart then
+            local targetPos = neonPart.Position
+            local success = moveToPosition(targetPos)
+            if not success then break end
+        end
         
         wait(0.3)
         
@@ -424,8 +429,11 @@ local function startFlight()
                 
                 progressLabel.Text = "Checkpoint: " .. i .. "/" .. #markers
                 
-                local success = moveToPosition(marker.Position)
-                if not success then break end
+                local neonPart = marker:FindFirstChild("Neon")
+                if neonPart then
+                    local success = moveToPosition(neonPart.Position)
+                    if not success then break end
+                end
                 
                 wait(0.3)
                 
