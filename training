@@ -11,7 +11,8 @@ local modelList = {
     {name = "{6042dc5b-0335-4047-8248-f9633ada55e7}", displayName = "karolina"},
     {name = "{adac3b42-a4c8-4008-b3eb-3326a8c333ec}", displayName = "szchoch"},
     {name = "{ff8c36e8-ad2d-4a8e-bf6a-3444f7113351}", displayName = "diego"},
-    {name = "{dbb2a7c6-9b77-45b9-8e2d-20c5a8dd1dac}", displayName = "siostra"}
+    {name = "{dbb2a7c6-9b77-45b9-8e2d-20c5a8dd1dac}", displayName = "siostra"},
+    {name = "{4ecb439c-9f5e-4633-912f-ec59935a6cfe}", displayName = "test hors"}
 }
 
 -- State variables
