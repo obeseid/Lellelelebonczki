@@ -1,4 +1,4 @@
--- justupdatengr
+-- e
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -327,7 +327,12 @@ local function startLogPulling()
     local primaryPart = selectedModel.PrimaryPart or selectedModel:FindFirstChildWhichIsA("BasePart")
     if not primaryPart then return false end
     
-    -- Teleport to interaction part
+    -- Teleport player character to interaction part
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(interactionPart.Position)
+    end
+    
+    -- Teleport selected model to interaction part
     if selectedModel.PrimaryPart then
         selectedModel:SetPrimaryPartCFrame(CFrame.new(interactionPart.Position))
     else
