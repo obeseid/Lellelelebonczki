@@ -42,7 +42,7 @@ local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 local Section = Misc:CreateSection("Mystery Scripts")
 
 
-local Paragraph = Tab:CreateParagraph({Title = "Last update 22/12/25", Content = "Farmy lubia juz renifery <3 No leaking"})
+local Paragraph = Tab:CreateParagraph({Title = "Last update 23/12/25", Content = "Farmy lubia juz renifery <3 No leaking"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
@@ -90,7 +90,7 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-   Name = "Auto Training (only with Standard Racetrack)",
+   Name = "Auto Training (only log pulling)",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/training'))()
    end,
