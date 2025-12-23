@@ -43,10 +43,10 @@ spawn(function()
 end)
 
 -- Get the checkpoints path
-local checkpointsPath = workspace.Islands["Training Island"]["Race Track"].DynamicArena._LAYOUT.CheckpointActivity.Routes.Checkpoints
+local checkpointsPath = workspace:FindFirstChild("CheckpointMarker")
 
 if not checkpointsPath then
-    warn("Checkpoints path not found!")
+    warn("CheckpointMarker not found!")
     return
 end
 
@@ -188,7 +188,7 @@ local progressLabel = Instance.new("TextLabel")
 progressLabel.Size = UDim2.new(1, -20, 0, 22)
 progressLabel.Position = UDim2.new(0, 10, 0, 135)
 progressLabel.BackgroundTransparency = 1
-progressLabel.Text = "Folder: 0/6 | Part: 0/0"
+progressLabel.Text = "Checkpoint: 0/0"
 progressLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
 progressLabel.TextSize = 11
 progressLabel.Font = Enum.Font.Gotham
@@ -230,8 +230,38 @@ local function updateStatus()
     end
 end
 
+-- Function to simulate E key press using VirtualInputManager
+local function simulateEKey()
+    local VIM = game:GetService("VirtualInputManager")
+    VIM:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+    wait(0.05)
+    VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+    print("Simulated E key press!")
+end
+
+-- Function to check if checkpoint requires jump
+local function checkForJump(checkpoint)
+    local billboardGui = checkpoint:FindFirstChild("BillboardGui")
+    if billboardGui then
+        local conditionLabel = billboardGui:FindFirstChild("ConditionLabel")
+        if conditionLabel and conditionLabel:IsA("TextLabel") then
+            return conditionLabel.Text == "Jump"
+        end
+    end
+    return false
+end
+
+-- Function to simulate jump using VirtualInputManager
+local function simulateJump()
+    local VIM = game:GetService("VirtualInputManager")
+    VIM:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+    wait(0.05)
+    VIM:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+    print("Simulated jump!")
+end
+
 -- Function to move model to a target position
-local function moveToPosition(targetPos)
+local function moveToPosition(targetPos, checkpoint)
     if not selectedModel then return false end
     
     local primaryPart = selectedModel.PrimaryPart or selectedModel:FindFirstChildWhichIsA("BasePart")
@@ -273,50 +303,106 @@ local function moveToPosition(targetPos)
         primaryPart.CFrame = finalCFrame
     end
     
+    -- Check if we need to jump at this checkpoint
+    if checkpoint and checkForJump(checkpoint) then
+        simulateJump()
+    end
+    
     return true
 end
 
 -- Main flight function
 local function startFlight()
     while isRunning do
-        for folderNum = 1, 6 do
+        -- Get all parts/checkpoints in CheckpointMarker
+        local checkpoints = {}
+        for _, child in ipairs(checkpointsPath:GetChildren()) do
+            if child:IsA("BasePart") or child:IsA("Model") then
+                table.insert(checkpoints, child)
+            end
+        end
+        
+        -- Sort checkpoints by name if they have numerical names
+        table.sort(checkpoints, function(a, b)
+            local numA = tonumber(a.Name)
+            local numB = tonumber(b.Name)
+            if numA and numB then
+                return numA < numB
+            end
+            return a.Name < b.Name
+        end)
+        
+        -- Move through each checkpoint
+        for i, checkpoint in ipairs(checkpoints) do
             if not isRunning then break end
             
-            local folder = checkpointsPath:FindFirstChild(tostring(folderNum))
+            -- Update progress
+            progressLabel.Text = "Checkpoint: " .. i .. "/" .. #checkpoints
             
-            if folder then
-                local parts = {}
-                for _, child in ipairs(folder:GetChildren()) do
-                    if child:IsA("BasePart") then
-                        table.insert(parts, child)
+            -- Wait if paused
+            while isPaused and isRunning do
+                wait(0.1)
+            end
+            
+            if not isRunning then break end
+            
+            -- Get position (if it's a model, use primary part or first part)
+            local targetPos
+            if checkpoint:IsA("Model") then
+                local part = checkpoint.PrimaryPart or checkpoint:FindFirstChildWhichIsA("BasePart")
+                if part then
+                    targetPos = part.Position
+                end
+            else
+                targetPos = checkpoint.Position
+            end
+            
+            if targetPos then
+                local success = moveToPosition(targetPos, checkpoint)
+                if not success then break end
+                wait(0.5)
+            end
+        end
+        
+        -- After completing all checkpoints, teleport to interaction point and press E
+        if isRunning then
+            print("All checkpoints completed! Teleporting to interaction point...")
+            
+            -- Find the interaction point
+            local interactionPath = workspace.Islands["Training Island"]["Cross Country"].CheckpointActivity.Interaction
+            if interactionPath then
+                local interactionPos
+                if interactionPath:IsA("Model") then
+                    local part = interactionPath.PrimaryPart or interactionPath:FindFirstChildWhichIsA("BasePart")
+                    if part then
+                        interactionPos = part.Position
                     end
+                else
+                    interactionPos = interactionPath.Position
                 end
                 
-                table.sort(parts, function(a, b)
-                    local numA = tonumber(a.Name)
-                    local numB = tonumber(b.Name)
-                    if numA and numB then
-                        return numA < numB
+                if interactionPos and selectedModel then
+                    -- Teleport the model to the interaction point
+                    local primaryPart = selectedModel.PrimaryPart or selectedModel:FindFirstChildWhichIsA("BasePart")
+                    if primaryPart then
+                        if selectedModel.PrimaryPart then
+                            selectedModel:SetPrimaryPartCFrame(CFrame.new(interactionPos))
+                        else
+                            primaryPart.CFrame = CFrame.new(interactionPos)
+                        end
+                        
+                        print("Teleported to interaction point!")
+                        wait(0.5)
+                        
+                        -- Press E key
+                        simulateEKey()
+                        wait(1)
+                        
+                        print("Restarting checkpoint loop...")
                     end
-                    return a.Name < b.Name
-                end)
-                
-                for i, part in ipairs(parts) do
-                    if not isRunning then break end
-                    
-                    progressLabel.Text = "Folder: " .. folderNum .. "/6 | Part: " .. i .. "/" .. #parts
-                    
-                    while isPaused and isRunning do
-                        wait(0.1)
-                    end
-                    
-                    if not isRunning then break end
-                    
-                    local success = moveToPosition(part.Position)
-                    if not success then break end
-                    
-                    wait(0.5)
                 end
+            else
+                warn("Interaction point not found!")
             end
         end
         
