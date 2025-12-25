@@ -1,4 +1,4 @@
--- Horse ngr
+-- Horse Scanner with Error Handling
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -199,17 +199,39 @@ local function checkMaterial(mesh)
 end
 
 -- Helper function to check mane texture
-local function checkManeTexture(mesh)
+local function checkManeTexture(maneMesh)
     local success, result = pcall(function()
-        if mesh:IsA("SpecialMesh") and mesh.TextureId then
-            return maneTextures[mesh.TextureId]
+        if not maneMesh then return nil end
+        
+        -- Check for TextureID property (capital ID)
+        if maneMesh.TextureID then
+            local textureMatch = maneTextures[maneMesh.TextureID]
+            if textureMatch then
+                print("  Found mane texture match:", maneMesh.TextureID, "=", textureMatch)
+                return textureMatch
+            else
+                print("  Mane TextureID not in list:", maneMesh.TextureID)
+            end
         end
+        
+        -- Also check TextureId (lowercase 'd') just in case
+        if maneMesh.TextureId then
+            local textureMatch = maneTextures[maneMesh.TextureId]
+            if textureMatch then
+                print("  Found mane texture match:", maneMesh.TextureId, "=", textureMatch)
+                return textureMatch
+            else
+                print("  Mane TextureId not in list:", maneMesh.TextureId)
+            end
+        end
+        
         return nil
     end)
     
     if success then
         return result
     else
+        print("  Error checking mane texture:", result)
         return nil
     end
 end
@@ -219,24 +241,26 @@ local function checkBodyTexture(bodyPart)
     local success, result = pcall(function()
         if not bodyPart then return nil end
         
-        -- Check if Body part has a SurfaceAppearance with TextureID
-        local surfaceAppearance = bodyPart:FindFirstChildOfClass("SurfaceAppearance")
-        if surfaceAppearance and surfaceAppearance.TextureID then
-            local textureMatch = bodyTextures[surfaceAppearance.TextureID]
+        -- Check for TextureID property (capital ID)
+        if bodyPart.TextureID then
+            local textureMatch = bodyTextures[bodyPart.TextureID]
             if textureMatch then
+                print("  Found body texture match:", bodyPart.TextureID, "=", textureMatch)
                 return textureMatch
+            else
+                print("  Body TextureID not in list:", bodyPart.TextureID)
             end
         end
         
-        -- Check if Body part itself is a SpecialMesh with TextureId
-        if bodyPart:IsA("SpecialMesh") and bodyPart.TextureId then
-            return bodyTextures[bodyPart.TextureId]
-        end
-        
-        -- Check for SpecialMesh child
-        local specialMesh = bodyPart:FindFirstChildOfClass("SpecialMesh")
-        if specialMesh and specialMesh.TextureId then
-            return bodyTextures[specialMesh.TextureId]
+        -- Also check TextureId (lowercase 'd') just in case
+        if bodyPart.TextureId then
+            local textureMatch = bodyTextures[bodyPart.TextureId]
+            if textureMatch then
+                print("  Found body texture match:", bodyPart.TextureId, "=", textureMatch)
+                return textureMatch
+            else
+                print("  Body TextureId not in list:", bodyPart.TextureId)
+            end
         end
         
         return nil
@@ -245,6 +269,7 @@ local function checkBodyTexture(bodyPart)
     if success then
         return result
     else
+        print("  Error checking body texture:", result)
         return nil
     end
 end
