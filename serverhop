@@ -1,4 +1,4 @@
--- Ho
+-- Horse Scanner with Error Handling
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -41,7 +41,7 @@ screenGui.Parent = playerGui
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.Size = UDim2.new(0, 400, 0, 450)
-mainFrame.Position = UDim2.new(0, 10, 0, 10) -- Top-left corner
+mainFrame.Position = UDim2.new(0, 10, 0, 10)
 mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -125,7 +125,7 @@ listLayout.Padding = UDim.new(0, 5)
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Parent = scrollFrame
 
--- Make GUI draggable (works on PC and Mobile)
+-- Make GUI draggable
 local dragging = false
 local dragInput, dragStart, startPos
 
@@ -160,39 +160,74 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
--- Helper function to check material
+-- Helper function to safely check material
 local function checkMaterial(mesh)
-    if not mesh then return nil end
+    -- Use pcall to catch errors when accessing properties
+    local success, result = pcall(function()
+        if not mesh then return nil end
+        
+        -- Check if it's a mesh type that can have Material property
+        if not (mesh:IsA("MeshPart") or mesh:IsA("SpecialMesh") or mesh:IsA("Part")) then
+            return nil
+        end
+        
+        -- Check if the object actually has Material and Color properties
+        if not mesh.Material or not mesh.Color then
+            return nil
+        end
+        
+        -- Check if material is NOT Fabric OR color is NOT black (0,0,0)
+        local isNotFabric = mesh.Material ~= Enum.Material.Fabric
+        local color = mesh.Color
+        local r, g, b = math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)
+        local isNotBlack = (r ~= 0 or g ~= 0 or b ~= 0)
+        
+        if isNotFabric or isNotBlack then
+            local matName = tostring(mesh.Material):gsub("Enum.Material.", "")
+            return string.format("%s (%d,%d,%d)", matName, r, g, b)
+        end
+        
+        return nil
+    end)
     
-    -- Check if material is NOT Fabric OR color is NOT black (0,0,0)
-    local isNotFabric = mesh.Material ~= Enum.Material.Fabric
-    local color = mesh.Color
-    local r, g, b = math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)
-    local isNotBlack = (r ~= 0 or g ~= 0 or b ~= 0)
-    
-    if isNotFabric or isNotBlack then
-        -- Return a description of the material/color
-        local matName = tostring(mesh.Material):gsub("Enum.Material.", "")
-        return string.format("%s (%d,%d,%d)", matName, r, g, b)
+    if success then
+        return result
+    else
+        -- Error occurred, return nil
+        return nil
     end
-    
-    return nil
 end
 
 -- Helper function to check mane texture
 local function checkManeTexture(mesh)
-    if mesh:IsA("SpecialMesh") and mesh.TextureId then
-        return maneTextures[mesh.TextureId]
+    local success, result = pcall(function()
+        if mesh:IsA("SpecialMesh") and mesh.TextureId then
+            return maneTextures[mesh.TextureId]
+        end
+        return nil
+    end)
+    
+    if success then
+        return result
+    else
+        return nil
     end
-    return nil
 end
 
 -- Helper function to check body texture
 local function checkBodyTexture(mesh)
-    if mesh:IsA("SpecialMesh") and mesh.TextureId then
-        return bodyTextures[mesh.TextureId]
+    local success, result = pcall(function()
+        if mesh:IsA("SpecialMesh") and mesh.TextureId then
+            return bodyTextures[mesh.TextureId]
+        end
+        return nil
+    end)
+    
+    if success then
+        return result
+    else
+        return nil
     end
-    return nil
 end
 
 -- Find current island
@@ -206,16 +241,13 @@ local function findCurrentIsland()
     local islands = workspace:WaitForChild("Islands")
     local playerName = player.Name
     
-    -- Check each subfolder (island) in workspace.Islands
     for _, island in pairs(islands:GetChildren()) do
         if island:IsA("Folder") or island:IsA("Model") then
-            -- Check if player's character (by name) is in this island folder
             local playerCharInIsland = island:FindFirstChild(playerName)
             if playerCharInIsland and playerCharInIsland == char then
                 return island
             end
             
-            -- Alternative: check if character is descendant of island
             if char:IsDescendantOf(island) then
                 return island
             end
@@ -262,6 +294,8 @@ local function scanIsland()
             
             if hrp then
                 modelsChecked = modelsChecked + 1
+                
+                -- Safely check each property
                 local materialName = maneMesh and checkMaterial(maneMesh) or nil
                 local maneTextureName = maneMesh and checkManeTexture(maneMesh) or nil
                 local bodyTextureName = bodyMesh and checkBodyTexture(bodyMesh) or nil
