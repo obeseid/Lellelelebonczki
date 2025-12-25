@@ -1,4 +1,4 @@
--- Horse Scanner with Error Handling
+-- Horse ngr
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -215,11 +215,30 @@ local function checkManeTexture(mesh)
 end
 
 -- Helper function to check body texture
-local function checkBodyTexture(mesh)
+local function checkBodyTexture(bodyPart)
     local success, result = pcall(function()
-        if mesh:IsA("SpecialMesh") and mesh.TextureId then
-            return bodyTextures[mesh.TextureId]
+        if not bodyPart then return nil end
+        
+        -- Check if Body part has a SurfaceAppearance with TextureID
+        local surfaceAppearance = bodyPart:FindFirstChildOfClass("SurfaceAppearance")
+        if surfaceAppearance and surfaceAppearance.TextureID then
+            local textureMatch = bodyTextures[surfaceAppearance.TextureID]
+            if textureMatch then
+                return textureMatch
+            end
         end
+        
+        -- Check if Body part itself is a SpecialMesh with TextureId
+        if bodyPart:IsA("SpecialMesh") and bodyPart.TextureId then
+            return bodyTextures[bodyPart.TextureId]
+        end
+        
+        -- Check for SpecialMesh child
+        local specialMesh = bodyPart:FindFirstChildOfClass("SpecialMesh")
+        if specialMesh and specialMesh.TextureId then
+            return bodyTextures[specialMesh.TextureId]
+        end
+        
         return nil
     end)
     
