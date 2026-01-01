@@ -193,7 +193,63 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	playerListFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 5)
 end)
 
--- Start Trade button functionality
+-- Function to setup trading menu UI
+local function setupTradingMenu()
+	local tradingMenu = PlayerGui:FindFirstChild("Menus") and PlayerGui.Menus:FindFirstChild("Trading")
+	
+	if not tradingMenu then
+		warn("Trading menu not found")
+		return false
+	end
+	
+	-- Set size
+	tradingMenu.Size = UDim2.new(0.7, 0, 0.7, 0)
+	
+	-- Update trading header with selected player name
+	if selectedPlayer then
+		local headerTitle = tradingMenu:FindFirstChild("Header") and tradingMenu.Header:FindFirstChild("Title")
+		if headerTitle then
+			headerTitle.Text = "Trading with " .. selectedPlayer
+		end
+	end
+	
+	-- Make ExecutionTimer invisible
+	local executionTimer = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
+		and tradingMenu.Content.Content:FindFirstChild("Center")
+		and tradingMenu.Content.Content.Center:FindFirstChild("ExecutionTimer")
+	if executionTimer then
+		executionTimer.Visible = false
+	end
+	
+	-- Make Local.Value invisible
+	local localValue = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
+		and tradingMenu.Content.Content:FindFirstChild("Local")
+		and tradingMenu.Content.Content.Local:FindFirstChild("Value")
+	if localValue then
+		localValue.Visible = false
+	end
+	
+	-- Make Other.Value invisible
+	local otherValue = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
+		and tradingMenu.Content.Content:FindFirstChild("Other")
+		and tradingMenu.Content.Content.Other:FindFirstChild("Value")
+	if otherValue then
+		otherValue.Visible = false
+	end
+	
+	return true
+end
+
+-- Monitor when trading menu opens and auto-apply settings
+local tradingMenu = PlayerGui:WaitForChild("Menus"):WaitForChild("Trading")
+tradingMenu:GetPropertyChangedSignal("Visible"):Connect(function()
+	if tradingMenu.Visible then
+		task.wait(0.1) -- Small delay to ensure everything is loaded
+		setupTradingMenu()
+	end
+end)
+
+-- Start Trade button functionality (visual only)
 startTradeBtn.MouseButton1Click:Connect(function()
 	if not selectedPlayer then
 		startTradeBtn.Text = "Select a player first!"
@@ -202,78 +258,26 @@ startTradeBtn.MouseButton1Click:Connect(function()
 		return
 	end
 	
-	local tradingMenu = PlayerGui:FindFirstChild("Menus") and PlayerGui.Menus:FindFirstChild("Trading")
-	
 	if tradingMenu then
 		tradingMenu.Visible = true
-		tradingMenu.Size = UDim2.new(0.7, 0, 0.7, 0)
 		
-		-- Update trading header
-		local headerTitle = tradingMenu:FindFirstChild("Header") and tradingMenu.Header:FindFirstChild("Title")
-		if headerTitle then
-			headerTitle.Text = "Trading with " .. selectedPlayer
-		end
+		-- Wait a frame for UI to update
+		task.wait()
 		
-		-- Setup decline button
-		local declineBtn = tradingMenu:FindFirstChild("Bottom") and tradingMenu.Bottom:FindFirstChild("Decline")
-		if declineBtn then
-			declineBtn.MouseButton1Click:Connect(function()
-				tradingMenu.Visible = false
-			end)
-		end
-		
-		-- Make ExecutionTimer invisible
-		local executionTimer = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
-			and tradingMenu.Content.Content:FindFirstChild("Center")
-			and tradingMenu.Content.Content.Center:FindFirstChild("ExecutionTimer")
-		if executionTimer then
-			executionTimer.Visible = false
-		end
-		
-		-- Make Local.Value invisible
-		local localValue = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
-			and tradingMenu.Content.Content:FindFirstChild("Local")
-			and tradingMenu.Content.Content.Local:FindFirstChild("Value")
-		if localValue then
-			localValue.Visible = false
-		end
-		
-		-- Make Other.Value invisible
-		local otherValue = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content")
-			and tradingMenu.Content.Content:FindFirstChild("Other")
-			and tradingMenu.Content.Content.Other:FindFirstChild("Value")
-		if otherValue then
-			otherValue.Visible = false
-		end
-		
-		-- Setup add items button
-		local localOffers = tradingMenu:FindFirstChild("Content") and tradingMenu.Content:FindFirstChild("Content") 
-			and tradingMenu.Content.Content:FindFirstChild("Local") 
-			and tradingMenu.Content.Content.Local:FindFirstChild("Offers")
-		
-		if localOffers then
-			local addBtn = localOffers:FindFirstChild("Add")
-			if addBtn then
-				-- Remove any existing connections
-				for _, connection in pairs(getconnections(addBtn.MouseButton1Click)) do
-					connection:Disable()
-				end
-				
-				addBtn.MouseButton1Click:Connect(function()
-					local backpack = PlayerGui:FindFirstChild("Menus") and PlayerGui.Menus:FindFirstChild("Backpack")
-					if backpack then
-						backpack.Visible = true
-					else
-						warn("Backpack not found at PlayerGui.Menus.Backpack")
-					end
-				end)
-			else
-				warn("Add button not found")
-			end
+		-- Setup all the modifications
+		if setupTradingMenu() then
+			startTradeBtn.Text = "Trade opened!"
+			wait(1)
+			startTradeBtn.Text = "Start Trade"
 		else
-			warn("Local.Offers not found")
+			startTradeBtn.Text = "Error opening trade"
+			wait(2)
+			startTradeBtn.Text = "Start Trade"
 		end
 	else
 		warn("Trading menu not found in PlayerGui.Menus.Trading")
+		startTradeBtn.Text = "Trading menu not found"
+		wait(2)
+		startTradeBtn.Text = "Start Trade"
 	end
 end)
