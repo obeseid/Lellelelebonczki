@@ -279,3 +279,5 @@ startAutoClicker()
 
 -- Auto-start scanning Royal Island
 followLoopFrom(workspace.Islands["Jungle Island"])
+
+workspace.Islands["Volcano Island"].LavaParts:Destroy()
