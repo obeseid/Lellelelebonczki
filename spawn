@@ -1,0 +1,349 @@
+-- Draggable GUI Monkey Patch for Variant Module
+-- Place this in StarterGui or StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- ============================================
+-- CREATE GUI
+-- ============================================
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "VariantPatcherGUI"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = playerGui
+
+-- Main Frame (draggable)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 350, 0, 400)
+mainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Corner rounding
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = mainFrame
+
+-- Shadow effect
+local shadow = Instance.new("ImageLabel")
+shadow.Name = "Shadow"
+shadow.Size = UDim2.new(1, 30, 1, 30)
+shadow.Position = UDim2.new(0, -15, 0, -15)
+shadow.BackgroundTransparency = 1
+shadow.Image = "rbxasset://textures/ui/Shadow.png"
+shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+shadow.ImageTransparency = 0.7
+shadow.ScaleType = Enum.ScaleType.Slice
+shadow.SliceCenter = Rect.new(10, 10, 118, 118)
+shadow.ZIndex = 0
+shadow.Parent = mainFrame
+
+-- Title Bar
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = titleBar
+
+-- Fix bottom corners of title bar
+local titleFix = Instance.new("Frame")
+titleFix.Size = UDim2.new(1, 0, 0, 12)
+titleFix.Position = UDim2.new(0, 0, 1, -12)
+titleFix.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+titleFix.BorderSizePixel = 0
+titleFix.Parent = titleBar
+
+-- Title Text
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Size = UDim2.new(1, -50, 1, 0)
+titleLabel.Position = UDim2.new(0, 10, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "🐴 Variant Patcher"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 18
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = titleBar
+
+-- Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+closeButton.Text = "×"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 24
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Parent = titleBar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 6)
+closeCorner.Parent = closeButton
+
+-- Content Frame
+local contentFrame = Instance.new("Frame")
+contentFrame.Name = "ContentFrame"
+contentFrame.Size = UDim2.new(1, -20, 1, -60)
+contentFrame.Position = UDim2.new(0, 10, 0, 50)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = mainFrame
+
+-- Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "StatusLabel"
+statusLabel.Size = UDim2.new(1, 0, 0, 60)
+statusLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+statusLabel.Text = "Status: Not Patched"
+statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+statusLabel.TextSize = 16
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextWrapped = true
+statusLabel.Parent = contentFrame
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 8)
+statusCorner.Parent = statusLabel
+
+-- Spawn Rate Input
+local spawnRateLabel = Instance.new("TextLabel")
+spawnRateLabel.Size = UDim2.new(1, 0, 0, 30)
+spawnRateLabel.Position = UDim2.new(0, 0, 0, 70)
+spawnRateLabel.BackgroundTransparency = 1
+spawnRateLabel.Text = "Spawn Rate (1 = guaranteed, 100 = 1%):"
+spawnRateLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+spawnRateLabel.TextSize = 14
+spawnRateLabel.Font = Enum.Font.Gotham
+spawnRateLabel.TextXAlignment = Enum.TextXAlignment.Left
+spawnRateLabel.Parent = contentFrame
+
+local spawnRateInput = Instance.new("TextBox")
+spawnRateInput.Name = "SpawnRateInput"
+spawnRateInput.Size = UDim2.new(1, 0, 0, 40)
+spawnRateInput.Position = UDim2.new(0, 0, 0, 105)
+spawnRateInput.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+spawnRateInput.Text = "1"
+spawnRateInput.PlaceholderText = "Enter number (1-10000)"
+spawnRateInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+spawnRateInput.TextSize = 18
+spawnRateInput.Font = Enum.Font.GothamBold
+spawnRateInput.ClearTextOnFocus = false
+spawnRateInput.Parent = contentFrame
+
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 8)
+inputCorner.Parent = spawnRateInput
+
+-- Apply Patch Button
+local applyButton = Instance.new("TextButton")
+applyButton.Name = "ApplyButton"
+applyButton.Size = UDim2.new(1, 0, 0, 50)
+applyButton.Position = UDim2.new(0, 0, 0, 160)
+applyButton.BackgroundColor3 = Color3.fromRGB(60, 180, 100)
+applyButton.Text = "🔧 Apply Patch"
+applyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+applyButton.TextSize = 18
+applyButton.Font = Enum.Font.GothamBold
+applyButton.Parent = contentFrame
+
+local applyCorner = Instance.new("UICorner")
+applyCorner.CornerRadius = UDim.new(0, 8)
+applyCorner.Parent = applyButton
+
+-- Remove Patch Button
+local removeButton = Instance.new("TextButton")
+removeButton.Name = "RemoveButton"
+removeButton.Size = UDim2.new(1, 0, 0, 50)
+removeButton.Position = UDim2.new(0, 0, 0, 220)
+removeButton.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
+removeButton.Text = "❌ Remove Patch"
+removeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+removeButton.TextSize = 18
+removeButton.Font = Enum.Font.GothamBold
+removeButton.Parent = contentFrame
+
+local removeCorner = Instance.new("UICorner")
+removeCorner.CornerRadius = UDim.new(0, 8)
+removeCorner.Parent = removeButton
+
+-- Info Label
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Size = UDim2.new(1, 0, 0, 50)
+infoLabel.Position = UDim2.new(0, 0, 0, 280)
+infoLabel.BackgroundTransparency = 1
+infoLabel.Text = "💡 Lower = more common\n1 = every horse is special!"
+infoLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+infoLabel.TextSize = 12
+infoLabel.Font = Enum.Font.Gotham
+infoLabel.TextWrapped = true
+infoLabel.Parent = contentFrame
+
+-- ============================================
+-- DRAGGING FUNCTIONALITY
+-- ============================================
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+titleBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- ============================================
+-- PATCH LOGIC
+-- ============================================
+local isPatched = false
+local originalDo = nil
+local patchedModule = nil
+
+local function applyPatch()
+    local spawnRate = tonumber(spawnRateInput.Text) or 1
+    
+    -- Validate input
+    if spawnRate < 1 then
+        spawnRate = 1
+    elseif spawnRate > 1000000 then
+        spawnRate = 1000000
+    end
+    spawnRateInput.Text = tostring(spawnRate)
+    
+    -- Try to require the module
+    local success, result = pcall(function()
+        -- CHANGE THIS PATH TO YOUR GAME'S VARIANT MODULE
+        return require(ReplicatedStorage.References.Utilities.Server.Functions.ModifyAnimalSpawnData)
+    end)
+    
+    if not success then
+        statusLabel.Text = "❌ Error: Module not found!\nCheck the path in the script."
+        statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
+    end
+    
+    patchedModule = result
+    
+    -- Store original if not already patched
+    if not originalDo then
+        originalDo = patchedModule.Do
+    end
+    
+    -- Apply the patch
+    patchedModule.Do = function(arg1, arg2, arg3, arg4, arg5, arg6)
+        -- Force multipliers
+        arg5 = arg5 or {}
+        if type(arg5) == "table" then
+            local multiplier = 10000 / spawnRate
+            arg5.specialIslandUniqueCoat = multiplier
+            arg5.islandUniqueHairColour = multiplier
+            arg5.horn = multiplier
+        end
+        
+        return originalDo(arg1, arg2, arg3, arg4, arg5, arg6)
+    end
+    
+    -- Also modify flags if available
+    pcall(function()
+        local Flags = require(ReplicatedStorage.References.Flags)
+        if Flags and Flags.flags then
+            Flags.flags.specialIslandUniqueCoatSpawnRate = spawnRate
+            Flags.flags.islandUniqueHairColourSpawnRate = spawnRate
+            Flags.flags.eventHornSpawnRate = spawnRate
+        end
+    end)
+    
+    isPatched = true
+    statusLabel.Text = "✅ Patch Active!\nSpawn Rate: 1 in " .. spawnRate
+    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    print("🐴 Variant Patcher: Patch applied with rate 1/" .. spawnRate)
+end
+
+local function removePatch()
+    if not isPatched or not originalDo or not patchedModule then
+        statusLabel.Text = "⚠️ No patch to remove!"
+        statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+        return
+    end
+    
+    -- Restore original function
+    patchedModule.Do = originalDo
+    
+    -- Restore flags
+    pcall(function()
+        local Flags = require(ReplicatedStorage.References.Flags)
+        if Flags and Flags.flags then
+            Flags.flags.specialIslandUniqueCoatSpawnRate = nil
+            Flags.flags.islandUniqueHairColourSpawnRate = nil
+            Flags.flags.eventHornSpawnRate = nil
+        end
+    end)
+    
+    isPatched = false
+    statusLabel.Text = "Status: Patch Removed"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+    print("🐴 Variant Patcher: Patch removed")
+end
+
+-- ============================================
+-- BUTTON CONNECTIONS
+-- ============================================
+applyButton.MouseButton1Click:Connect(applyPatch)
+removeButton.MouseButton1Click:Connect(removePatch)
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Hover effects
+local function addHoverEffect(button, normalColor, hoverColor)
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = hoverColor
+    end)
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = normalColor
+    end)
+end
+
+addHoverEffect(applyButton, Color3.fromRGB(60, 180, 100), Color3.fromRGB(70, 200, 120))
+addHoverEffect(removeButton, Color3.fromRGB(180, 60, 60), Color3.fromRGB(200, 70, 70))
+addHoverEffect(closeButton, Color3.fromRGB(255, 60, 60), Color3.fromRGB(255, 80, 80))
+
+print("🐴 Variant Patcher GUI loaded! Press the Apply button to start.")
