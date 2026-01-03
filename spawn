@@ -1,4 +1,4 @@
--- Draggable GUI Monkey Patch for Variant Module
+-- Draggable GUI Boost Modifier
 -- Place this in StarterGui or StarterPlayerScripts
 
 local Players = game:GetService("Players")
@@ -12,7 +12,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 -- CREATE GUI
 -- ============================================
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "VariantPatcherGUI"
+screenGui.Name = "BoostModifierGUI"
 screenGui.ResetOnSpawn = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = playerGui
@@ -20,8 +20,8 @@ screenGui.Parent = playerGui
 -- Main Frame (draggable)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 350, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
+mainFrame.Size = UDim2.new(0, 350, 0, 450)
+mainFrame.Position = UDim2.new(0.5, -175, 0.5, -225)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -71,7 +71,7 @@ titleLabel.Name = "TitleLabel"
 titleLabel.Size = UDim2.new(1, -50, 1, 0)
 titleLabel.Position = UDim2.new(0, 10, 0, 0)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "🐴 Variant Patcher"
+titleLabel.Text = "🚀 Boost Modifier"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 18
 titleLabel.Font = Enum.Font.GothamBold
@@ -95,11 +95,14 @@ closeCorner.CornerRadius = UDim.new(0, 6)
 closeCorner.Parent = closeButton
 
 -- Content Frame
-local contentFrame = Instance.new("Frame")
+local contentFrame = Instance.new("ScrollingFrame")
 contentFrame.Name = "ContentFrame"
 contentFrame.Size = UDim2.new(1, -20, 1, -60)
 contentFrame.Position = UDim2.new(0, 10, 0, 50)
 contentFrame.BackgroundTransparency = 1
+contentFrame.BorderSizePixel = 0
+contentFrame.ScrollBarThickness = 6
+contentFrame.CanvasSize = UDim2.new(0, 0, 0, 500)
 contentFrame.Parent = mainFrame
 
 -- Status Label
@@ -107,7 +110,7 @@ local statusLabel = Instance.new("TextLabel")
 statusLabel.Name = "StatusLabel"
 statusLabel.Size = UDim2.new(1, 0, 0, 60)
 statusLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-statusLabel.Text = "Status: Not Patched"
+statusLabel.Text = "Status: Not Modified"
 statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 statusLabel.TextSize = 16
 statusLabel.Font = Enum.Font.Gotham
@@ -118,42 +121,71 @@ local statusCorner = Instance.new("UICorner")
 statusCorner.CornerRadius = UDim.new(0, 8)
 statusCorner.Parent = statusLabel
 
--- Spawn Rate Input
-local spawnRateLabel = Instance.new("TextLabel")
-spawnRateLabel.Size = UDim2.new(1, 0, 0, 30)
-spawnRateLabel.Position = UDim2.new(0, 0, 0, 70)
-spawnRateLabel.BackgroundTransparency = 1
-spawnRateLabel.Text = "Spawn Rate (1 = guaranteed, 100 = 1%):"
-spawnRateLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-spawnRateLabel.TextSize = 14
-spawnRateLabel.Font = Enum.Font.Gotham
-spawnRateLabel.TextXAlignment = Enum.TextXAlignment.Left
-spawnRateLabel.Parent = contentFrame
+-- Price Input
+local priceLabel = Instance.new("TextLabel")
+priceLabel.Size = UDim2.new(1, 0, 0, 30)
+priceLabel.Position = UDim2.new(0, 0, 0, 70)
+priceLabel.BackgroundTransparency = 1
+priceLabel.Text = "Boost Price (Boost Credits):"
+priceLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+priceLabel.TextSize = 14
+priceLabel.Font = Enum.Font.Gotham
+priceLabel.TextXAlignment = Enum.TextXAlignment.Left
+priceLabel.Parent = contentFrame
 
-local spawnRateInput = Instance.new("TextBox")
-spawnRateInput.Name = "SpawnRateInput"
-spawnRateInput.Size = UDim2.new(1, 0, 0, 40)
-spawnRateInput.Position = UDim2.new(0, 0, 0, 105)
-spawnRateInput.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
-spawnRateInput.Text = "1"
-spawnRateInput.PlaceholderText = "Enter number (1-10000)"
-spawnRateInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-spawnRateInput.TextSize = 18
-spawnRateInput.Font = Enum.Font.GothamBold
-spawnRateInput.ClearTextOnFocus = false
-spawnRateInput.Parent = contentFrame
+local priceInput = Instance.new("TextBox")
+priceInput.Name = "PriceInput"
+priceInput.Size = UDim2.new(1, 0, 0, 40)
+priceInput.Position = UDim2.new(0, 0, 0, 105)
+priceInput.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+priceInput.Text = "1"
+priceInput.PlaceholderText = "Enter price (1-1000)"
+priceInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+priceInput.TextSize = 18
+priceInput.Font = Enum.Font.GothamBold
+priceInput.ClearTextOnFocus = false
+priceInput.Parent = contentFrame
 
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 8)
-inputCorner.Parent = spawnRateInput
+local priceCorner = Instance.new("UICorner")
+priceCorner.CornerRadius = UDim.new(0, 8)
+priceCorner.Parent = priceInput
+
+-- Multiplier Input
+local multiplierLabel = Instance.new("TextLabel")
+multiplierLabel.Size = UDim2.new(1, 0, 0, 30)
+multiplierLabel.Position = UDim2.new(0, 0, 0, 155)
+multiplierLabel.BackgroundTransparency = 1
+multiplierLabel.Text = "Luck Multiplier (e.g. 10000 = very strong):"
+multiplierLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+multiplierLabel.TextSize = 14
+multiplierLabel.Font = Enum.Font.Gotham
+multiplierLabel.TextXAlignment = Enum.TextXAlignment.Left
+multiplierLabel.Parent = contentFrame
+
+local multiplierInput = Instance.new("TextBox")
+multiplierInput.Name = "MultiplierInput"
+multiplierInput.Size = UDim2.new(1, 0, 0, 40)
+multiplierInput.Position = UDim2.new(0, 0, 0, 190)
+multiplierInput.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+multiplierInput.Text = "10000"
+multiplierInput.PlaceholderText = "Enter multiplier (1-100000)"
+multiplierInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+multiplierInput.TextSize = 18
+multiplierInput.Font = Enum.Font.GothamBold
+multiplierInput.ClearTextOnFocus = false
+multiplierInput.Parent = contentFrame
+
+local multiplierCorner = Instance.new("UICorner")
+multiplierCorner.CornerRadius = UDim.new(0, 8)
+multiplierCorner.Parent = multiplierInput
 
 -- Apply Patch Button
 local applyButton = Instance.new("TextButton")
 applyButton.Name = "ApplyButton"
 applyButton.Size = UDim2.new(1, 0, 0, 50)
-applyButton.Position = UDim2.new(0, 0, 0, 160)
+applyButton.Position = UDim2.new(0, 0, 0, 245)
 applyButton.BackgroundColor3 = Color3.fromRGB(60, 180, 100)
-applyButton.Text = "🔧 Apply Patch"
+applyButton.Text = "🔧 Apply Modifications"
 applyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 applyButton.TextSize = 18
 applyButton.Font = Enum.Font.GothamBold
@@ -167,9 +199,9 @@ applyCorner.Parent = applyButton
 local removeButton = Instance.new("TextButton")
 removeButton.Name = "RemoveButton"
 removeButton.Size = UDim2.new(1, 0, 0, 50)
-removeButton.Position = UDim2.new(0, 0, 0, 220)
+removeButton.Position = UDim2.new(0, 0, 0, 305)
 removeButton.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
-removeButton.Text = "❌ Remove Patch"
+removeButton.Text = "❌ Remove Modifications"
 removeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 removeButton.TextSize = 18
 removeButton.Font = Enum.Font.GothamBold
@@ -181,14 +213,15 @@ removeCorner.Parent = removeButton
 
 -- Info Label
 local infoLabel = Instance.new("TextLabel")
-infoLabel.Size = UDim2.new(1, 0, 0, 50)
-infoLabel.Position = UDim2.new(0, 0, 0, 280)
+infoLabel.Size = UDim2.new(1, 0, 0, 80)
+infoLabel.Position = UDim2.new(0, 0, 0, 365)
 infoLabel.BackgroundTransparency = 1
-infoLabel.Text = "💡 Lower = more common\n1 = every horse is special!"
+infoLabel.Text = "💡 This modifies the GameBoosts module\nPrice = how many credits to buy\nMultiplier = how powerful the boost is\n\nDefault: 2x at 75-150 credits"
 infoLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
 infoLabel.TextSize = 12
 infoLabel.Font = Enum.Font.Gotham
 infoLabel.TextWrapped = true
+infoLabel.TextYAlignment = Enum.TextYAlignment.Top
 infoLabel.Parent = contentFrame
 
 -- ============================================
@@ -234,93 +267,167 @@ end)
 -- PATCH LOGIC
 -- ============================================
 local isPatched = false
-local originalDo = nil
-local patchedModule = nil
+local originalTypes = {}
+local originalPurchaseOptions = {}
+local boostsModule = nil
 
 local function applyPatch()
-    local spawnRate = tonumber(spawnRateInput.Text) or 1
+    local price = tonumber(priceInput.Text) or 1
+    local multiplier = tonumber(multiplierInput.Text) or 10000
     
-    -- Validate input
-    if spawnRate < 1 then
-        spawnRate = 1
-    elseif spawnRate > 1000000 then
-        spawnRate = 1000000
+    -- Validate inputs
+    if price < 1 then price = 1 end
+    if price > 1000 then price = 1000 end
+    if multiplier < 1 then multiplier = 1 end
+    if multiplier > 100000 then multiplier = 100000 end
+    
+    priceInput.Text = tostring(price)
+    multiplierInput.Text = tostring(multiplier)
+    
+    -- WARNING: Tell user about timing
+    if not isPatched then
+        warn("⚠️ NOTE: If boosts are already loaded in the shop, you may need to rejoin for prices to update!")
     end
-    spawnRateInput.Text = tostring(spawnRate)
     
-    -- Try to require the module
+    -- Try to require the GameBoosts module
     local success, result = pcall(function()
-        -- CHANGE THIS PATH TO YOUR GAME'S VARIANT MODULE
-        return require(ReplicatedStorage.References.Utilities.Server.Functions.ModifyAnimalSpawnData)
+        -- Try common paths for the GameBoosts module
+        local possiblePaths = {
+            ReplicatedStorage:FindFirstChild("References"),
+            ReplicatedStorage:FindFirstChild("Modules"),
+            ReplicatedStorage:FindFirstChild("Shared"),
+        }
+        
+        for _, parent in ipairs(possiblePaths) do
+            if parent then
+                local boostsModule = parent:FindFirstChild("GameBoosts")
+                if boostsModule then
+                    return require(boostsModule)
+                end
+            end
+        end
+        
+        error("GameBoosts module not found")
     end)
     
     if not success then
-        statusLabel.Text = "❌ Error: Module not found!\nCheck the path in the script."
+        statusLabel.Text = "❌ Error: GameBoosts module not found!\nTry finding it manually in ReplicatedStorage."
         statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        warn("Boost Modifier Error:", result)
         return
     end
     
-    patchedModule = result
+    boostsModule = result
     
-    -- Store original if not already patched
-    if not originalDo then
-        originalDo = patchedModule.Do
+    -- Backup originals if not already saved
+    if not next(originalTypes) then
+        for key, value in pairs(boostsModule.types) do
+            originalTypes[key] = {}
+            for k, v in pairs(value) do
+                originalTypes[key][k] = v
+            end
+        end
     end
     
-    -- Apply the patch
-    patchedModule.Do = function(arg1, arg2, arg3, arg4, arg5, arg6)
-        -- Force multipliers
-        arg5 = arg5 or {}
-        if type(arg5) == "table" then
-            local multiplier = 10000 / spawnRate
-            arg5.specialIslandUniqueCoat = multiplier
-            arg5.islandUniqueHairColour = multiplier
-            arg5.horn = multiplier
+    if #originalPurchaseOptions == 0 then
+        for i, option in ipairs(boostsModule.purchaseOptions) do
+            originalPurchaseOptions[i] = {
+                id = option.id,
+                duration = option.duration,
+                price = option.price
+            }
         end
-        
-        return originalDo(arg1, arg2, arg3, arg4, arg5, arg6)
     end
     
-    -- Also modify flags if available
-    pcall(function()
-        local Flags = require(ReplicatedStorage.References.Flags)
-        if Flags and Flags.flags then
-            Flags.flags.specialIslandUniqueCoatSpawnRate = spawnRate
-            Flags.flags.islandUniqueHairColourSpawnRate = spawnRate
-            Flags.flags.eventHornSpawnRate = spawnRate
+    -- Modify all boost types to have insane multipliers
+    for key, boost in pairs(boostsModule.types) do
+        if boost.luckModifiers then
+            for modKey, _ in pairs(boost.luckModifiers) do
+                boost.luckModifiers[modKey] = multiplier
+            end
         end
-    end)
+    end
+    
+    -- Modify all purchase options to cost the specified price
+    for i, option in ipairs(boostsModule.purchaseOptions) do
+        option.price = price
+    end
     
     isPatched = true
-    statusLabel.Text = "✅ Patch Active!\nSpawn Rate: 1 in " .. spawnRate
+    statusLabel.Text = string.format("✅ Modifications Active!\nPrice: %d credits | Multiplier: %dx", price, multiplier)
     statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-    print("🐴 Variant Patcher: Patch applied with rate 1/" .. spawnRate)
+    print(string.format("🚀 Boost Modifier: Applied! Price=%d, Multiplier=%dx", price, multiplier))
+    
+    -- Refresh the Premium UI to show new prices
+    task.spawn(function()
+        local success, err = pcall(function()
+            local subMenus = playerGui:FindFirstChild("SubMenus")
+            if subMenus then
+                local premium = subMenus:FindFirstChild("Premium")
+                if premium then
+                    -- Store if it was visible
+                    local wasVisible = premium.Enabled
+                    
+                    -- Destroy and wait for it to recreate
+                    premium:Destroy()
+                    
+                    -- Wait a moment for the game to recreate it
+                    task.wait(0.5)
+                    
+                    -- Try to reopen it if it was open
+                    if wasVisible then
+                        -- Find the new premium menu
+                        local newPremium = subMenus:FindFirstChild("Premium")
+                        if newPremium then
+                            newPremium.Enabled = true
+                        end
+                    end
+                    
+                    print("✅ Premium UI refreshed!")
+                    statusLabel.Text = string.format("✅ Active & UI Refreshed!\nPrice: %d credits | Multiplier: %dx", price, multiplier)
+                else
+                    warn("⚠️ Premium menu not found in SubMenus")
+                end
+            else
+                warn("⚠️ SubMenus not found in PlayerGui")
+            end
+        end)
+        
+        if not success then
+            warn("⚠️ Failed to refresh Premium UI:", err)
+            statusLabel.Text = string.format("✅ Active (UI refresh failed)\nPrice: %d credits | Multiplier: %dx\nReopen shop manually", price, multiplier)
+        end
+    end)
 end
 
 local function removePatch()
-    if not isPatched or not originalDo or not patchedModule then
-        statusLabel.Text = "⚠️ No patch to remove!"
+    if not isPatched or not boostsModule then
+        statusLabel.Text = "⚠️ No modifications to remove!"
         statusLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
         return
     end
     
-    -- Restore original function
-    patchedModule.Do = originalDo
-    
-    -- Restore flags
-    pcall(function()
-        local Flags = require(ReplicatedStorage.References.Flags)
-        if Flags and Flags.flags then
-            Flags.flags.specialIslandUniqueCoatSpawnRate = nil
-            Flags.flags.islandUniqueHairColourSpawnRate = nil
-            Flags.flags.eventHornSpawnRate = nil
+    -- Restore original types
+    for key, original in pairs(originalTypes) do
+        if boostsModule.types[key] then
+            for k, v in pairs(original) do
+                boostsModule.types[key][k] = v
+            end
         end
-    end)
+    end
+    
+    -- Restore original purchase options
+    for i, original in ipairs(originalPurchaseOptions) do
+        if boostsModule.purchaseOptions[i] then
+            boostsModule.purchaseOptions[i].price = original.price
+            boostsModule.purchaseOptions[i].duration = original.duration
+        end
+    end
     
     isPatched = false
-    statusLabel.Text = "Status: Patch Removed"
+    statusLabel.Text = "Status: Modifications Removed"
     statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-    print("🐴 Variant Patcher: Patch removed")
+    print("🚀 Boost Modifier: Modifications removed")
 end
 
 -- ============================================
@@ -346,4 +453,4 @@ addHoverEffect(applyButton, Color3.fromRGB(60, 180, 100), Color3.fromRGB(70, 200
 addHoverEffect(removeButton, Color3.fromRGB(180, 60, 60), Color3.fromRGB(200, 70, 70))
 addHoverEffect(closeButton, Color3.fromRGB(255, 60, 60), Color3.fromRGB(255, 80, 80))
 
-print("🐴 Variant Patcher GUI loaded! Press the Apply button to start.")
+print("🚀 Boost Modifier GUI loaded! Configure and press Apply to modify boosts.")
