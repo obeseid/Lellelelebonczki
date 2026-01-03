@@ -1,5 +1,5 @@
 -- Draggable GUI Boost Modifier
--- Place this in StarterGui or StarterPlayerScripts
+-- Placffffffffffffffffffffffffff
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -353,6 +353,39 @@ local function applyPatch()
         option.price = price
     end
     
+    -- CRITICAL: Bypass the "HasEnough" check for Boost Credits
+    pcall(function()
+        local references = ReplicatedStorage:WaitForChild("References")
+        local statHandlerPath = references:FindFirstChild("PlayerScripts")
+        if statHandlerPath then
+            statHandlerPath = statHandlerPath:FindFirstChild("Secondary")
+            if statHandlerPath then
+                local statHandler = statHandlerPath:FindFirstChild("StatHandler")
+                if statHandler then
+                    local statModule = require(statHandler)
+                    
+                    -- Store original HasEnough function
+                    if not statModule._originalHasEnough then
+                        statModule._originalHasEnough = statModule.HasEnough
+                    end
+                    
+                    -- Override HasEnough to always return true for Boost Credits
+                    statModule.HasEnough = function(currencyName, amount)
+                        if currencyName == "Boost Credits" then
+                            print("💰 Bypassed Boost Credits check for:", amount)
+                            return true -- Always say you have enough!
+                        end
+                        return statModule._originalHasEnough(currencyName, amount)
+                    end
+                    
+                    print("✅ StatHandler.HasEnough patched!")
+                else
+                    warn("⚠️ StatHandler not found")
+                end
+            end
+        end
+    end)
+    
     isPatched = true
     statusLabel.Text = string.format("✅ Modifications Active!\nPrice: %d credits | Multiplier: %dx", price, multiplier)
     statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
@@ -423,6 +456,25 @@ local function removePatch()
             boostsModule.purchaseOptions[i].duration = original.duration
         end
     end
+    
+    -- Restore original HasEnough function
+    pcall(function()
+        local references = ReplicatedStorage:WaitForChild("References")
+        local statHandlerPath = references:FindFirstChild("PlayerScripts")
+        if statHandlerPath then
+            statHandlerPath = statHandlerPath:FindFirstChild("Secondary")
+            if statHandlerPath then
+                local statHandler = statHandlerPath:FindFirstChild("StatHandler")
+                if statHandler then
+                    local statModule = require(statHandler)
+                    if statModule._originalHasEnough then
+                        statModule.HasEnough = statModule._originalHasEnough
+                        print("✅ StatHandler.HasEnough restored!")
+                    end
+                end
+            end
+        end
+    end)
     
     isPatched = false
     statusLabel.Text = "Status: Modifications Removed"
