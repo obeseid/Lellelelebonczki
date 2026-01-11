@@ -1,4 +1,4 @@
--- did it update
+-- hello
 
 local HttpService = game:GetService("HttpService")
 
@@ -96,7 +96,7 @@ end
 -- Function to send webhook notification for mane/tail
 local function sendWebhook(modelName, island, maneName, tailName)
     local data = {
-        ["content"] = "@everyone",
+        ["content"] = "@everyone IUH",
         ["embeds"] = {{
             ["title"] = "IUH has been found!",
             ["description"] = "Stats of the caught horse:",
@@ -164,7 +164,7 @@ end
 -- Function to send webhook notification for body texture
 local function sendBodyWebhook(modelName, island, bodyName)
     local data = {
-        ["content"] = "@everyone",
+        ["content"] = "@everyone SIUC",
         ["embeds"] = {{
             ["title"] = "SIUC has been found!",
             ["description"] = "Stats of the caught horse:",
@@ -228,7 +228,7 @@ end
 -- Function to send webhook notification for horn
 local function sendHornWebhook(modelName, island, hornName)
     local data = {
-        ["content"] = "@everyone",
+        ["content"] = "@everyone HORN",
         ["embeds"] = {{
             ["title"] = "Horned has been found!",
             ["description"] = "Stats of the caught horse:",
