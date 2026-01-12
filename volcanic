@@ -1,5 +1,5 @@
--- eeee
 local Players = game:GetService("Players")
+local VIM = game:GetService("VirtualInputManager")
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -25,31 +25,24 @@ button.Parent = screenGui
 local scanning = false
 local teleporting = false
 
-local function findClickDetector(obj)
-	if obj:FindFirstChildOfClass("ClickDetector") then
-		return obj:FindFirstChildOfClass("ClickDetector")
-	end
-	for _, child in ipairs(obj:GetDescendants()) do
-		if child:IsA("ClickDetector") then
-			return child
-		end
-	end
-	return nil
+local function clickScreenCenter()
+	local screenSize = workspace.CurrentCamera.ViewportSize
+	local centerX = screenSize.X / 2 - 10  -- 10 pixel offset to the left
+	local centerY = screenSize.Y / 2
+	
+	-- Simulate mouse click at position
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+	task.wait(0.05)
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
 end
 
 local function checkProximityAndClick(rock)
-	local clickDetector = findClickDetector(rock.Parent)
-	if not clickDetector then return end
-	
 	while scanning and rock and rock.Parent do
 		local distance = (humanoidRootPart.Position - rock.Position).Magnitude
 		
 		if distance <= 5 then
 			button.Text = "In Range! Clicking..."
-			-- Trigger the click detector using fireclickdetector
-			if fireclickdetector then
-				fireclickdetector(clickDetector)
-			end
+			clickScreenCenter()
 			task.wait(0.5)
 		end
 		
