@@ -1,3 +1,5 @@
+-- tffgg
+
 local Players = game:GetService("Players")
 local VIM = game:GetService("VirtualInputManager")
 local player = Players.LocalPlayer
