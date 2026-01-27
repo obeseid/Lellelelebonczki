@@ -1,0 +1,239 @@
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Configuration
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook URL
+
+-- Function to send webhook notification
+local function sendAnimalWebhook(animalName, bodyVariant, maneVariant, tailVariant, hornVariant)
+    local data = {
+        ["content"] = "🐴 **UNBREEDABLE ANIMAL DETECTED!**",
+        ["embeds"] = {{
+            ["title"] = "Unbreedable Animal Found!",
+            ["description"] = "You've inspected an unbreedable animal!",
+            ["color"] = 15844367, -- Gold color
+            ["fields"] = {
+                {
+                    ["name"] = "🐴 Animal Name",
+                    ["value"] = animalName,
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "Player",
+                    ["value"] = LocalPlayer.Name,
+                    ["inline"] = false
+                },
+                {
+                    ["name"] = "Body Variant",
+                    ["value"] = bodyVariant,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Mane Variant",
+                    ["value"] = maneVariant,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Tail Variant",
+                    ["value"] = tailVariant,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Horn Variant",
+                    ["value"] = hornVariant,
+                    ["inline"] = true
+                }
+            },
+            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S")
+        }}
+    }
+    
+    print("🔔 Attempting to send webhook...")
+    print("  Webhook URL: " .. (WEBHOOK_URL ~= "YOUR_WEBHOOK_URL_HERE" and "Configured" or "NOT CONFIGURED"))
+    
+    local success, err = pcall(function()
+        local response = syn and syn.request or http_request or request
+        print("  Using request function: " .. (response and "Found" or "NOT FOUND"))
+        
+        if response then
+            local result = response({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Body = HttpService:JSONEncode(data)
+            })
+            print("  Request result: " .. tostring(result))
+        else
+            print("  Falling back to HttpService")
+            HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
+        end
+    end)
+    
+    if success then
+        print("✅ Webhook sent successfully for: " .. animalName)
+    else
+        warn("❌ Failed to send webhook: " .. tostring(err))
+    end
+end
+
+-- Function to check the animal information GUI
+local function checkAnimalInfo()
+    local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+    local subMenus = playerGui:WaitForChild("SubMenus")
+    local itemInfo = subMenus:WaitForChild("Item Information")
+    local animals = itemInfo:WaitForChild("Animals")
+    
+    if not animals.Visible then return end
+    
+    print("🔍 Animal GUI became visible, checking...")
+    
+    -- Wait a moment for GUI to fully load
+    task.wait(0.1)
+    
+    local main = animals:FindFirstChild("Main")
+    if not main then 
+        warn("Main not found")
+        return 
+    end
+    
+    local content = main:FindFirstChild("Content")
+    if not content then 
+        warn("Content not found")
+        return 
+    end
+    
+    local top = content:FindFirstChild("Top")
+    if not top then 
+        warn("Top not found")
+        return 
+    end
+    
+    local labels = top:FindFirstChild("Labels")
+    if not labels then 
+        warn("Labels not found")
+        return 
+    end
+    
+    -- Check if unbreedable
+    local indicatorLabel = labels:FindFirstChild("IndicatorLabel")
+    if not indicatorLabel then 
+        warn("IndicatorLabel not found")
+        return 
+    end
+    
+    print("  Indicator text: " .. indicatorLabel.Text)
+    
+    if not string.find(indicatorLabel.Text, "Unbreedable") then
+        print("  ❌ Not unbreedable, skipping")
+        return
+    end
+    
+    print("  ✅ Unbreedable detected!")
+    
+    -- Get animal name
+    local nameLabel = labels:FindFirstChild("NameLabel")
+    local animalName = nameLabel and nameLabel.Text or "Unknown"
+    print("  Animal Name: " .. animalName)
+    
+    -- Get variants
+    local middle = content:FindFirstChild("Middle")
+    if not middle then 
+        warn("Middle not found")
+        return 
+    end
+    
+    local middleTop = middle:FindFirstChild("Top")
+    if not middleTop then 
+        warn("Middle Top not found")
+        return 
+    end
+    
+    local variantsFrame = middleTop:FindFirstChild("VariantsFrame")
+    if not variantsFrame then 
+        warn("VariantsFrame not found")
+        return 
+    end
+    
+    -- Get Body Variant
+    local bodyVariant = "Unknown"
+    local bodyVariantFrame = variantsFrame:FindFirstChild("BodyVariant")
+    if bodyVariantFrame then
+        local right = bodyVariantFrame:FindFirstChild("Right")
+        if right then
+            local colourLabel = right:FindFirstChild("ColourLabel")
+            if colourLabel then
+                bodyVariant = colourLabel.Text
+            end
+        end
+    end
+    print("  Body Variant: " .. bodyVariant)
+    
+    -- Get Mane Variant
+    local maneVariant = "Unknown"
+    local maneVariantsFrame = variantsFrame:FindFirstChild("ManeVariants")
+    if maneVariantsFrame then
+        local right = maneVariantsFrame:FindFirstChild("Right")
+        if right then
+            local originalLabel = right:FindFirstChild("OriginalLabel")
+            if originalLabel then
+                maneVariant = originalLabel.Text
+            end
+        end
+    end
+    print("  Mane Variant: " .. maneVariant)
+    
+    -- Get Tail Variant
+    local tailVariant = "Unknown"
+    local tailVariantsFrame = variantsFrame:FindFirstChild("TailVariants")
+    if tailVariantsFrame then
+        local right = tailVariantsFrame:FindFirstChild("Right")
+        if right then
+            local originalLabel = right:FindFirstChild("OriginalLabel")
+            if originalLabel then
+                tailVariant = originalLabel.Text
+            end
+        end
+    end
+    print("  Tail Variant: " .. tailVariant)
+    
+    -- Get Horn Variant
+    local hornVariant = "N/A"
+    local hornVariantsFrame = variantsFrame:FindFirstChild("HornVariants")
+    if hornVariantsFrame and hornVariantsFrame.Visible then
+        local right = hornVariantsFrame:FindFirstChild("Right")
+        if right then
+            local originalLabel = right:FindFirstChild("OriginalLabel")
+            if originalLabel then
+                hornVariant = originalLabel.Text
+            end
+        end
+    end
+    print("  Horn Variant: " .. hornVariant)
+    
+    -- Send webhook
+    print("🔥 FOUND UNBREEDABLE ANIMAL: " .. animalName)
+    sendAnimalWebhook(animalName, bodyVariant, maneVariant, tailVariant, hornVariant)
+end
+
+-- Monitor the Animals GUI for visibility changes
+local function setupMonitoring()
+    local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+    local subMenus = playerGui:WaitForChild("SubMenus")
+    local itemInfo = subMenus:WaitForChild("Item Information")
+    local animals = itemInfo:WaitForChild("Animals")
+    
+    -- Check when GUI becomes visible
+    animals:GetPropertyChangedSignal("Visible"):Connect(function()
+        if animals.Visible then
+            checkAnimalInfo()
+        end
+    end)
+    
+    print("👁️ Monitoring Animal Information GUI for unbreedable animals!")
+end
+
+-- Start monitoring
+setupMonitoring()
