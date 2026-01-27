@@ -3,10 +3,45 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- Configuration
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook URL
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook ngr
+
+-- Function to get the player's current island
+local function getPlayerIsland()
+    local character = LocalPlayer.Character
+    if not character then return "Unknown Island" end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return "Unknown Island" end
+    
+    local Islands = game.Workspace:FindFirstChild("Islands")
+    if not Islands then return "Unknown Island" end
+    
+    -- Check which island folder the player is in
+    for _, island in pairs(Islands:GetChildren()) do
+        if island:IsA("Folder") then
+            -- Check if player's character is a descendant of this island
+            if humanoidRootPart:IsDescendantOf(island) then
+                return island.Name
+            end
+            
+            -- Alternative: Check by proximity to island bounds
+            -- This helps if the character isn't directly parented to the island
+            local islandRegion = island:FindFirstChild("IslandRegion") or island:FindFirstChild("Region")
+            if islandRegion and islandRegion:IsA("BasePart") then
+                local distance = (humanoidRootPart.Position - islandRegion.Position).Magnitude
+                local size = islandRegion.Size.Magnitude
+                if distance < size then
+                    return island.Name
+                end
+            end
+        end
+    end
+    
+    return "Unknown Island"
+end
 
 -- Function to send webhook notification
-local function sendAnimalWebhook(animalName, bodyVariant, maneVariant, tailVariant, hornVariant)
+local function sendAnimalWebhook(animalName, island, bodyVariant, maneVariant, tailVariant, hornVariant)
     local data = {
         ["content"] = "🐴 **UNBREEDABLE ANIMAL DETECTED!**",
         ["embeds"] = {{
@@ -20,9 +55,14 @@ local function sendAnimalWebhook(animalName, bodyVariant, maneVariant, tailVaria
                     ["inline"] = false
                 },
                 {
+                    ["name"] = "Island",
+                    ["value"] = island,
+                    ["inline"] = true
+                },
+                {
                     ["name"] = "Player",
                     ["value"] = LocalPlayer.Name,
-                    ["inline"] = false
+                    ["inline"] = true
                 },
                 {
                     ["name"] = "Body Variant",
@@ -213,9 +253,13 @@ local function checkAnimalInfo()
     end
     print("  Horn Variant: " .. hornVariant)
     
+    -- Get player's current island
+    local currentIsland = getPlayerIsland()
+    print("  Current Island: " .. currentIsland)
+    
     -- Send webhook
     print("🔥 FOUND UNBREEDABLE ANIMAL: " .. animalName)
-    sendAnimalWebhook(animalName, bodyVariant, maneVariant, tailVariant, hornVariant)
+    sendAnimalWebhook(animalName, currentIsland, bodyVariant, maneVariant, tailVariant, hornVariant)
 end
 
 -- Monitor the Animals GUI for visibility changes
