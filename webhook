@@ -1,178 +1,57 @@
--- hello
-
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
 -- Configuration
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook URL
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook ngr
 
--- Special TextureIDs to watch for with their names
-local TEXTURE_NAMES = {
-    ["rbxassetid://136373168220543"] = "Pastel Streaks",
-    ["rbxassetid://116165213056086"] = "Winter Streaks",
-    ["rbxassetid://11509046725"] = "Cow Print",
-    ["rbxassetid://8895902468"] = "Zebra Print",
-    ["rbxassetid://103883884513514"] = "Dusty Fade",
-    ["rbxassetid://11509043446"] = "Pink Cow Print",
-    ["rbxassetid://111500380221658"] = "Sunrise Streaks",
-    ["rbxassetid://112405515165803"] = "Jaguar Spots",
-    ["rbxassetid://12859587687"] = "Tiger Stripes",
-    ["rbxassetid://86178361529080"] = "Cracked Lava Fade",
-    ["rbxassetid://9783778257"] = "Leathery",
-    ["rbxassetid://112458560900077"] = "Snowy Glacier Fade",
-    ["rbxassetid://85795242225613"] = "Deep Space"
-}
-
--- Body TextureIDs to watch for
-local BODY_TEXTURE_NAMES = {
-    ["rbxassetid://113103040884654"] = "Blowing Snow",
-    ["rbxassetid://130845145281644"] = "Mother of Pearl",
-    ["rbxassetid://135058641443394"] = "Dusty Brindle",
-    ["rbxassetid://94920612359921"] = "Glacier Chimera",
-    ["rbxassetid://127786237142282"] = "Mountain Sunrise",
-    ["rbxassetid://73022658037146"] = "Jaguar",
-    ["rbxassetid://123342212722176"] = "Deep Space",
-    ["rbxassetid://94361314630149"] = "Cracked Lava"
-}
-
--- Material and color combinations with their names
-local MATERIAL_COLOR_NAMES = {
-    -- Glass materials
-    ["Glass_171,171,255"] = "Blessed",
-    ["Glass_62,184,40"] = "Pearly Green",
-    ["Glass_244,220,255"] = "Pearly",
-    ["Glass_237,147,255"] = "Pearly Pink",
-    ["Glass_245,157,80"] = "Pearly Orange",
-    ["Glass_214,53,56"] = "Pearly Red",
-    ["Glass_32,62,171"] = "Pearly Blue",
-    ["Glass_34,34,34"] = "Pearly Black",
+-- Function to get the player's current island
+local function getPlayerIsland()
+    local character = LocalPlayer.Character
+    if not character then return "Unknown Island" end
     
-    -- Ice materials
-    ["Ice_154,197,202"] = "Icey Blue",
-    ["Ice_243,243,243"] = "Icey White",
-    ["Ice_216,157,210"] = "Icey Pink",
-    ["Ice_22,22,22"] = "Icey Black",
-    ["Ice_141,202,139"] = "Icey Green",
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return "Unknown Island" end
     
-    -- Other materials
-    ["LeafyGrass_109,77,61"] = "Leafy",
-    ["Foil_255,225,246"] = "Clear Quartz",
-    ["Limestone_152,106,87"] = "Limestone",
-    ["Sandstone_105,68,57"] = "Sandstone",
-    ["Foil_184,22,37"] = "Ruby",
-    ["Glacier_154,248,191"] = "Glacier Green",
-    ["Glacier_223,187,255"] = "Glacier Pink",
-    ["Glacier_157,200,206"] = "Glacier Blue",
-    ["Foil_0,176,176"] = "Diamond",
-    ["Foil_12,0,86"] = "Sapphire",
-    ["Foil_156,105,244"] = "Amethyst",
-    ["Foil_223,149,0"] = "Topaz",
-    ["Grass_62,109,27"] = "Mossy",
-    ["Foil_0,165,43"] = "Emerald",
-    ["Neon_72,85,222"] = "Neon Blue",
-    ["Neon_142,80,247"] = "Neon Purple",
-    ["Foil_17,17,17"] = "Obsidian",
-    ["Neon_253,234,141"] = "Moonstone",
-    ["CrackedLava_255,81,0"] = "Volcanic Orange",
-    ["CrackedLava_49,49,49"] = "Volcanic Black",
-    ["Neon_112,189,95"] = "Prismatic"
-}
-
--- Helper function to get material/color name
-local function getMaterialColorName(material, color)
-    local r = math.floor(color.R * 255 + 0.5)
-    local g = math.floor(color.G * 255 + 0.5)
-    local b = math.floor(color.B * 255 + 0.5)
+    local Islands = game.Workspace:FindFirstChild("Islands")
+    if not Islands then return "Unknown Island" end
     
-    -- Remove "Enum.Material." prefix if present
-    local materialName = tostring(material):gsub("Enum%.Material%.", "")
-    
-    local key = materialName .. "_" .. r .. "," .. g .. "," .. b
-    
-    print("  Looking up key: " .. key)
-    
-    return MATERIAL_COLOR_NAMES[key] or ("Unknown (" .. materialName .. ", " .. r .. "," .. g .. "," .. b .. ")")
-end
-
--- Function to send webhook notification for mane/tail
-local function sendWebhook(modelName, island, maneName, tailName)
-    local data = {
-        ["content"] = "@everyone IUH",
-        ["embeds"] = {{
-            ["title"] = "IUH has been found!",
-            ["description"] = "Stats of the caught horse:",
-            ["color"] = 16716947, -- Gold color
-            ["fields"] = {
-                {
-                    ["name"] = "Model Name",
-                    ["value"] = modelName,
-                    ["inline"] = false
-                },
-                {
-                    ["name"] = "Island",
-                    ["value"] = island,
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "Player",
-                    ["value"] = game.Players.LocalPlayer.Name,
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "🎨 Mane Type",
-                    ["value"] = maneName,
-                    ["inline"] = false
-                },
-                {
-                    ["name"] = "🎨 Tail Type",
-                    ["value"] = tailName,
-                    ["inline"] = false
-                }
-            },
-            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S")
-        }}
-    }
-    print("🔔 Attempting to send horn webhook...")
-    print("  Webhook URL: " .. (WEBHOOK_URL ~= "YOUR_WEBHOOK_URL_HERE" and "Configured" or "NOT CONFIGURED"))
-    
-    local success, err = pcall(function()
-        local response = syn and syn.request or http_request or request
-        print("  Using request function: " .. (response and "Found" or "NOT FOUND"))
-        
-        if response then
-            local result = response({
-                Url = WEBHOOK_URL,
-                Method = "POST",
-                Headers = {
-                    ["Content-Type"] = "application/json"
-                },
-                Body = HttpService:JSONEncode(data)
-            })
-            print("  Request result: " .. tostring(result))
-        else
-            print("  Falling back to HttpService")
-            HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
+    -- Check which island folder the player is in
+    for _, island in pairs(Islands:GetChildren()) do
+        if island:IsA("Folder") then
+            -- Check if player's character is a descendant of this island
+            if humanoidRootPart:IsDescendantOf(island) then
+                return island.Name
+            end
+            
+            -- Alternative: Check by proximity to island bounds
+            -- This helps if the character isn't directly parented to the island
+            local islandRegion = island:FindFirstChild("IslandRegion") or island:FindFirstChild("Region")
+            if islandRegion and islandRegion:IsA("BasePart") then
+                local distance = (humanoidRootPart.Position - islandRegion.Position).Magnitude
+                local size = islandRegion.Size.Magnitude
+                if distance < size then
+                    return island.Name
+                end
+            end
         end
-    end)
-    
-    if success then
-        print("✅ Horn webhook sent successfully for: " .. modelName)
-    else
-        warn("❌ Failed to send horn webhook: " .. tostring(err))
     end
+    
+    return "Unknown Island"
 end
 
--- Function to send webhook notification for body texture
-local function sendBodyWebhook(modelName, island, bodyName)
+-- Function to send webhook notification
+local function sendAnimalWebhook(animalName, island, bodyVariant, maneVariant, tailVariant, hornVariant)
     local data = {
-        ["content"] = "@everyone SIUC",
+        ["content"] = "@everyone **UNBREEDABLE ANIMAL DETECTED!**",
         ["embeds"] = {{
-            ["title"] = "SIUC has been found!",
+            ["title"] = "Rare horse found!",
             ["description"] = "Stats of the caught horse:",
-            ["color"] = 16716947, -- Purple color
+            ["color"] = 16716947, -- hot pink color
             ["fields"] = {
                 {
-                    ["name"] = "Model Name",
-                    ["value"] = modelName,
+                    ["name"] = "Horse Breed",
+                    ["value"] = animalName,
                     ["inline"] = false
                 },
                 {
@@ -182,77 +61,28 @@ local function sendBodyWebhook(modelName, island, bodyName)
                 },
                 {
                     ["name"] = "Player",
-                    ["value"] = game.Players.LocalPlayer.Name,
+                    ["value"] = LocalPlayer.Name,
                     ["inline"] = true
                 },
                 {
-                    ["name"] = "✨ Body Pattern",
-                    ["value"] = bodyName,
-                    ["inline"] = false
-                }
-            },
-            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S")
-        }}
-    }
-    
-    print("🔔 Attempting to send body texture webhook...")
-    print("  Webhook URL: " .. (WEBHOOK_URL ~= "YOUR_WEBHOOK_URL_HERE" and "Configured" or "NOT CONFIGURED"))
-    
-    local success, err = pcall(function()
-        local response = syn and syn.request or http_request or request
-        print("  Using request function: " .. (response and "Found" or "NOT FOUND"))
-        
-        if response then
-            local result = response({
-                Url = WEBHOOK_URL,
-                Method = "POST",
-                Headers = {
-                    ["Content-Type"] = "application/json"
-                },
-                Body = HttpService:JSONEncode(data)
-            })
-            print("  Request result: " .. tostring(result))
-        else
-            print("  Falling back to HttpService")
-            HttpService:PostAsync(WEBHOOK_URL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
-        end
-    end)
-    
-    if success then
-        print("✅ Body texture webhook sent successfully for: " .. modelName)
-    else
-        warn("❌ Failed to send body texture webhook: " .. tostring(err))
-    end
-end
-
--- Function to send webhook notification for horn
-local function sendHornWebhook(modelName, island, hornName)
-    local data = {
-        ["content"] = "@everyone HORN",
-        ["embeds"] = {{
-            ["title"] = "Horned has been found!",
-            ["description"] = "Stats of the caught horse:",
-            ["color"] = 255, -- Yellow color
-            ["fields"] = {
-                {
-                    ["name"] = "Model Name",
-                    ["value"] = modelName,
-                    ["inline"] = false
-                },
-                {
-                    ["name"] = "Island",
-                    ["value"] = island,
+                    ["name"] = "Coat",
+                    ["value"] = bodyVariant,
                     ["inline"] = true
                 },
                 {
-                    ["name"] = "Player",
-                    ["value"] = game.Players.LocalPlayer.Name,
+                    ["name"] = "Mane Color",
+                    ["value"] = maneVariant,
                     ["inline"] = true
                 },
                 {
-                    ["name"] = "🦄 Horn Type",
-                    ["value"] = hornName,
-                    ["inline"] = false
+                    ["name"] = "Tail Color",
+                    ["value"] = tailVariant,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Horn Variant",
+                    ["value"] = hornVariant,
+                    ["inline"] = true
                 }
             },
             ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S")
@@ -283,190 +113,171 @@ local function sendHornWebhook(modelName, island, hornName)
     end)
     
     if success then
-        print("✅ Webhook sent successfully for: " .. modelName)
+        print("✅ Webhook sent successfully for: " .. animalName)
     else
         warn("❌ Failed to send webhook: " .. tostring(err))
     end
 end
 
--- Function to check if a model has special meshes
-local function checkModel(model, islandName)
-    if not model:IsA("Model") then return end
+-- Function to check the animal information GUI
+local function checkAnimalInfo()
+    local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+    local subMenus = playerGui:WaitForChild("SubMenus")
+    local itemInfo = subMenus:WaitForChild("Item Information")
+    local animals = itemInfo:WaitForChild("Animals")
     
-    local maneMesh = model:FindFirstChild("maneMesh")
-    local tailMesh = model:FindFirstChild("tailMesh")
-    local hornModel = model:FindFirstChild("hornModel")
-    local bodyPart = model:FindFirstChild("Body")
+    if not animals.Visible then return end
     
-    -- Get breed name from OverheadPart
-    local breedName = model.Name -- Default to model name
-    local overheadPart = model:FindFirstChild("OverheadPart")
-    if overheadPart then
-        local overhead = overheadPart:FindFirstChild("Overhead")
-        if overhead then
-            local breedLabel = overhead:FindFirstChild("BreedLabel")
-            if breedLabel and breedLabel:IsA("TextLabel") then
-                breedName = breedLabel.Text
-                print("  Found breed name: " .. breedName)
+    print("🔍 Animal GUI became visible, checking...")
+    
+    -- Wait a moment for GUI to fully load
+    task.wait(0.1)
+    
+    local main = animals:FindFirstChild("Main")
+    if not main then 
+        warn("Main not found")
+        return 
+    end
+    
+    local content = main:FindFirstChild("Content")
+    if not content then 
+        warn("Content not found")
+        return 
+    end
+    
+    local top = content:FindFirstChild("Top")
+    if not top then 
+        warn("Top not found")
+        return 
+    end
+    
+    local labels = top:FindFirstChild("Labels")
+    if not labels then 
+        warn("Labels not found")
+        return 
+    end
+    
+    -- Check if unbreedable
+    local indicatorLabel = labels:FindFirstChild("IndicatorLabel")
+    if not indicatorLabel then 
+        warn("IndicatorLabel not found")
+        return 
+    end
+    
+    print("  Indicator text: " .. indicatorLabel.Text)
+    
+    if not string.find(indicatorLabel.Text, "Unbreedable") then
+        print("  ❌ Not unbreedable, skipping")
+        return
+    end
+    
+    print("  ✅ Unbreedable detected!")
+    
+    -- Get animal name
+    local nameLabel = labels:FindFirstChild("NameLabel")
+    local animalName = nameLabel and nameLabel.Text or "Unknown"
+    print("  Animal Name: " .. animalName)
+    
+    -- Get variants
+    local middle = content:FindFirstChild("Middle")
+    if not middle then 
+        warn("Middle not found")
+        return 
+    end
+    
+    local middleTop = middle:FindFirstChild("Top")
+    if not middleTop then 
+        warn("Middle Top not found")
+        return 
+    end
+    
+    local variantsFrame = middleTop:FindFirstChild("VariantsFrame")
+    if not variantsFrame then 
+        warn("VariantsFrame not found")
+        return 
+    end
+    
+    -- Get Body Variant
+    local bodyVariant = "Unknown"
+    local bodyVariantFrame = variantsFrame:FindFirstChild("BodyVariant")
+    if bodyVariantFrame then
+        local right = bodyVariantFrame:FindFirstChild("Right")
+        if right then
+            local colourLabel = right:FindFirstChild("ColourLabel")
+            if colourLabel then
+                bodyVariant = colourLabel.Text
             end
         end
     end
+    print("  Body Variant: " .. bodyVariant)
     
-    -- Check for horn
-    if hornModel then
-        print("🦄 FOUND HORN: " .. breedName .. " on " .. islandName)
-        sendHornWebhook(breedName, islandName, "Horn Present")
-    end
-    
-    -- Check for special body texture
-    if bodyPart then
-        local bodyTexture = ""
-        pcall(function()
-            bodyTexture = bodyPart.TextureID or ""
-        end)
-        
-        if bodyTexture ~= "" then
-            print("  Body Texture: " .. bodyTexture)
-        end
-        
-        if BODY_TEXTURE_NAMES[bodyTexture] then
-            local bodyName = BODY_TEXTURE_NAMES[bodyTexture]
-            print("✨ FOUND SPECIAL BODY: " .. breedName .. " (" .. bodyName .. ") on " .. islandName)
-            sendBodyWebhook(breedName, islandName, bodyName)
+    -- Get Mane Variant
+    local maneVariant = "Unknown"
+    local maneVariantsFrame = variantsFrame:FindFirstChild("ManeVariants")
+    if maneVariantsFrame then
+        local right = maneVariantsFrame:FindFirstChild("Right")
+        if right then
+            local originalLabel = right:FindFirstChild("OriginalLabel")
+            if originalLabel then
+                maneVariant = originalLabel.Text
+            end
         end
     end
+    print("  Mane Variant: " .. maneVariant)
     
-    -- Check for special mane/tail
-    if maneMesh and tailMesh then
-        local isSpecial = false
-        
-        -- Safely get texture IDs
-        local maneTexture = ""
-        local tailTexture = ""
-        
-        pcall(function()
-            maneTexture = maneMesh.TextureID or ""
-        end)
-        
-        pcall(function()
-            tailTexture = tailMesh.TextureID or ""
-        end)
-        
-        -- Debug output
-        print("Checking model: " .. model.Name)
-        print("  Mane Class: " .. maneMesh.ClassName)
-        print("  Tail Class: " .. tailMesh.ClassName)
-        print("  Mane Texture: " .. maneTexture)
-        print("  Tail Texture: " .. tailTexture)
-        
-        -- Determine mane name
-        local maneName = "Default"
-        if TEXTURE_NAMES[maneTexture] then
-            maneName = TEXTURE_NAMES[maneTexture]
-            isSpecial = true
-            print("  ✅ Mane texture is special: " .. maneName)
-        elseif maneMesh.Material ~= Enum.Material.Fabric or maneMesh.Color ~= Color3.new(0, 0, 0) then
-            maneName = getMaterialColorName(maneMesh.Material, maneMesh.Color)
-            isSpecial = true
-            print("  ✅ Mane has special material/color: " .. maneName)
-        end
-        
-        -- Determine tail name
-        local tailName = "Default"
-        if TEXTURE_NAMES[tailTexture] then
-            tailName = TEXTURE_NAMES[tailTexture]
-            isSpecial = true
-            print("  ✅ Tail texture is special: " .. tailName)
-        elseif tailMesh.Material ~= Enum.Material.Fabric or tailMesh.Color ~= Color3.new(0, 0, 0) then
-            tailName = getMaterialColorName(tailMesh.Material, tailMesh.Color)
-            isSpecial = true
-            print("  ✅ Tail has special material/color: " .. tailName)
-        end
-        
-        -- If special, send webhook
-        if isSpecial then
-            print("🔥 FOUND SPECIAL MESH: " .. breedName .. " on " .. islandName)
-            sendWebhook(breedName, islandName, maneName, tailName)
+    -- Get Tail Variant
+    local tailVariant = "Unknown"
+    local tailVariantsFrame = variantsFrame:FindFirstChild("TailVariants")
+    if tailVariantsFrame then
+        local right = tailVariantsFrame:FindFirstChild("Right")
+        if right then
+            local originalLabel = right:FindFirstChild("OriginalLabel")
+            if originalLabel then
+                tailVariant = originalLabel.Text
+            end
         end
     end
+    print("  Tail Variant: " .. tailVariant)
+    
+    -- Get Horn Variant
+    local hornVariant = "N/A"
+    local hornVariantsFrame = variantsFrame:FindFirstChild("HornVariants")
+    if hornVariantsFrame and hornVariantsFrame.Visible then
+        local right = hornVariantsFrame:FindFirstChild("Right")
+        if right then
+            local originalLabel = right:FindFirstChild("OriginalLabel")
+            if originalLabel then
+                hornVariant = originalLabel.Text
+            end
+        end
+    end
+    print("  Horn Variant: " .. hornVariant)
+    
+    -- Get player's current island
+    local currentIsland = getPlayerIsland()
+    print("  Current Island: " .. currentIsland)
+    
+    -- Send webhook
+    print("🔥 FOUND UNBREEDABLE ANIMAL: " .. animalName)
+    sendAnimalWebhook(animalName, currentIsland, bodyVariant, maneVariant, tailVariant, hornVariant)
 end
 
--- Function to get the player's current island
-local function getPlayerIsland()
-    local character = game.Players.LocalPlayer.Character
-    if not character then return nil end
+-- Monitor the Animals GUI for visibility changes
+local function setupMonitoring()
+    local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+    local subMenus = playerGui:WaitForChild("SubMenus")
+    local itemInfo = subMenus:WaitForChild("Item Information")
+    local animals = itemInfo:WaitForChild("Animals")
     
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then return nil end
-    
-    local Islands = game.Workspace:FindFirstChild("Islands")
-    if not Islands then return nil end
-    
-    -- Check which island folder the player is in
-    for _, island in pairs(Islands:GetChildren()) do
-        if island:IsA("Folder") then
-            -- Check if player's character is a descendant of this island
-            if humanoidRootPart:IsDescendantOf(island) then
-                return island
-            end
-            
-            -- Alternative: Check by proximity to island bounds
-            -- This helps if the character isn't directly parented to the island
-            local islandRegion = island:FindFirstChild("IslandRegion") or island:FindFirstChild("Region")
-            if islandRegion and islandRegion:IsA("BasePart") then
-                local distance = (humanoidRootPart.Position - islandRegion.Position).Magnitude
-                local size = islandRegion.Size.Magnitude
-                if distance < size then
-                    return island
-                end
-            end
-        end
-    end
-    
-    return nil
-end
-
--- Function to monitor an island folder
-local function monitorIsland(island)
-    local islandName = island.Name
-    
-    -- Check existing models
-    for _, child in pairs(island:GetChildren()) do
-        checkModel(child, islandName)
-    end
-    
-    -- Monitor for new models
-    island.ChildAdded:Connect(function(child)
-        task.wait(0.1) -- Small delay to ensure model is fully loaded
-        
-        -- Only check if player is on this island
-        local playerIsland = getPlayerIsland()
-        if playerIsland and playerIsland == island then
-            checkModel(child, islandName)
-        else
-            print("⏭️ Skipping check - player not on " .. islandName)
+    -- Check when GUI becomes visible
+    animals:GetPropertyChangedSignal("Visible"):Connect(function()
+        if animals.Visible then
+            checkAnimalInfo()
         end
     end)
     
-    print("👁️ Monitoring island: " .. islandName)
+    print("👁️ Monitoring Animal Information GUI for unbreedable animals!")
 end
 
--- Main setup
-local Islands = game.Workspace:WaitForChild("Islands")
-
--- Monitor all existing islands
-for _, island in pairs(Islands:GetChildren()) do
-    if island:IsA("Folder") then
-        monitorIsland(island)
-    end
-end
-
--- Monitor for new islands being added
-Islands.ChildAdded:Connect(function(island)
-    if island:IsA("Folder") then
-        task.wait(0.1)
-        monitorIsland(island)
-    end
-end)
-
-print("🚀 Islands mesh monitor active! Watching all islands in workspace.")
+-- Start monitoring
+setupMonitoring()
