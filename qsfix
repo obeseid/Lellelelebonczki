@@ -1,4 +1,4 @@
--- ddd
+-- gbg
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -33,6 +33,30 @@ local function clickButton(button)
 	-- Fire Activated
 	for _, connection in pairs(getconnections(button.Activated)) do
 		connection:Fire()
+	end
+end
+
+-- Special function for clicking the Yes button (to avoid crash)
+local function clickYesButton(button)
+	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
+		return
+	end
+	
+	print("Attempting to click Yes button with MouseButton1Click")
+	
+	-- Try MouseButton1Click
+	local clicked = false
+	for _, connection in pairs(getconnections(button.MouseButton1Click)) do
+		connection:Fire()
+		clicked = true
+	end
+	
+	if not clicked then
+		print("No MouseButton1Click found, trying Activated")
+		-- If no MouseButton1Click, try just Activated
+		for _, connection in pairs(getconnections(button.Activated)) do
+			connection:Fire()
+		end
 	end
 end
 
@@ -81,36 +105,28 @@ local function onItemInfoOpened()
 				task.wait(1)
 				
 				-- Click the Yes button in the confirmation prompt
-				task.spawn(function()
-					local success, err = pcall(function()
-						local prompts = playerGui:WaitForChild("Prompts", 3)
-						local yesNo = prompts:WaitForChild("YesNo", 3)
-						local yesButton = yesNo.Content.Frame.Yes
-						
-						print("Found Yes button, attempting to click")
-						clickButton(yesButton)
-						print("Yes button clicked")
-					end)
+				local success, err = pcall(function()
+					local prompts = playerGui:WaitForChild("Prompts", 3)
+					local yesNo = prompts:WaitForChild("YesNo", 3)
+					local yesButton = yesNo.Content.Frame.Yes
 					
-					if not success then
-						warn("Failed to click Yes button: " .. tostring(err))
-					end
-					
-					-- Reset debounce after clicking
-					task.wait(1)
-					isProcessing = false
+					print("Found Yes button at path: " .. yesButton:GetFullName())
+					clickYesButton(yesButton)
+					print("Yes button click attempted")
 				end)
+				
+				if not success then
+					warn("Failed to click Yes button: " .. tostring(err))
+				end
 				
 				break
 			end
 		end
 	end
 	
-	-- If we didn't find the button, reset debounce
-	if isProcessing then
-		task.wait(2)
-		isProcessing = false
-	end
+	-- Reset debounce after a delay
+	task.wait(2)
+	isProcessing = false
 end
 
 -- Monitor when the Item Information frame becomes visible
