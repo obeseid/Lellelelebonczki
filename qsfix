@@ -34,28 +34,22 @@ local function clickButton(button)
 	end
 end
 
--- Special function for clicking the Yes button using VIM (Virtual Input Manager)
+-- Special safe function for clicking the Yes button - only fires ONE event
 local function clickYesButtonSafe(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
 		return
 	end
 	
-	print("Attempting to click Yes button using mouse simulation")
+	print("Attempting to click Yes button with single Activated event")
 	
-	local VirtualInputManager = game:GetService("VirtualInputManager")
-	
-	-- Get button position
-	local buttonPos = button.AbsolutePosition
-	local buttonSize = button.AbsoluteSize
-	local centerX = buttonPos.X + (buttonSize.X / 2)
-	local centerY = buttonPos.Y + (buttonSize.Y / 2)
-	
-	-- Simulate mouse click at button center
-	VirtualInputManager:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
-	task.wait(0.05)
-	VirtualInputManager:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
-	
-	print("Yes button clicked with VIM")
+	-- Only fire Activated event, nothing else
+	local connections = getconnections(button.Activated)
+	if #connections > 0 then
+		connections[1]:Fire() -- Only fire the first connection
+		print("Fired Activated event")
+	else
+		print("No Activated connections found")
+	end
 end
 
 -- Function to handle when Item Information frame opens
