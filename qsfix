@@ -1,3 +1,5 @@
+-- ddd
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -58,6 +60,7 @@ local function onItemInfoOpened()
 		-- Contains "Unbreedable" - just close the menu and return
 		print("Item is Unbreedable, closing menu")
 		clickButton(closeButton)
+		task.wait(1)
 		isProcessing = false
 		return -- Exit the function here, don't continue
 	end
@@ -78,31 +81,36 @@ local function onItemInfoOpened()
 				task.wait(1)
 				
 				-- Click the Yes button in the confirmation prompt
-				local success, err = pcall(function()
-					local prompts = playerGui:WaitForChild("Prompts", 3)
-					local yesNo = prompts:WaitForChild("YesNo", 3)
-					local yesButton = yesNo.Content.Frame.Yes
+				task.spawn(function()
+					local success, err = pcall(function()
+						local prompts = playerGui:WaitForChild("Prompts", 3)
+						local yesNo = prompts:WaitForChild("YesNo", 3)
+						local yesButton = yesNo.Content.Frame.Yes
+						
+						print("Found Yes button, attempting to click")
+						clickButton(yesButton)
+						print("Yes button clicked")
+					end)
 					
-					print("Clicking Yes button")
-					
-					-- Only fire MouseButton1Click instead of all events
-					for _, connection in pairs(getconnections(yesButton.MouseButton1Click)) do
-						connection:Fire()
+					if not success then
+						warn("Failed to click Yes button: " .. tostring(err))
 					end
+					
+					-- Reset debounce after clicking
+					task.wait(1)
+					isProcessing = false
 				end)
-				
-				if not success then
-					warn("Failed to click Yes button: " .. tostring(err))
-				end
 				
 				break
 			end
 		end
 	end
 	
-	-- Reset debounce after a delay
-	task.wait(2)
-	isProcessing = false
+	-- If we didn't find the button, reset debounce
+	if isProcessing then
+		task.wait(2)
+		isProcessing = false
+	end
 end
 
 -- Monitor when the Item Information frame becomes visible
