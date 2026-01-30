@@ -1,5 +1,3 @@
--- ddhhdhd
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -44,14 +42,12 @@ local function clickYesButtonSafe(button)
 	
 	print("Attempting to click Yes button with single Activated event")
 	
-	-- Only fire Activated event, nothing else
-	local connections = getconnections(button.Activated)
-	if #connections > 0 then
-		connections[1]:Fire() -- Only fire the first connection
-		print("Fired Activated event")
-	else
-		print("No Activated connections found")
+	-- Only fire Activated event, nothing else - just like the working script
+	for _, connection in pairs(getconnections(button.Activated)) do
+		connection:Fire()
 	end
+	
+	print("Fired Activated event on Yes button")
 end
 
 -- Function to handle when Item Information frame opens
