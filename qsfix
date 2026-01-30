@@ -1,3 +1,5 @@
+-- fffffff
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -34,20 +36,30 @@ local function clickButton(button)
 	end
 end
 
--- Special safe function for clicking the Yes button - only fires ONE event
-local function clickYesButtonSafe(button)
+-- VIM function for clicking the Yes button
+local function clickYesButtonVIM(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
 		return
 	end
 	
-	print("Attempting to click Yes button with single Activated event")
+	print("Clicking Yes button with VirtualInputManager")
 	
-	-- Only fire Activated event, nothing else - just like the working script
-	for _, connection in pairs(getconnections(button.Activated)) do
-		connection:Fire()
-	end
+	local VirtualInputManager = game:GetService("VirtualInputManager")
 	
-	print("Fired Activated event on Yes button")
+	-- Get button position
+	local buttonPos = button.AbsolutePosition
+	local buttonSize = button.AbsoluteSize
+	local centerX = buttonPos.X + (buttonSize.X / 2)
+	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 10  -- Added 10 pixels down
+	
+	print("Button center position (adjusted): X=" .. centerX .. " Y=" .. centerY)
+	
+	-- Simulate mouse click at button center
+	VirtualInputManager:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+	task.wait(0.1)
+	VirtualInputManager:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+	
+	print("VIM click sent")
 end
 
 -- Function to handle when Item Information frame opens
@@ -76,7 +88,7 @@ local function onItemInfoOpened()
 		clickButton(closeButton)
 		task.wait(1)
 		isProcessing = false
-		return -- Exit the function here, don't continue
+		return
 	end
 	
 	-- Does NOT contain "Unbreedable" - proceed with breeding logic
@@ -95,18 +107,16 @@ local function onItemInfoOpened()
 				print("Waiting 2 seconds for YesNo prompt to load...")
 				task.wait(2)
 				
-				-- Click the Yes button in the confirmation prompt
+				-- Click the Yes button with VIM
 				local success, err = pcall(function()
 					local prompts = playerGui:WaitForChild("Prompts", 3)
 					local yesNo = prompts:WaitForChild("YesNo", 3)
 					local yesButton = yesNo.Content.Frame.Yes
 					
-					print("Found Yes button at path: " .. yesButton:GetFullName())
-					print("Waiting 1 more second before clicking...")
+					print("Found Yes button, waiting 1 second...")
 					task.wait(1)
 					
-					clickYesButtonSafe(yesButton)
-					print("Yes button click attempted")
+					clickYesButtonVIM(yesButton)
 				end)
 				
 				if not success then
