@@ -142,9 +142,9 @@ local function onItemInfoOpened()
 				print("Found breeding button, clicking it")
 				clickButtonVIM(child)
 				
-				-- Wait 2 seconds for the prompt to fully appear
-				print("Waiting 2 seconds for YesNo prompt to load...")
-				task.wait(2)
+				-- Wait 1seconds for the prompt to fully appear
+				print("Waiting 1seconds for YesNo prompt to load...")
+				task.wait(1)
 				
 				-- Click the Yes button with VIM
 				local success, err = pcall(function()
@@ -153,7 +153,7 @@ local function onItemInfoOpened()
 					local yesButton = yesNo.Content.Frame.Yes
 					
 					print("Found Yes button, waiting 1 second...")
-					task.wait(1)
+					task.wait(0.1)
 					
 					clickYesButtonVIM(yesButton)
 				end)
