@@ -50,7 +50,7 @@ local function clickYesButtonVIM(button)
 	local buttonPos = button.AbsolutePosition
 	local buttonSize = button.AbsoluteSize
 	local centerX = buttonPos.X + (buttonSize.X / 2)
-	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 30  -- Added 30 pixels down
+	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50  -- Added 30 pixels down
 	
 	print("Button center position (adjusted): X=" .. centerX .. " Y=" .. centerY)
 	
