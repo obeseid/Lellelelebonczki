@@ -1,6 +1,3 @@
--- ffff
-
-
 -- Services
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
@@ -59,27 +56,25 @@ local function startAutoClicker()
 end
 
 -- Breeding Script Functions
-local function clickButton(button)
+local function clickButtonVIM(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
 		return
 	end
 	
-	-- Fire MouseButton1Down
-	for _, connection in pairs(getconnections(button.MouseButton1Down)) do
-		connection:Fire()
-	end
-	task.wait(0.05)
+	print("Clicking button with VirtualInputManager: " .. button.Name)
 	
-	-- Fire MouseButton1Up
-	for _, connection in pairs(getconnections(button.MouseButton1Up)) do
-		connection:Fire()
-	end
-	task.wait(0.05)
+	-- Get button position
+	local buttonPos = button.AbsolutePosition
+	local buttonSize = button.AbsoluteSize
+	local centerX = buttonPos.X + (buttonSize.X / 2)
+	local centerY = buttonPos.Y + (buttonSize.Y / 2)
 	
-	-- Fire Activated
-	for _, connection in pairs(getconnections(button.Activated)) do
-		connection:Fire()
-	end
+	-- Simulate mouse click at button center
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+	task.wait(0.1)
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+	
+	print("VIM click sent on: " .. button.Name)
 end
 
 local function clickYesButtonVIM(button)
@@ -128,7 +123,7 @@ local function onItemInfoOpened()
 	if string.find(labelText, "Unbreedable") then
 		-- Contains "Unbreedable" - just close the menu and return
 		print("Item is Unbreedable, closing menu")
-		clickButton(closeButton)
+		clickButtonVIM(closeButton)
 		task.wait(1)
 		isProcessingBreed = false
 		isBreeding = false -- Resume auto-clicker
@@ -145,10 +140,10 @@ local function onItemInfoOpened()
 			local imageLabel = child:FindFirstChildWhichIsA("ImageLabel")
 			if imageLabel and imageLabel.Image == TARGET_IMAGE_ID then
 				print("Found breeding button, clicking it")
-				clickButton(child)
+				clickButtonVIM(child)
 				
-				-- Wait 2 seconds for the prompt to fully appear
-				print("Waiting 2 seconds for YesNo prompt to load...")
+				-- Wait 1 seconds for the prompt to fully appear
+				print("Waiting 1 seconds for YesNo prompt to load...")
 				task.wait(1)
 				
 				-- Click the Yes button with VIM
@@ -157,8 +152,8 @@ local function onItemInfoOpened()
 					local yesNo = prompts:WaitForChild("YesNo", 3)
 					local yesButton = yesNo.Content.Frame.Yes
 					
-					print("Found Yes button, waiting 1 second...")
-					task.wait(1)
+					print("Found Yes button, waiting 0.1 second...")
+					task.wait(0.1)
 					
 					clickYesButtonVIM(yesButton)
 				end)
@@ -173,7 +168,7 @@ local function onItemInfoOpened()
 	end
 	
 	-- Reset debounce and resume auto-clicker after a delay
-	task.wait(2)
+	task.wait(0.5)
 	isProcessingBreed = false
 	isBreeding = false
 end
@@ -388,4 +383,4 @@ lp.CharacterAdded:Connect(function()
 	updateIsland()
 end)
 
-print("Combined Horse Catcher + Auto Breeder loaded!")
+print("Horse Catcher + Auto Breeder loaded!")
