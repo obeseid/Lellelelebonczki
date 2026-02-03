@@ -1,3 +1,5 @@
+-- ffff
+
 -- Services
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
@@ -13,10 +15,8 @@ local currentIslandIndex = 1
 local clickLoop = nil
 local isBreeding = false -- Flag to prevent auto-clicker from interfering with breeding clicks
 local islands = {
-	"Royal Island",
-	"Desert Island",
-	"Glacier Island",
-	"Mountain Island"
+	"Blizzard Island",
+	"Forest Island"
 }
 
 -- Breeding Script Variables
