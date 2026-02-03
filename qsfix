@@ -105,7 +105,7 @@ local function onItemInfoOpened()
 				
 				-- Wait 2 seconds for the prompt to fully appear
 				print("Waiting 2 seconds for YesNo prompt to load...")
-				task.wait(2)
+				task.wait(0.5)
 				
 				-- Click the Yes button with VIM
 				local success, err = pcall(function()
