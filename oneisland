@@ -1,3 +1,5 @@
+-- ddmmdmdmd
+
 -- Services
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
@@ -67,7 +69,7 @@ local function clickButtonVIM(button)
 	local buttonPos = button.AbsolutePosition
 	local buttonSize = button.AbsoluteSize
 	local centerX = buttonPos.X + (buttonSize.X / 2)
-	local centerY = buttonPos.Y + (buttonSize.Y / 2)
+	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50
 	
 	-- Simulate mouse click at button center
 	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
