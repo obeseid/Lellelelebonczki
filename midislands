@@ -1,4 +1,4 @@
--- Services
+-- ServicesNga
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
@@ -151,9 +151,9 @@ local function onItemInfoOpened()
 				print("Found breeding button, clicking it")
 				clickButton(child)
 				
-				-- Wait 2 seconds for the prompt to fully appear
-				print("Waiting 2 seconds for YesNo prompt to load...")
-				task.wait(2)
+				-- Wait 1 seconds for the prompt to fully appear
+				print("Waiting 1 seconds for YesNo prompt to load...")
+				task.wait(1)
 				
 				-- Click the Yes button with VIM
 				local success, err = pcall(function()
