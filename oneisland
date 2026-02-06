@@ -66,7 +66,7 @@ local function clickButtonVIM(button)
 	-- Get button position
 	local buttonPos = button.AbsolutePosition
 	local buttonSize = button.AbsoluteSize
-	local centerX = buttonPos.X + (buttonSize.X / 2) + 15
+	local centerX = buttonPos.X + (buttonSize.X / 2) + 12
 	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50  -- Added 50 pixels down
 	
 	-- Simulate mouse click at button center
