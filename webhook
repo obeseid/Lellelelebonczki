@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- Configuration
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1437114096511221790/0odcPwZ2rAA2hG2roA5YLmDWJSO0KvSHJeTaFgYYkPjAbwObUDogwDVcMknx-BlZV8fi" -- Replace with your Discord webhook ngr
+local WEBHOOK_URL = "YOUR_WEBHOOK_URL_HERE" -- Replace with your Discord webhook URL
 
 -- Function to get the player's current island
 local function getPlayerIsland()
@@ -41,13 +41,13 @@ local function getPlayerIsland()
 end
 
 -- Function to send webhook notification
-local function sendAnimalWebhook(animalName, island, bodyVariant, maneVariant, tailVariant, hornVariant)
+local function sendAnimalWebhook(animalName, island, bodyVariant, maneVariant, tailVariant, hornVariant, specialType)
     local data = {
-        ["content"] = "@everyone **UNBREEDABLE ANIMAL DETECTED!**",
+        ["content"] = "@everyone " .. specialType,
         ["embeds"] = {{
             ["title"] = "Rare horse found!",
             ["description"] = "Stats of the caught horse:",
-            ["color"] = 16716947, -- hot pink color
+            ["color"] = 16738740, -- hot pink
             ["fields"] = {
                 {
                     ["name"] = "Horse Breed",
@@ -166,12 +166,30 @@ local function checkAnimalInfo()
     
     print("  Indicator text: " .. indicatorLabel.Text)
     
-    if not string.find(indicatorLabel.Text, "Unbreedable") then
-        print("  ❌ Not unbreedable, skipping")
+    -- Check if it has any special indicators
+    local hasSpecial = false
+    local specialType = ""
+    
+    if string.find(indicatorLabel.Text, "Island Unique Hair") then
+        hasSpecial = true
+        specialType = "Island Unique Hair"
+    elseif string.find(indicatorLabel.Text, "Special Island Unique Coat") then
+        hasSpecial = true
+        specialType = "Special Island Unique Coat"
+    elseif string.find(indicatorLabel.Text, "Naturally Dyed") then
+        hasSpecial = true
+        specialType = "Naturally Dyed"
+    elseif string.find(indicatorLabel.Text, "Horned") then
+        hasSpecial = true
+        specialType = "Horned"
+    end
+    
+    if not hasSpecial then
+        print("  ❌ No special indicators found, skipping")
         return
     end
     
-    print("  ✅ Unbreedable detected!")
+    print("  ✅ Special indicator detected: " .. specialType)
     
     -- Get animal name
     local nameLabel = labels:FindFirstChild("NameLabel")
@@ -258,8 +276,8 @@ local function checkAnimalInfo()
     print("  Current Island: " .. currentIsland)
     
     -- Send webhook
-    print("🔥 FOUND UNBREEDABLE ANIMAL: " .. animalName)
-    sendAnimalWebhook(animalName, currentIsland, bodyVariant, maneVariant, tailVariant, hornVariant)
+    print("🔥 FOUND SPECIAL ANIMAL: " .. animalName .. " (" .. specialType .. ")")
+    sendAnimalWebhook(animalName, currentIsland, bodyVariant, maneVariant, tailVariant, hornVariant, specialType)
 end
 
 -- Monitor the Animals GUI for visibility changes
@@ -276,7 +294,8 @@ local function setupMonitoring()
         end
     end)
     
-    print("👁️ Monitoring Animal Information GUI for unbreedable animals!")
+    print("👁️ Monitoring Animal Information GUI for special animals!")
+    print("  Looking for: Island Unique Hair, Special Island Unique Coat, Naturally Dyed, Horned")
 end
 
 -- Start monitoring
