@@ -1,4 +1,4 @@
--- Ultimate Performance Optimizer (Rendering Toggle + Terrain Optimizer)
+-- ddddddddddddddddddddd
 -- Run this via executor or place in StarterPlayerScripts
 
 local Players = game:GetService("Players")
@@ -45,10 +45,12 @@ local function reduceGraphicsQuality()
 	Lighting.Technology = Enum.Technology.Compatibility
 	
 	for _, effect in pairs(Lighting:GetChildren()) do
-		if effect:IsA("Atmosphere") or effect:IsA("BloomEffect") or 
-		   effect:IsA("BlurEffect") or effect:IsA("ColorCorrectionEffect") or
-		   effect:IsA("DepthOfFieldEffect") or effect:IsA("SunRaysEffect") then
+		if effect:IsA("BloomEffect") or effect:IsA("BlurEffect") or 
+		   effect:IsA("ColorCorrectionEffect") or effect:IsA("DepthOfFieldEffect") or 
+		   effect:IsA("SunRaysEffect") then
 			effect.Enabled = false
+		elseif effect:IsA("Atmosphere") then
+			effect:Destroy()
 		end
 	end
 	
