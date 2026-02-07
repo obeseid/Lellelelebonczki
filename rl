@@ -1,4 +1,4 @@
--- Ultimate Performance Optimizer (Rendering Toggle + Terrain Optimizer)
+-- ddddddddddddddddddddd
 -- Run this via executor or place in StarterPlayerScripts
 
 local Players = game:GetService("Players")
@@ -14,7 +14,7 @@ local renderingEnabled = true
 -- Configuration
 local CONFIG = {
 	UpdateInterval = 1,
-	RenderDistance = 128,
+	RenderDistance = 10,
 	UseExecutorFunctions = true,
 	AutoDisableRendering = true, -- Set to false if you want rendering ON at start
 }
