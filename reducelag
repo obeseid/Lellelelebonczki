@@ -1,4 +1,6 @@
--- aaaaaaaahhhhhhhhhhhhhhhddddddddddd
+-- Ultimate Performance Optimizer (Terrain + Graphics Only)
+-- Run this via executor or place in StarterPlayerScripts
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -7,14 +9,12 @@ local Lighting = game:GetService("Lighting")
 local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
 local terrain = Workspace.Terrain
-local renderingEnabled = true
 
 -- Configuration
 local CONFIG = {
 	UpdateInterval = 1,
 	RenderDistance = 10,
 	UseExecutorFunctions = true,
-	AutoDisableRendering = true, -- Set to false if you want rendering ON at start
 }
 
 -- Check if executor functions are available
@@ -139,36 +139,12 @@ local function aggressiveCleanup()
 end
 
 -- ============================================
--- RENDERING TOGGLE FUNCTIONS
+-- STATS DISPLAY
 -- ============================================
 
-local function toggleRendering()
-	renderingEnabled = not renderingEnabled
-	
-	pcall(function()
-		RunService:Set3dRenderingEnabled(renderingEnabled)
-	end)
-	
-	return renderingEnabled
-end
-
-local function updateButton(button, indicator, enabled)
-	if enabled then
-		button.Text = "🎥 Rendering: ON"
-		button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-		button.BorderColor3 = Color3.fromRGB(0, 255, 0)
-		indicator.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-	else
-		button.Text = "🎥 Rendering: OFF"
-		button.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
-		button.BorderColor3 = Color3.fromRGB(255, 0, 0)
-		indicator.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-	end
-end
-
-local function createGUI()
+local function createStatsDisplay()
 	local screenGui = Instance.new("ScreenGui")
-	screenGui.Name = "PerformanceOptimizer"
+	screenGui.Name = "PerformanceStats"
 	screenGui.ResetOnSpawn = false
 	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	
@@ -180,53 +156,9 @@ local function createGUI()
 		screenGui.Parent = player:WaitForChild("PlayerGui")
 	end
 	
-	-- Rendering toggle button
-	local renderButton = Instance.new("TextButton")
-	renderButton.Name = "RenderToggleButton"
-	renderButton.Size = UDim2.new(0, 180, 0, 50)
-	renderButton.Position = UDim2.new(1, -190, 0, 10)
-	renderButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	renderButton.BorderSizePixel = 2
-	renderButton.BorderColor3 = Color3.fromRGB(0, 255, 0)
-	renderButton.Font = Enum.Font.GothamBold
-	renderButton.TextSize = 16
-	renderButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-	renderButton.Text = "🎥 Rendering: ON"
-	renderButton.AutoButtonColor = false
-	renderButton.Parent = screenGui
-	
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 8)
-	corner.Parent = renderButton
-	
-	local shadow = Instance.new("Frame")
-	shadow.Size = UDim2.new(1, 4, 1, 4)
-	shadow.Position = UDim2.new(0, -2, 0, 2)
-	shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	shadow.BackgroundTransparency = 0.7
-	shadow.ZIndex = renderButton.ZIndex - 1
-	shadow.BorderSizePixel = 0
-	shadow.Parent = renderButton
-	
-	local shadowCorner = Instance.new("UICorner")
-	shadowCorner.CornerRadius = UDim.new(0, 8)
-	shadowCorner.Parent = shadow
-	
-	local indicator = Instance.new("Frame")
-	indicator.Size = UDim2.new(0, 10, 0, 10)
-	indicator.Position = UDim2.new(0, 10, 0.5, -5)
-	indicator.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-	indicator.BorderSizePixel = 0
-	indicator.Parent = renderButton
-	
-	local indicatorCorner = Instance.new("UICorner")
-	indicatorCorner.CornerRadius = UDim.new(1, 0)
-	indicatorCorner.Parent = indicator
-	
-	-- Stats display
 	local statsFrame = Instance.new("Frame")
 	statsFrame.Size = UDim2.new(0, 180, 0, 70)
-	statsFrame.Position = UDim2.new(1, -190, 0, 70)
+	statsFrame.Position = UDim2.new(1, -190, 0, 10)
 	statsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	statsFrame.BackgroundTransparency = 0.5
 	statsFrame.BorderSizePixel = 0
@@ -247,7 +179,7 @@ local function createGUI()
 	statsLabel.TextYAlignment = Enum.TextYAlignment.Top
 	statsLabel.Parent = statsFrame
 	
-	return screenGui, renderButton, indicator, statsLabel
+	return statsLabel
 end
 
 -- ============================================
@@ -262,45 +194,23 @@ reduceGraphicsQuality()
 executorOptimizations()
 optimizeCameraSettings()
 
--- Create GUI
-local screenGui, renderButton, indicator, statsLabel = createGUI()
-
--- Button hover effect
-renderButton.MouseEnter:Connect(function()
-	renderButton.BackgroundTransparency = 0.2
+-- Disable rendering immediately
+wait(0.5)
+pcall(function()
+	RunService:Set3dRenderingEnabled(false)
 end)
+print("🔴 3D Rendering DISABLED for maximum performance!")
 
-renderButton.MouseLeave:Connect(function()
-	renderButton.BackgroundTransparency = 0
-end)
-
--- Button click event
-renderButton.MouseButton1Click:Connect(function()
-	local enabled = toggleRendering()
-	updateButton(renderButton, indicator, enabled)
-	
-	local sound = Instance.new("Sound")
-	sound.SoundId = "rbxasset://sounds/button.wav"
-	sound.Volume = 0.5
-	sound.Parent = screenGui
-	sound:Play()
-	game:GetService("Debris"):AddItem(sound, 1)
-	
-	local originalSize = renderButton.Size
-	renderButton.Size = UDim2.new(0, 175, 0, 48)
-	wait(0.1)
-	renderButton.Size = originalSize
-end)
+-- Create stats display
+local statsLabel = createStatsDisplay()
 
 -- Stats update loop
 RunService.RenderStepped:Connect(function()
 	local memoryMB = math.floor(gcinfo() / 1024)
-	local cpuStatus = renderingEnabled and "Normal" or "Ultra Low"
 	
 	statsLabel.Text = string.format(
-		"Memory: %d MB\nCPU Mode: %s\nRender Dist: %d",
+		"Memory: %d MB\nRender Dist: %d\nOptimized: ON",
 		memoryMB,
-		cpuStatus,
 		CONFIG.RenderDistance
 	)
 end)
@@ -319,14 +229,6 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
--- Auto-disable rendering if configured
-if CONFIG.AutoDisableRendering then
-	wait(0.5)
-	renderingEnabled = toggleRendering()
-	updateButton(renderButton, indicator, renderingEnabled)
-	print("Rendering automatically disabled for maximum performance!")
-end
-
 print("✅ Ultimate Performance Optimizer loaded!")
 print("📊 Features active:")
 print("  - Terrain optimization (128 stud render distance)")
@@ -335,8 +237,5 @@ print("  - Aggressive memory cleanup")
 print("  - Particle effects removed")
 if hasExecutor then
 	print("  - Executor optimizations (FPS capped at 30)")
-end
-if CONFIG.AutoDisableRendering then
-	print("  - 3D Rendering DISABLED (click button to enable)")
 end
 print("💡 Current memory usage:", math.floor(gcinfo() / 1024), "MB")
