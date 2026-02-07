@@ -14,7 +14,7 @@ local renderingEnabled = true
 -- Configuration
 local CONFIG = {
 	UpdateInterval = 1,
-	RenderDistance = 128,
+	RenderDistance = 10,
 	UseExecutorFunctions = true,
 	AutoDisableRendering = true, -- Set to false if you want rendering ON at start
 }
