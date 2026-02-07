@@ -1,6 +1,4 @@
--- aaaaaaaaaaaaaaaaaaaaaa
--- Run this via executor or place in StarterPlayerScripts
-
+-- aaaaaaaahhhhhhhhhhhhhhhhhhh
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
