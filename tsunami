@@ -1,0 +1,29 @@
+-- Model Destroyer Script
+-- Destroys models named "Slow", "Medium", "Hard", or "Beast" when they appear in Workspace
+
+local targetModels = {
+    ["Slow"] = true,
+    ["Medium"] = true,
+    ["Hard"] = true,
+    ["Beast"] = true
+}
+
+-- Function to check and destroy matching models
+local function checkAndDestroy(instance)
+    if instance:IsA("Model") and targetModels[instance.Name] then
+        print("Destroying model:", instance.Name)
+        instance:Destroy()
+    end
+end
+
+-- Check all existing models in Workspace
+for _, child in pairs(workspace:GetChildren()) do
+    checkAndDestroy(child)
+end
+
+-- Monitor for new models being added
+workspace.ChildAdded:Connect(function(child)
+    checkAndDestroy(child)
+end)
+
+print("Model Destroyer script active - monitoring for Slow, Medium, Hard, and Beast models")
