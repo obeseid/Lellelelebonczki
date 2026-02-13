@@ -77,6 +77,7 @@ local function clickButtonVIM(button)
 	-- Add 5-pixel right offset for close button
 	if button.Name == "CloseMenu" then
 		centerX = centerX + 5
+		centerY = centerY + 2
 	end
 	
 	-- Simulate mouse click at button center
