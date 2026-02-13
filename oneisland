@@ -69,6 +69,11 @@ local function clickButtonVIM(button)
 	local centerX = buttonPos.X + (buttonSize.X / 2) + 12
 	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50  -- Added 50 pixels down
 	
+	-- Add 5-pixel right offset for close button
+	if button.Name == "CloseMenu" then
+		centerX = centerX + 5
+	end
+	
 	-- Simulate mouse click at button center
 	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
 	task.wait(0.1)
