@@ -1,4 +1,4 @@
--- ServicesNga
+-- ServicesNgavwwww
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
@@ -81,11 +81,22 @@ local function clickButtonActivated(button)
 
 	print("Clicking button: " .. button.Name)
 
-	button:FireMouseButton1Down()
+	-- Fire MouseButton1Down
+	for _, connection in pairs(getconnections(button.MouseButton1Down)) do
+		connection:Fire()
+	end
 	task.wait(0.05)
-	button:FireMouseButton1Up()
+
+	-- Fire MouseButton1Up
+	for _, connection in pairs(getconnections(button.MouseButton1Up)) do
+		connection:Fire()
+	end
 	task.wait(0.05)
-	firesignal(button.Activated)
+
+	-- Fire Activated
+	for _, connection in pairs(getconnections(button.Activated)) do
+		connection:Fire()
+	end
 
 	print("Click sequence done on: " .. button.Name)
 end
