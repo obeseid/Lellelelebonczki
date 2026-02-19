@@ -1,13 +1,9 @@
--- ServicesNgaaaaaa
+-- ServicesNga
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
 local VIM = game:GetService("VirtualInputManager")
 local Camera = workspace.CurrentCamera
-local RunService = game:GetService("RunService")
-
--- Configuration
-local FLY_SPEED = 50
 
 -- State
 local currentTask
@@ -85,22 +81,11 @@ local function clickButtonActivated(button)
 
 	print("Clicking button: " .. button.Name)
 
-	-- Get button center position
-	local buttonPos = button.AbsolutePosition
-	local buttonSize = button.AbsoluteSize
-	local centerX = buttonPos.X + (buttonSize.X / 2)
-	local centerY = buttonPos.Y + (buttonSize.Y / 2)
-
-	-- Fire MouseButton1Down
 	button:FireMouseButton1Down()
 	task.wait(0.05)
-	-- Fire MouseButton1Up
 	button:FireMouseButton1Up()
 	task.wait(0.05)
-	-- Fire Activated via VIM click at button center
-	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
-	task.wait(0.05)
-	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+	firesignal(button.Activated)
 
 	print("Click sequence done on: " .. button.Name)
 end
@@ -256,6 +241,7 @@ local function followLoopFrom(folder)
 
 	local char = lp.Character or lp.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
 
 	local function getValidTargets()
 		local targets = {}
@@ -295,7 +281,7 @@ local function followLoopFrom(folder)
 
 			local now = tick()
 
-			-- Switch target every 15 seconds or if lost, and teleport to it
+			-- Switch target every 15 seconds or if lost
 			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
 				local targets = getValidTargets()
 				if #targets > 0 then
@@ -307,7 +293,6 @@ local function followLoopFrom(folder)
 					currentTarget = newTarget
 					lastSwitch = now
 
-					-- Teleport to new target
 					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
 					if targetHRP then
 						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
@@ -315,27 +300,21 @@ local function followLoopFrom(folder)
 				end
 			end
 
-			-- Fly toward current target
+			-- Follow current target
 			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
 				local targetHRP = currentTarget.HumanoidRootPart
-				local targetPos = targetHRP.Position + Vector3.new(0, 0, -4)
 				local distance = (hrp.Position - targetHRP.Position).Magnitude
 
 				if distance > 6 then
-					local direction = (targetPos - hrp.Position)
-					if direction.Magnitude > 0.1 then
-						hrp.CFrame = CFrame.lookAt(hrp.Position, hrp.Position + direction.Unit)
-							* CFrame.new(0, 0, -math.min(FLY_SPEED * 0.2, direction.Magnitude))
-					end
+					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
 				end
 
-				-- Teleport if too far
 				if distance > 30 then
 					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
 				end
 			end
 
-			RunService.Heartbeat:Wait()
+			task.wait(0.2)
 		end
 	end)
 end
