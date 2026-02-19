@@ -1,10 +1,13 @@
--- ServicesNga
+-- ServicesNgaaaaaa
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
 local VIM = game:GetService("VirtualInputManager")
 local Camera = workspace.CurrentCamera
 local RunService = game:GetService("RunService")
+
+-- Configuration
+local FLY_SPEED = 50
 
 -- State
 local currentTask
@@ -39,9 +42,6 @@ task.spawn(function()
 		VirtualUser:Button1Up(Vector2.new(0, 0))
 	end
 end)
-
--- Configuration
-local FLY_SPEED = 30
 
 -- Virtual Input Manager Functions
 local function getScreenSize()
@@ -82,9 +82,27 @@ local function clickButtonActivated(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
 		return
 	end
-	print("Clicking button with Activated event: " .. button.Name)
-	button:Activate()
-	print("Activated click sent on: " .. button.Name)
+
+	print("Clicking button: " .. button.Name)
+
+	-- Get button center position
+	local buttonPos = button.AbsolutePosition
+	local buttonSize = button.AbsoluteSize
+	local centerX = buttonPos.X + (buttonSize.X / 2)
+	local centerY = buttonPos.Y + (buttonSize.Y / 2)
+
+	-- Fire MouseButton1Down
+	button:FireMouseButton1Down()
+	task.wait(0.05)
+	-- Fire MouseButton1Up
+	button:FireMouseButton1Up()
+	task.wait(0.05)
+	-- Fire Activated via VIM click at button center
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+	task.wait(0.05)
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+
+	print("Click sequence done on: " .. button.Name)
 end
 
 local function clickYesButtonVIM(button)
@@ -165,32 +183,6 @@ local function onItemInfoOpened()
 	isBreeding = false
 end
 
--- Fly to a target position (moves player character smoothly)
-local function flyToPosition(hrp, targetPos, shouldContinue)
-	local startPos = hrp.Position
-	local distance = (targetPos - startPos).Magnitude
-	local duration = distance / FLY_SPEED
-	local startTime = tick()
-
-	while tick() - startTime < duration do
-		if not shouldContinue() then return false end
-
-		local alpha = math.min((tick() - startTime) / duration, 1)
-		local currentPos = startPos:Lerp(targetPos, alpha)
-
-		local direction = (targetPos - currentPos)
-		if direction.Magnitude > 0.1 then
-			hrp.CFrame = CFrame.lookAt(currentPos, currentPos + direction.Unit)
-		else
-			hrp.CFrame = CFrame.new(currentPos, hrp.CFrame.LookVector)
-		end
-
-		RunService.Heartbeat:Wait()
-	end
-
-	return true
-end
-
 -- Create GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "HorseCatcherGUI"
@@ -256,7 +248,7 @@ local function getCurrentIsland()
 	return nil
 end
 
--- Follow Logic (fly-based)
+-- Follow Logic
 local function followLoopFrom(folder)
 	if currentTask then
 		task.cancel(currentTask)
@@ -264,11 +256,6 @@ local function followLoopFrom(folder)
 
 	local char = lp.Character or lp.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
-	local humanoid = char:WaitForChild("Humanoid")
-
-	-- Disable humanoid auto-movement so we can fly freely
-	humanoid.WalkSpeed = 0
-	humanoid.JumpPower = 0
 
 	local function getValidTargets()
 		local targets = {}
@@ -308,7 +295,7 @@ local function followLoopFrom(folder)
 
 			local now = tick()
 
-			-- Switch target every 15 seconds or if lost
+			-- Switch target every 15 seconds or if lost, and teleport to it
 			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
 				local targets = getValidTargets()
 				if #targets > 0 then
@@ -319,6 +306,12 @@ local function followLoopFrom(folder)
 
 					currentTarget = newTarget
 					lastSwitch = now
+
+					-- Teleport to new target
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
+					end
 				end
 			end
 
@@ -326,23 +319,23 @@ local function followLoopFrom(folder)
 			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
 				local targetHRP = currentTarget.HumanoidRootPart
 				local targetPos = targetHRP.Position + Vector3.new(0, 0, -4)
+				local distance = (hrp.Position - targetHRP.Position).Magnitude
 
-				-- Continuously fly toward the target; re-evaluate every frame
-				flyToPosition(hrp, targetPos, function()
-					-- Stop flying if paused, task cancelled, or target gone
-					if isPaused or not currentTarget or not currentTarget.Parent then
-						return false
+				if distance > 6 then
+					local direction = (targetPos - hrp.Position)
+					if direction.Magnitude > 0.1 then
+						hrp.CFrame = CFrame.lookAt(hrp.Position, hrp.Position + direction.Unit)
+							* CFrame.new(0, 0, -math.min(FLY_SPEED * 0.2, direction.Magnitude))
 					end
-					-- If target has moved significantly, break early to re-target
-					local newTargetPos = targetHRP.Position + Vector3.new(0, 0, -4)
-					if (newTargetPos - targetPos).Magnitude > 8 then
-						return false
-					end
-					return true
-				end)
-			else
-				task.wait(0.2)
+				end
+
+				-- Teleport if too far
+				if distance > 30 then
+					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+				end
 			end
+
+			RunService.Heartbeat:Wait()
 		end
 	end)
 end
@@ -398,7 +391,7 @@ task.spawn(function()
 	end
 end)
 
--- Restore humanoid speed on respawn and re-init
+-- Handle respawn
 lp.CharacterAdded:Connect(function()
 	task.wait(1)
 	updateIsland()
