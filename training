@@ -1,3 +1,5 @@
+-- hihi
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local RunService = game:GetService("RunService")
@@ -42,11 +44,11 @@ spawn(function()
     end
 end)
 
--- Get the checkpoints path
-local checkpointsPath = workspace.Islands["Training Island"]["Race Track"].DynamicArena._LAYOUT.CheckpointActivity.Routes.Checkpoints
+-- Get the CheckpointMarker Neon part
+local neonPart = workspace:WaitForChild("CheckpointMarker"):WaitForChild("Neon")
 
-if not checkpointsPath then
-    warn("Checkpoints path not found!")
+if not neonPart then
+    warn("CheckpointMarker Neon not found!")
     return
 end
 
@@ -73,7 +75,7 @@ local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 35)
 titleLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 titleLabel.BorderSizePixel = 0
-titleLabel.Text = "Checkpoint Flight"
+titleLabel.Text = "Nigga flight-"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 18
 titleLabel.Font = Enum.Font.GothamBold
@@ -188,7 +190,7 @@ local progressLabel = Instance.new("TextLabel")
 progressLabel.Size = UDim2.new(1, -20, 0, 22)
 progressLabel.Position = UDim2.new(0, 10, 0, 135)
 progressLabel.BackgroundTransparency = 1
-progressLabel.Text = "Folder: 0/6 | Part: 0/0"
+progressLabel.Text = "Moving to: CheckpointMarker.Neon"
 progressLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
 progressLabel.TextSize = 11
 progressLabel.Font = Enum.Font.Gotham
@@ -276,53 +278,22 @@ local function moveToPosition(targetPos)
     return true
 end
 
--- Main flight function
+-- Main flight function — continuously follows workspace.CheckpointMarker.Neon
 local function startFlight()
     while isRunning do
-        for folderNum = 1, 6 do
-            if not isRunning then break end
-            
-            local folder = checkpointsPath:FindFirstChild(tostring(folderNum))
-            
-            if folder then
-                local parts = {}
-                for _, child in ipairs(folder:GetChildren()) do
-                    if child:IsA("BasePart") then
-                        table.insert(parts, child)
-                    end
-                end
-                
-                table.sort(parts, function(a, b)
-                    local numA = tonumber(a.Name)
-                    local numB = tonumber(b.Name)
-                    if numA and numB then
-                        return numA < numB
-                    end
-                    return a.Name < b.Name
-                end)
-                
-                for i, part in ipairs(parts) do
-                    if not isRunning then break end
-                    
-                    progressLabel.Text = "Folder: " .. folderNum .. "/6 | Part: " .. i .. "/" .. #parts
-                    
-                    while isPaused and isRunning do
-                        wait(0.1)
-                    end
-                    
-                    if not isRunning then break end
-                    
-                    local success = moveToPosition(part.Position)
-                    if not success then break end
-                    
-                    wait(0.5)
-                end
-            end
+        while isPaused and isRunning do
+            wait(0.1)
         end
-        
-        if isRunning then
-            wait(1)
-        end
+
+        if not isRunning then break end
+
+        -- Always read the current position of the Neon part each frame
+        local targetPos = neonPart.Position
+        progressLabel.Text = string.format("Target: (%.1f, %.1f, %.1f)", targetPos.X, targetPos.Y, targetPos.Z)
+
+        moveToPosition(targetPos)
+
+        wait(0.05) -- Small delay before re-checking position
     end
 end
 
