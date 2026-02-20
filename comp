@@ -1,0 +1,288 @@
+-- IslandMoverScript (LocalScript inside StarterPlayerScripts or run via executor)
+-- Moves workspace.Islands["Competition Hub"] 10 studs underground and glides it to CheckpointMarkers
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+-- ============================================================
+-- CONFIG
+-- ============================================================
+local MODEL_PATH = {"Islands", "Competition Hub", "{fca161b0-5821-45ce-80b2-7d321c9d95a3}} -- workspace.Islands["Competition Hub"]
+local UNDERGROUND_OFFSET = -10       -- studs below ground (Y offset applied to original position)
+local GLIDE_SPEED = 8                -- studs per second (keep it smooth, not too fast)
+local SCAN_INTERVAL = 1              -- seconds between scanning for new CheckpointMarkers
+-- ============================================================
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Resolve the target model
+local function getModel()
+    local current = workspace
+    for _, name in ipairs(MODEL_PATH) do
+        current = current:FindFirstChild(name)
+        if not current then return nil end
+    end
+    return current
+end
+
+-- Get the PrimaryPart or first BasePart of the model
+local function getPrimaryPart(model)
+    if model.PrimaryPart then return model.PrimaryPart end
+    for _, v in ipairs(model:GetDescendants()) do
+        if v:IsA("BasePart") then return v end
+    end
+    return nil
+end
+
+-- ============================================================
+-- State
+-- ============================================================
+local running = false
+local originalCFrame = nil
+local buriedCFrame = nil
+local activeTween = nil
+local scanConnection = nil
+local checkpointQueue = {}
+local visitedCheckpoints = {}
+local processingQueue = false
+
+-- ============================================================
+-- GUI Setup
+-- ============================================================
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "IslandMoverGui"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 80)
+frame.Position = UDim2.new(0.5, -100, 0, 20)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+local startBtn = Instance.new("TextButton")
+startBtn.Size = UDim2.new(0.45, 0, 0.7, 0)
+startBtn.Position = UDim2.new(0.04, 0, 0.15, 0)
+startBtn.BackgroundColor3 = Color3.fromRGB(50, 180, 80)
+startBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+startBtn.Text = "Start"
+startBtn.Font = Enum.Font.GothamBold
+startBtn.TextSize = 16
+startBtn.BorderSizePixel = 0
+startBtn.Parent = frame
+
+local startCorner = Instance.new("UICorner")
+startCorner.CornerRadius = UDim.new(0, 8)
+startCorner.Parent = startBtn
+
+local stopBtn = Instance.new("TextButton")
+stopBtn.Size = UDim2.new(0.45, 0, 0.7, 0)
+stopBtn.Position = UDim2.new(0.51, 0, 0.15, 0)
+stopBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+stopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopBtn.Text = "Stop"
+stopBtn.Font = Enum.Font.GothamBold
+stopBtn.TextSize = 16
+stopBtn.BorderSizePixel = 0
+stopBtn.Parent = frame
+
+local stopCorner = Instance.new("UICorner")
+stopCorner.CornerRadius = UDim.new(0, 8)
+stopCorner.Parent = stopBtn
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 14)
+statusLabel.Position = UDim2.new(0, 0, 1, 2)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.Text = "Idle"
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextSize = 12
+statusLabel.Parent = frame
+
+-- ============================================================
+-- Logic
+-- ============================================================
+
+local function setStatus(msg)
+    statusLabel.Text = msg
+end
+
+local function buryModel(model)
+    local primary = getPrimaryPart(model)
+    if not primary then
+        warn("No PrimaryPart found on model!")
+        return false
+    end
+    if not originalCFrame then
+        originalCFrame = model:GetPrimaryPartCFrame()
+    end
+    buriedCFrame = originalCFrame + Vector3.new(0, UNDERGROUND_OFFSET, 0)
+    model:SetPrimaryPartCFrame(buriedCFrame)
+    return true
+end
+
+local function tweenModelTo(model, targetPosition, onComplete)
+    if activeTween then
+        activeTween:Cancel()
+        activeTween = nil
+    end
+    local primary = getPrimaryPart(model)
+    if not primary then return end
+
+    -- Calculate distance to determine tween time
+    local currentPos = primary.Position
+    local distance = (Vector3.new(targetPosition.X, currentPos.Y, targetPosition.Z) - currentPos).Magnitude
+    local tweenTime = distance / GLIDE_SPEED
+
+    -- Target CFrame: move X/Z to checkpoint, keep Y underground
+    local targetCFrame = CFrame.new(targetPosition.X, currentPos.Y, targetPosition.Z)
+
+    local info = TweenInfo.new(tweenTime, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+    local tween = TweenService:Create(primary, info, {CFrame = targetCFrame})
+
+    -- Also move all other parts relative to primary
+    -- Use model:SetPrimaryPartCFrame approach via a RunService loop instead for full model movement
+    -- since TweenService only moves the primary part
+
+    -- We'll do it via a coroutine loop for full-model movement
+    local startCFrame = primary.CFrame
+    local elapsed = 0
+    local connection
+    connection = RunService.Heartbeat:Connect(function(dt)
+        if not running then
+            connection:Disconnect()
+            return
+        end
+        elapsed = elapsed + dt
+        local alpha = math.min(elapsed / tweenTime, 1)
+        -- Sine ease in-out
+        local t = alpha < 0.5 and (2 * alpha * alpha) or (1 - (-2 * alpha + 2)^2 / 2)
+        local newCF = startCFrame:Lerp(targetCFrame, t)
+        model:SetPrimaryPartCFrame(newCF)
+        if alpha >= 1 then
+            connection:Disconnect()
+            if onComplete then onComplete() end
+        end
+    end)
+    activeTween = { Cancel = function() connection:Disconnect() end }
+end
+
+local function processNextCheckpoint(model)
+    if not running then return end
+    if #checkpointQueue == 0 then
+        processingQueue = false
+        setStatus("Waiting for checkpoints...")
+        return
+    end
+    processingQueue = true
+    local checkpoint = table.remove(checkpointQueue, 1)
+    -- Make sure checkpoint still exists
+    if not checkpoint or not checkpoint.Parent then
+        processNextCheckpoint(model)
+        return
+    end
+    local cpPos = checkpoint:IsA("Model") and (checkpoint.PrimaryPart or checkpoint:FindFirstChildWhichIsA("BasePart"))
+        or checkpoint:IsA("BasePart") and checkpoint
+    if not cpPos then
+        processNextCheckpoint(model)
+        return
+    end
+    setStatus("Gliding to: " .. checkpoint.Name)
+    tweenModelTo(model, cpPos.Position, function()
+        processNextCheckpoint(model)
+    end)
+end
+
+local function onCheckpointAdded(instance, model)
+    if not running then return end
+    -- Accept Models or Parts named CheckpointMarker
+    if instance.Name == "CheckpointMarker" then
+        if not visitedCheckpoints[instance] then
+            visitedCheckpoints[instance] = true
+            table.insert(checkpointQueue, instance)
+            if not processingQueue then
+                processNextCheckpoint(model)
+            end
+        end
+    end
+end
+
+local function startScript()
+    if running then return end
+    local model = getModel()
+    if not model then
+        setStatus("Model not found!")
+        warn("Could not find model at: workspace." .. table.concat(MODEL_PATH, "."))
+        return
+    end
+    running = true
+    checkpointQueue = {}
+    visitedCheckpoints = {}
+    processingQueue = false
+
+    -- Bury the model
+    if not buryModel(model) then
+        running = false
+        setStatus("Failed to bury model.")
+        return
+    end
+    setStatus("Running - Scanning...")
+
+    -- Scan existing CheckpointMarkers
+    for _, child in ipairs(workspace:GetDescendants()) do
+        if child.Name == "CheckpointMarker" and not visitedCheckpoints[child] then
+            visitedCheckpoints[child] = true
+            table.insert(checkpointQueue, child)
+        end
+    end
+    if #checkpointQueue > 0 and not processingQueue then
+        processNextCheckpoint(model)
+    end
+
+    -- Watch for new CheckpointMarkers
+    scanConnection = workspace.DescendantAdded:Connect(function(inst)
+        onCheckpointAdded(inst, model)
+    end)
+end
+
+local function stopScript()
+    if not running then return end
+    running = false
+    if activeTween then
+        activeTween:Cancel()
+        activeTween = nil
+    end
+    if scanConnection then
+        scanConnection:Disconnect()
+        scanConnection = nil
+    end
+    processingQueue = false
+    checkpointQueue = {}
+    visitedCheckpoints = {}
+
+    -- Restore original position
+    local model = getModel()
+    if model and originalCFrame then
+        model:SetPrimaryPartCFrame(originalCFrame)
+    end
+    originalCFrame = nil
+    buriedCFrame = nil
+    setStatus("Stopped.")
+end
+
+-- ============================================================
+-- Button Events
+-- ============================================================
+startBtn.MouseButton1Click:Connect(startScript)
+stopBtn.MouseButton1Click:Connect(stopScript)
+
+print("[IslandMover] Script loaded. Press Start to begin.")
