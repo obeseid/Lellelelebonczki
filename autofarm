@@ -99,14 +99,14 @@ local Button = Tab:CreateButton({
 
 -- EXCLUSIVE TAB
 
-local Button = Exclusive:CreateButton({
+local Button = Exc:CreateButton({
    Name = "brudna kasia",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/onika'))()
    end,
 })
 
-local Button = Exclusive:CreateButton({
+local Button = Exc:CreateButton({
    Name = "ania",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/ania'))()
