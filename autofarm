@@ -38,6 +38,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
+local Exc = Window:CreateTab("Exclusive", 4483362458) -- exclusive ngas
 local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 local Section = Misc:CreateSection("Mystery Scripts")
 
@@ -96,7 +97,23 @@ local Button = Tab:CreateButton({
    end,
 })
 
--- misc buttons alright
+-- EXCLUSIVE TAB
+
+local Button = Exclusive:CreateButton({
+   Name = "brudna kasia",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/onika'))()
+   end,
+})
+
+local Button = Exclusive:CreateButton({
+   Name = "ania",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/ania'))()
+   end,
+})
+
+-- MISC TAB
 
 local Button = Misc:CreateButton({
    Name = "Auto sell (must be at Larry)",
