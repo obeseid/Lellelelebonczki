@@ -43,7 +43,7 @@ local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 local Section = Misc:CreateSection("Mystery Scripts")
 
 
-local Paragraph = Tab:CreateParagraph({Title = "Last update 03/02/26", Content = "Autosell dziala ale trzeba otworzyc renifera przez autofarma okej"})
+local Paragraph = Tab:CreateParagraph({Title = "czesc bieda nie moze uzywac", Content = "malo inteligentne zdziry maja teraz ekskuzive skrypty bo sa otyle i prostackie"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
