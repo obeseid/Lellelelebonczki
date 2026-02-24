@@ -22,12 +22,8 @@ local function clickButton(button)
 	end
 	task.wait(0.05)
 
-	local fakeInput = Instance.new("InputObject")
-	fakeInput.UserInputType = Enum.UserInputType.MouseButton1
-	fakeInput.UserInputState = Enum.UserInputState.End
-
-	for _, connection in pairs(getconnections(button.Activated)) do
-		connection:Fire(fakeInput, 1)
+	for _, connection in pairs(getconnections(button.TouchTap)) do
+		connection:Fire({Vector2.new(0, 0)})
 	end
 end
 
@@ -83,3 +79,5 @@ itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
 		onItemInfoOpened()
 	end
 end)
+
+print("uu")
