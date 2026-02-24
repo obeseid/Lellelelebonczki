@@ -1,0 +1,83 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local itemInfoFrame = playerGui:WaitForChild("SubMenus"):WaitForChild("Item Information")
+local indicatorLabel = itemInfoFrame.Animals.Main.Content.Top.Labels.IndicatorLabel
+local closeButton = itemInfoFrame.Animals.Main.CloseMenu
+local buttonsContainer = itemInfoFrame.Animals.Main.Content.Buttons
+local TARGET_IMAGE_ID = "rbxassetid://13116451197"
+
+local function clickButton(button)
+	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
+		return
+	end
+
+	for _, connection in pairs(getconnections(button.MouseButton1Down)) do
+		connection:Fire()
+	end
+	task.wait(0.05)
+
+	for _, connection in pairs(getconnections(button.MouseButton1Up)) do
+		connection:Fire()
+	end
+	task.wait(0.05)
+
+	for _, connection in pairs(getconnections(button.Activated)) do
+		connection:Fire()
+	end
+end
+
+local function onItemInfoOpened()
+	if not itemInfoFrame.Visible then
+		return
+	end
+
+	task.wait(0.5)
+
+	local labelText = indicatorLabel.Text
+
+	if string.find(labelText, "Unbreedable") then
+		print("Item is Unbreedable, closing menu")
+		clickButton(closeButton)
+	else
+		print("Item is breedable, looking for breed button")
+
+		for _, child in ipairs(buttonsContainer:GetChildren()) do
+			if child.Name == "OptionButton" then
+				local imageLabel = child:FindFirstChildWhichIsA("ImageLabel")
+				if imageLabel and imageLabel.Image == TARGET_IMAGE_ID then
+					print("Found breeding button, clicking it")
+					clickButton(child)
+
+					task.wait(1)
+
+					local prompts = playerGui:WaitForChild("Prompts")
+					local yesNo = prompts:WaitForChild("YesNo", 5)
+					if not yesNo then
+						print("YesNo prompt never appeared")
+						return
+					end
+					task.wait(0.3)
+
+					local yesButton = yesNo.Content.Frame.Yes
+					if yesButton then
+						print("Clicking Yes button")
+						fireclick(yesButton)
+					else
+						print("Yes button not found in prompt")
+					end
+
+					break
+				end
+			end
+		end
+	end
+end
+
+itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+	if itemInfoFrame.Visible then
+		onItemInfoOpened()
+	end
+end)
+
+print("trr")
