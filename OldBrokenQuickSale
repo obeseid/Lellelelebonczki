@@ -11,19 +11,19 @@ local function clickButton(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
 		return
 	end
-
+	
 	for _, connection in pairs(getconnections(button.MouseButton1Down)) do
 		connection:Fire()
 	end
 	task.wait(0.05)
-
+	
 	for _, connection in pairs(getconnections(button.MouseButton1Up)) do
 		connection:Fire()
 	end
 	task.wait(0.05)
-
-	for _, connection in pairs(getconnections(button.TouchTap)) do
-		connection:Fire({Vector2.new(0, 0)})
+	
+	for _, connection in pairs(getconnections(button.Activated)) do
+		connection:Fire()
 	end
 end
 
@@ -31,42 +31,30 @@ local function onItemInfoOpened()
 	if not itemInfoFrame.Visible then
 		return
 	end
-
+	
 	task.wait(0.5)
-
+	
 	local labelText = indicatorLabel.Text
-
+	
 	if string.find(labelText, "Unbreedable") then
 		print("Item is Unbreedable, closing menu")
 		clickButton(closeButton)
 	else
 		print("Item is breedable, looking for breed button")
-
+		
 		for _, child in ipairs(buttonsContainer:GetChildren()) do
 			if child.Name == "OptionButton" then
 				local imageLabel = child:FindFirstChildWhichIsA("ImageLabel")
 				if imageLabel and imageLabel.Image == TARGET_IMAGE_ID then
 					print("Found breeding button, clicking it")
 					clickButton(child)
-
+					
 					task.wait(1)
-
-					local prompts = playerGui:WaitForChild("Prompts")
-					local yesNo = prompts:WaitForChild("YesNo", 5)
-					if not yesNo then
-						print("YesNo prompt never appeared")
-						return
-					end
-					task.wait(0.3)
-
-					local yesButton = yesNo.Content.Frame.Yes
-					if yesButton then
-						print("Clicking Yes button")
-						clickButton(yesButton)
-					else
-						print("Yes button not found in prompt")
-					end
-
+					
+					local yesButton = playerGui:WaitForChild("Prompts"):WaitForChild("YesNo").Content.Frame.Yes
+					print("Clicking Yes button")
+					clickButton(yesButton)
+					
 					break
 				end
 			end
@@ -80,4 +68,4 @@ itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
 	end
 end)
 
-print("uu")
+print("67")
