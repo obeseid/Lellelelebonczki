@@ -29,10 +29,10 @@ local function clickButton(button)
 	end
 	task.wait(0.05)
 	
-	-- Fire Activated
-	for _, connection in pairs(getconnections(button.Activated)) do
-		connection:Fire()
-	end
+    -- Use MouseButton1Click instead of Activated
+    for _, connection in pairs(getconnections(button.MouseButton1Click)) do
+        connection:Fire()
+    end
 end
 
 -- Function to handle when Item Information frame opens
