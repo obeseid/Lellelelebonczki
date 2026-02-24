@@ -22,7 +22,7 @@ local function clickButton(button)
 	end
 	task.wait(0.05)
 
-	for _, connection in pairs(getconnections(button.Activated)) do
+	for _, connection in pairs(getconnections(button.TouchTap)) do
 		connection:Fire()
 	end
 end
@@ -62,7 +62,7 @@ local function onItemInfoOpened()
 					local yesButton = yesNo.Content.Frame.Yes
 					if yesButton then
 						print("Clicking Yes button")
-						fireclick(yesButton)
+						clickButton(yesButton)
 					else
 						print("Yes button not found in prompt")
 					end
@@ -80,4 +80,4 @@ itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
 	end
 end)
 
-print("trr")
+print("djdjs")
