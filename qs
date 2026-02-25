@@ -1,3 +1,4 @@
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -66,11 +67,7 @@ local function onItemInfoOpened()
 						print("Firing QuickSellItem for: " .. tostring(itemID))
 						Network:FireServer("QuickSellItem", itemID)
 					else
-						print("Could not find ItemID, falling back to clickButton")
-						local yesButton = yesNo.Content.Frame.Yes
-						if yesButton then
-							clickButton(yesButton)
-						end
+						print("Could not find ItemID " .. err)
 					end
 
 					break
@@ -86,4 +83,5 @@ itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
 	end
 end)
 
-print("eee")
+
+print("essssssssssssssssssssssssse")
