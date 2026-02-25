@@ -66,10 +66,7 @@ local function onItemInfoOpened()
 						print("Firing QuickSellItem for: " .. tostring(itemID))
 						Network:FireServer("QuickSellItem", itemID)
 					else
-						print("Could not find ItemID, falling back to clickButton")
-						local yesButton = yesNo.Content.Frame.Yes
-						if yesButton then
-							clickButton(yesButton)
+						print("Could not find ItemID " .. err)
 						end
 					end
 
@@ -87,4 +84,4 @@ itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
 end)
 
 
-print("eee")
+print("essssssssssssssssssssssssse")
