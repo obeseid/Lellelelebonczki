@@ -6,7 +6,7 @@ local indicatorLabel = itemInfoFrame.Animals.Main.Content.Top.Labels.IndicatorLa
 local closeButton = itemInfoFrame.Animals.Main.CloseMenu
 local buttonsContainer = itemInfoFrame.Animals.Main.Content.Buttons
 local TARGET_IMAGE_ID = "rbxassetid://13116451197"
-local Network = require(game:GetService("ReplicatedStorage").References.Utilities.Network)
+local Network = require(game:GetService("ReplicatedStorage").References.Utilities.Shared.Network)
 
 local function clickButton(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
@@ -85,3 +85,6 @@ itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
 		onItemInfoOpened()
 	end
 end)
+
+
+print("eee")
