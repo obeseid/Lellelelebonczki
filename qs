@@ -6,6 +6,7 @@ local indicatorLabel = itemInfoFrame.Animals.Main.Content.Top.Labels.IndicatorLa
 local closeButton = itemInfoFrame.Animals.Main.CloseMenu
 local buttonsContainer = itemInfoFrame.Animals.Main.Content.Buttons
 local TARGET_IMAGE_ID = "rbxassetid://13116451197"
+local Network = require(game:GetService("ReplicatedStorage").References.Utilities.Network)
 
 local function clickButton(button)
 	if not button:IsA("TextButton") and not button:IsA("ImageButton") then
@@ -22,7 +23,7 @@ local function clickButton(button)
 	end
 	task.wait(0.05)
 
-	for _, connection in pairs(getconnections(button.TouchTap)) do
+	for _, connection in pairs(getconnections(button.Activated)) do
 		connection:Fire()
 	end
 end
@@ -59,12 +60,17 @@ local function onItemInfoOpened()
 					end
 					task.wait(0.3)
 
-					local yesButton = yesNo.Content.Frame.Yes
-					if yesButton then
-						print("Clicking Yes button")
-						clickButton(yesButton)
+					-- Get the item ID from the prompt or the button itself
+					local itemID = yesNo:GetAttribute("ItemID")
+					if itemID then
+						print("Firing QuickSellItem for: " .. tostring(itemID))
+						Network:FireServer("QuickSellItem", itemID)
 					else
-						print("Yes button not found in prompt")
+						print("Could not find ItemID, falling back to clickButton")
+						local yesButton = yesNo.Content.Frame.Yes
+						if yesButton then
+							clickButton(yesButton)
+						end
 					end
 
 					break
@@ -79,5 +85,3 @@ itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
 		onItemInfoOpened()
 	end
 end)
-
-print("djdjs")
