@@ -44,12 +44,13 @@ spawn(function()
     end
 end)
 
--- Get the CheckpointMarker Neon part
-local neonPart = workspace:WaitForChild("CheckpointMarker"):WaitForChild("Neon")
-
-if not neonPart then
-    warn("CheckpointMarker Neon not found!")
-    return
+-- Dynamic Neon part lookup
+local function getNeonPart()
+    local marker = workspace:FindFirstChild("CheckpointMarker")
+    if marker then
+        return marker:FindFirstChild("Neon")
+    end
+    return nil
 end
 
 -- Create GUI
@@ -140,13 +141,13 @@ for i, modelData in ipairs(modelList) do
     optionButton.Font = Enum.Font.Gotham
     optionButton.ZIndex = 11
     optionButton.Parent = dropdownFrame
-    
+
     optionButton.MouseButton1Click:Connect(function()
         selectedModelName = modelData.displayName
         dropdownButton.Text = selectedModelName .. " ▼"
         dropdownFrame.Visible = false
         dropdownOpen = false
-        
+
         -- Find and set the selected model
         selectedModel = workspace.Islands["Training Island"]:FindFirstChild(modelData.name)
         if selectedModel then
@@ -155,12 +156,12 @@ for i, modelData in ipairs(modelList) do
             warn("Model " .. modelData.displayName .. " not found!")
         end
     end)
-    
+
     -- Hover effect
     optionButton.MouseEnter:Connect(function()
         optionButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     end)
-    
+
     optionButton.MouseLeave:Connect(function()
         optionButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     end)
@@ -235,50 +236,56 @@ end
 -- Function to move model to a target position
 local function moveToPosition(targetPos)
     if not selectedModel then return false end
-    
+
     local primaryPart = selectedModel.PrimaryPart or selectedModel:FindFirstChildWhichIsA("BasePart")
     if not primaryPart then return false end
-    
+
     local startPos = primaryPart.Position
     local distance = (targetPos - startPos).Magnitude
     local duration = distance / SPEED
     local startTime = tick()
-    
+
     while tick() - startTime < duration do
         while isPaused and isRunning do
             wait(0.1)
         end
-        
+
         if not isRunning then
             return false
         end
-        
+
+        -- If the checkpoint changed mid-move, abort so the outer loop can re-acquire it
+        local currentNeon = getNeonPart()
+        if not currentNeon or currentNeon.Position ~= targetPos then
+            return false
+        end
+
         local alpha = (tick() - startTime) / duration
         local currentPos = startPos:Lerp(targetPos, alpha)
-        
+
         local direction = (targetPos - currentPos).Unit
         local lookCFrame = CFrame.lookAt(currentPos, currentPos + direction)
-        
+
         if selectedModel.PrimaryPart then
             selectedModel:SetPrimaryPartCFrame(lookCFrame)
         else
             primaryPart.CFrame = lookCFrame
         end
-        
+
         RunService.Heartbeat:Wait()
     end
-    
+
     local finalCFrame = CFrame.lookAt(targetPos, targetPos + (targetPos - startPos).Unit)
     if selectedModel.PrimaryPart then
         selectedModel:SetPrimaryPartCFrame(finalCFrame)
     else
         primaryPart.CFrame = finalCFrame
     end
-    
+
     return true
 end
 
--- Main flight function — continuously follows workspace.CheckpointMarker.Neon
+-- Main flight function — dynamically follows current CheckpointMarker.Neon
 local function startFlight()
     while isRunning do
         while isPaused and isRunning do
@@ -287,13 +294,23 @@ local function startFlight()
 
         if not isRunning then break end
 
-        -- Always read the current position of the Neon part each frame
+        -- Dynamically grab the current Neon part each loop
+        local neonPart = getNeonPart()
+
+        if not neonPart then
+            progressLabel.Text = "Waiting for checkpoint..."
+            progressLabel.TextColor3 = Color3.fromRGB(241, 196, 15)
+            wait(0.2)
+            continue
+        end
+
+        progressLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
         local targetPos = neonPart.Position
         progressLabel.Text = string.format("Target: (%.1f, %.1f, %.1f)", targetPos.X, targetPos.Y, targetPos.Z)
 
         moveToPosition(targetPos)
 
-        wait(0.05) -- Small delay before re-checking position
+        wait(0.05)
     end
 end
 
@@ -303,7 +320,7 @@ startButton.MouseButton1Click:Connect(function()
         warn("Please select a valid model first!")
         return
     end
-    
+
     if not isRunning then
         -- Start the script
         isRunning = true
