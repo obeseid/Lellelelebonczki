@@ -1,79 +1,40 @@
--- dddddddd
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local itemInfoFrame = playerGui:WaitForChild("SubMenus"):WaitForChild("Item Information")
-local indicatorLabel = itemInfoFrame.Animals.Main.Content.Top.Labels.IndicatorLabel
-local buttonsContainer = itemInfoFrame.Animals.Main.Content.Buttons
-local TARGET_IMAGE_ID = "rbxassetid://13116451197"
-local Network = require(game:GetService("ReplicatedStorage").References.Utilities.Network)
+local Network = require(game:GetService("ReplicatedStorage").References.Utilities.Shared.Network)
 
-local latestItemID = nil
-
-local function monitorCategory(categoryContainer)
-	local list = categoryContainer:FindFirstChild("List")
-	if not list then return end
-
-	list.ChildAdded:Connect(function(child)
-		if child:IsA("TextButton") then
-			latestItemID = child.Name
-			print("New item detected, ItemID: " .. latestItemID)
-		end
-	end)
+local function onNewItemDetected(itemID)
+	print("New item detected, firing QuickSellItem for: " .. tostring(itemID))
+	Network:FireServer("QuickSellItem", itemID)
 end
 
 local function monitorBackpack()
-	local inventoryList = playerGui:WaitForChild("Menus")
+	local contentList = playerGui:WaitForChild("Menus")
 		:WaitForChild("Backpack")
 		:WaitForChild("Main")
 		:WaitForChild("Inventory")
 		:WaitForChild("Content")
 		:WaitForChild("List")
 
-	for _, category in ipairs(inventoryList:GetChildren()) do
-		if category.Name == "CategoryContainer" then
-			monitorCategory(category)
-		end
-	end
-
-	inventoryList.ChildAdded:Connect(function(child)
-		if child.Name == "CategoryContainer" then
-			monitorCategory(child)
-		end
-	end)
-end
-
-local function onItemInfoOpened()
-	if not itemInfoFrame.Visible then
-		return
-	end
-
-	task.wait(0.5)
-
-	local labelText = indicatorLabel.Text
-
-	if string.find(labelText, "Unbreedable") then
-		print("Item is Unbreedable, closing menu")
-	else
-		print("Item is breedable, looking for breed button")
-
-		for _, child in ipairs(buttonsContainer:GetChildren()) do
-			if child.Name == "OptionButton" then
-				local imageLabel = child:FindFirstChildWhichIsA("ImageLabel")
-				if imageLabel and imageLabel.Image == TARGET_IMAGE_ID then
-
-					task.wait(1)
-
-					if latestItemID then
-						print("Firing QuickSellItem for: " .. tostring(latestItemID))
-						Network:FireServer("QuickSellItem", latestItemID)
-					else
-						print("No ItemID found yet")
-					end
-
+	for _, categoryContainer in ipairs(contentList:GetChildren()) do
+		local list = categoryContainer:FindFirstChild("List")
+		if list then
+			-- Check if this specific List has any TextButtons
+			local hasTextButton = false
+			for _, child in ipairs(list:GetChildren()) do
+				if child:IsA("TextButton") then
+					hasTextButton = true
 					break
 				end
+			end
+
+			if hasTextButton then
+				print("Found valid list in: " .. categoryContainer.Name)
+				list.ChildAdded:Connect(function(child)
+					if child:IsA("TextButton") then
+						onNewItemDetected(child.Name)
+					end
+				end)
 			end
 		end
 	end
@@ -81,8 +42,4 @@ end
 
 monitorBackpack()
 
-itemInfoFrame:GetPropertyChangedSignal("Visible"):Connect(function()
-	if itemInfoFrame.Visible then
-		onItemInfoOpened()
-	end
-end)
+print("EFES")
