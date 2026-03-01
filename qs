@@ -1,13 +1,11 @@
--- easfdadsf
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local Network = require(game:GetService("ReplicatedStorage").References.Utilities.Network)
+local Network = require(game:GetService("ReplicatedStorage").References.Utilities.Shared.Network)
 
 local function onNewItemDetected(itemID)
 	print("New item detected, firing QuickSellItem for: " .. tostring(itemID))
-	Network:FireServer("QuickSellItem", itemID)
+	Network.FireServer(Network, "QuickSellItem", itemID)
 end
 
 local function monitorBackpack()
@@ -21,7 +19,6 @@ local function monitorBackpack()
 	for _, categoryContainer in ipairs(contentList:GetChildren()) do
 		local list = categoryContainer:FindFirstChild("List")
 		if list then
-			-- Check if this specific List has any TextButtons
 			local hasTextButton = false
 			for _, child in ipairs(list:GetChildren()) do
 				if child:IsA("TextButton") then
@@ -44,4 +41,4 @@ end
 
 monitorBackpack()
 
-print("EE")
+print("hhh")
