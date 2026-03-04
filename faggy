@@ -1,3 +1,5 @@
+wait(4)
+
 game:GetService('StarterGui'):SetCore("DevConsoleVisible", true);
 local button = game.Players.LocalPlayer.PlayerGui.Prompts.YesNo.Content.Frame.Yes
 print("button:", button)
