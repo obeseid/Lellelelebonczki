@@ -43,7 +43,7 @@ local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 local Section = Misc:CreateSection("Mystery Scripts")
 
 
-local Paragraph = Tab:CreateParagraph({Title = "czesc bieda nie moze uzywac", Content = "malo inteligentne zdziry maja teraz ekskuzive skrypty bo sa otyle i prostackie"})
+local Paragraph = Tab:CreateParagraph({Title = "czesc bieda nie moze uzywac", Content = "Umiemy szyhko normalnie sprzedawac i nie jestesmy juz prostatcy"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
@@ -114,6 +114,12 @@ local Button = Exc:CreateButton({
 })
 
 -- MISC TAB
+local Button = Misc:CreateButton({
+   Name = "auto quick sale (view stat card first)
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/quicksale'))()
+   end,
+})
 
 local Button = Misc:CreateButton({
    Name = "Auto sell (must be at Larry)",
