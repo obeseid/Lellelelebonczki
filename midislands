@@ -269,4 +269,3 @@ startAutoClicker()
 followLoopFrom(workspace.Islands["Royal Island"])
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebobczki/refs/heads/main/webhook'))()
-loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebobczki/refs/heads/main/OldBrokenQuickSale'))()
