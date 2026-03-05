@@ -115,7 +115,7 @@ local Button = Exc:CreateButton({
 
 -- MISC TAB
 local Button = Misc:CreateButton({
-   Name = "auto quick sale (view stat card first)
+   Name = "auto quick sale (view stat card first)",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/quicksale'))()
    end,
