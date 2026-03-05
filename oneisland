@@ -248,4 +248,3 @@ lp.CharacterAdded:Connect(function()
 end)
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
-loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/OldBrokenQuickSale'))()
