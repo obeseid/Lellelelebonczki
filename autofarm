@@ -1,5 +1,3 @@
--- eheh
-
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -12,7 +10,7 @@ local Window = Rayfield:CreateWindow({
 
    ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
 
-   DisableRayfieldPrompts = false,
+   DisableRayfieldPrompts = true,
    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
 
    ConfigurationSaving = {
@@ -40,12 +38,10 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
-local Exc = Window:CreateTab("Exclusive", 4483362458) -- exclusive ngas
 local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
-local Section = Misc:CreateSection("Mystery Scripts")
 
 
-local Paragraph = Tab:CreateParagraph({Title = "czesc bieda nie moze uzywac", Content = "Umiemy szyhko normalnie sprzedawac i nie jestesmy juz prostatcy"})
+local Paragraph = Tab:CreateParagraph({Title = "PEDALUJACE PEDALY NIE MOGA UZYWAC", Content = "brudna kasia juz nie jest prostacka i moze robic auto sell"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
@@ -99,23 +95,23 @@ local Button = Tab:CreateButton({
    end,
 })
 
--- EXCLUSIVE TAB
+local Divider = Tab:CreateDivider()
 
-local Button = Exc:CreateButton({
-   Name = "brudna kasia",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/onika'))()
-   end,
-})
+local Section = Tab:CreateSection("Dla prostackiej ani")
 
-local Button = Exc:CreateButton({
-   Name = "ania",
+local Button = Tab:CreateButton({
+   Name = "prostacki skrypt",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/ania'))()
    end,
 })
 
+
+
 -- MISC TAB
+
+local Section = Misc:CreateSection("Mystery Scripts")
+
 local Button = Misc:CreateButton({
    Name = "auto quick sale (view stat card first)",
    Callback = function()
