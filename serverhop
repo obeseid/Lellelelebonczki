@@ -30,6 +30,7 @@ local bodyTextures = {
     ["rbxassetid://73022658037146"] = "Jaguar",
     ["rbxassetid://123342212722176"] = "Deep Space",
     ["rbxassetid://94361314630149"] = "Cracked Lava"
+    ["rbxassetid://10150999115"] = "Bay Roan"
 }
 
 -- Create GUI
