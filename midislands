@@ -25,15 +25,15 @@ end
 
 local function getClickPosition()
 	local screenSize = getScreenSize()
-	local x = screenSize.X - 300  -- 300 pixels from right edge
-	local y = 30                   -- 30 pixels from top
+	local x = screenSize.X - 300
+	local y = 30
 	return x, y
 end
 
 local function clickAt(x, y)
-	VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)  -- Mouse down
+	VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)
 	task.wait(0.05)
-	VIM:SendMouseButtonEvent(x, y, 0, false, game, 0) -- Mouse up
+	VIM:SendMouseButtonEvent(x, y, 0, false, game, 0)
 end
 
 local function startAutoClicker()
@@ -73,7 +73,7 @@ local islandLabel = Instance.new("TextLabel")
 islandLabel.Size = UDim2.new(1, -20, 0, 30)
 islandLabel.Position = UDim2.new(0, 10, 0, 10)
 islandLabel.BackgroundTransparency = 1
-islandLabel.Text = "Mid Islands"
+islandLabel.Text = "mid Islands"
 islandLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 islandLabel.TextSize = 14
 islandLabel.Font = Enum.Font.GothamBold
@@ -109,21 +109,47 @@ local function movePlayerToIsland(islandName)
 	local References = game:GetService("ReplicatedStorage"):WaitForChild("References")
 	local Utilities = require(References).Utilities
 
-	local success, result = pcall(function()
-		return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
-	end)
+	local function attemptTravel()
+		char = lp.Character or lp.CharacterAdded:Wait()
+		local hrp = char:FindFirstChild("HumanoidRootPart")
+		local posBefore = hrp and hrp.Position or Vector3.new(0, 0, 0)
 
-	if success then
-		print("Travel request successful for:", islandName)
-		print("Result:", result)
-		char.Parent = islandFolder
-		task.wait(3)
-		return true
-	else
-		warn("Travel request failed:", result)
-		char.Parent = islandFolder
-		task.wait(3)
-		return true
+		local success, result = pcall(function()
+			return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
+		end)
+
+		if success then
+			print("Travel invoked for:", islandName, "| Result:", result)
+		else
+			warn("Travel invoke failed:", result)
+		end
+
+		local deadline = tick() + 30
+		while tick() < deadline do
+			task.wait(0.2)
+
+			char = lp.Character
+			if char then
+				local hrpNow = char:FindFirstChild("HumanoidRootPart")
+				if hrpNow and (hrpNow.Position - posBefore).Magnitude >= 40 then
+					print("Teleport confirmed! Moved " .. math.floor((hrpNow.Position - posBefore).Magnitude) .. " studs.")
+					return true
+				end
+			end
+		end
+
+		print("30s elapsed without 40 stud movement. Retrying invoke...")
+		return false
+	end
+
+	local attempts = 0
+	while true do
+		attempts = attempts + 1
+		print("Travel attempt #" .. attempts .. " to: " .. islandName)
+		if attemptTravel() then
+			task.wait(1)
+			return true
+		end
 	end
 end
 
@@ -265,7 +291,7 @@ end)
 -- Start auto-clicker
 startAutoClicker()
 
--- Auto-start scanning Royal Island
+-- Auto-start scanning Jungle Island
 followLoopFrom(workspace.Islands["Royal Island"])
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
