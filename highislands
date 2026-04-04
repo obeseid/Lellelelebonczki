@@ -113,16 +113,20 @@ local function movePlayerToIsland(islandName)
 		local hrp = char:FindFirstChild("HumanoidRootPart")
 		local posBefore = hrp and hrp.Position or Vector3.new(0, 0, 0)
 
-		local success, result = pcall(function()
-			return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
+		-- Fire invoke in separate thread so it doesn't block the position watcher
+		task.spawn(function()
+			local success, result = pcall(function()
+				return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
+			end)
+
+			if success then
+				print("Travel invoked for:", islandName, "| Result:", result)
+			else
+				warn("Travel invoke failed:", result)
+			end
 		end)
 
-		if success then
-			print("Travel invoked for:", islandName, "| Result:", result)
-		else
-			warn("Travel invoke failed:", result)
-		end
-
+		-- Position watcher starts immediately alongside the invoke
 		local deadline = tick() + 30
 		while tick() < deadline do
 			task.wait(0.2)
