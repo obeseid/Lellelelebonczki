@@ -43,7 +43,7 @@ local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
 local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 
 
-local Paragraph = Tab:CreateParagraph({Title = "PEDALUJACE PEDALY NIE MOGA UZYWAC", Content = "brudna kasia juz nie jest prostacka i moze robic auto sell"})
+local Paragraph = Tab:CreateParagraph({Title = "PEDALUJACE PEDALY NIE MOGA UZYWAC", Content = "bonie lize sobie i cipkowi stopy i siurki"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
