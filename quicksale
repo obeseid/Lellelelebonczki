@@ -13,20 +13,15 @@ local function clickButton(button)
 	end
 	
 	-- Fire MouseButton1Down
-	for _, connection in pairs(getconnections(button.MouseButton1Down)) do
-		connection:Fire()
-	end
+	firesignal(button.MouseButton1Down)
 	task.wait(0.05)
 	
 	-- Fire MouseButton1Up
-	for _, connection in pairs(getconnections(button.MouseButton1Up)) do
-		connection:Fire()
-	end
+	firesignal(button.MouseButton1Up)
 	task.wait(0.05)
 	
 	-- Fire Activated
-	for _, connection in pairs(getconnections(button.Activated)) do
-		connection:Fire()
+	firesignal(button.Activated)
 	end
 end
 -- Function to handle when Item Information frame opens
