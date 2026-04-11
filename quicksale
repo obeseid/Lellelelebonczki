@@ -22,7 +22,6 @@ local function clickButton(button)
 	
 	-- Fire Activated
 	firesignal(button.Activated)
-	end
 end
 -- Function to handle when Item Information frame opens
 local function onItemInfoOpened()
