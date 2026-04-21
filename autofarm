@@ -1,4 +1,5 @@
--- e
+game.Players.LocalPlayer:Kick("THERES A NEW ANTI CHEAT, DO NOT USE RN")
+
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
