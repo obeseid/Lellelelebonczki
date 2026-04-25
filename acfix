@@ -1,4 +1,4 @@
--- Serviceshhh
+-- Services
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
@@ -12,7 +12,7 @@ local isPaused = false
 local currentIsland = "Unknown"
 local clickLoop = nil
 
--- Model list (from script 2)
+-- Model list
 local modelList = {
     {name = "{6042dc5b-0335-4047-8248-f9633ada55e7}", displayName = "karolina"},
     {name = "{adac3b42-a4c8-4008-b3eb-3326a8c333ec}", displayName = "szchoch"},
@@ -54,18 +54,37 @@ local function startAutoClicker()
                 local x, y = getClickPosition()
                 clickAt(x, y)
             end
-            task.wait(1) -- Once per second
+            task.wait(1)
         end
     end)
 end
 
--- Tween movement function
+-- Find model across islands
+local function findModelInIsland(modelName, islandName)
+    local islands = workspace:FindFirstChild("Islands")
+    if not islands then return nil end
+    if islandName and islandName ~= "Unknown" then
+        local islandFolder = islands:FindFirstChild(islandName)
+        if islandFolder then
+            local found = islandFolder:FindFirstChild(modelName)
+            if found then return found end
+        end
+    end
+    for _, island in ipairs(islands:GetChildren()) do
+        local found = island:FindFirstChild(modelName)
+        if found then return found end
+    end
+    return nil
+end
+
+-- Tween movement
 local function tweenToPosition(model, targetPos, speed)
     speed = speed or 50
     local primaryPart = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
     if not primaryPart then return end
 
     local distance = (targetPos - primaryPart.Position).Magnitude
+    if distance < 0.5 then return end
     local duration = distance / speed
 
     local targetCFrame = CFrame.new(targetPos)
@@ -81,7 +100,6 @@ screenGui.Name = "HorseCatcherGUI"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Main frame (taller to fit dropdown)
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 250, 0, 230)
 frame.Position = UDim2.new(0, 10, 0, 10)
@@ -148,14 +166,6 @@ dropdownFrameCorner.CornerRadius = UDim.new(0, 6)
 dropdownFrameCorner.Parent = dropdownFrame
 
 -- Dropdown options
-local function findModelInIsland(modelName)
-    local islands = workspace:FindFirstChild("Islands")
-    if not islands then return nil end
-    local islandFolder = islands:FindFirstChild(currentIsland)
-    if not islandFolder then return nil end
-    return islandFolder:FindFirstChild(modelName)
-end
-
 for i, modelData in ipairs(modelList) do
     local optionButton = Instance.new("TextButton")
     optionButton.Size = UDim2.new(1, 0, 0, 30)
@@ -174,11 +184,11 @@ for i, modelData in ipairs(modelList) do
         dropdownButton.Text = selectedModelName .. " ▼"
         dropdownFrame.Visible = false
         dropdownOpen = false
-        selectedModel = findModelInIsland(modelData.name)
+        selectedModel = findModelInIsland(modelData.name, currentIsland)
         if selectedModel then
             print("Selected model: " .. modelData.displayName)
         else
-            warn("Model not found in current island: " .. modelData.displayName)
+            warn("Model not found: " .. modelData.displayName)
         end
     end)
 
@@ -227,7 +237,7 @@ local function getCurrentIsland()
     return nil
 end
 
--- Follow logic using Tween instead of teleport/MoveTo
+-- Follow logic
 local function followLoopFrom(folder)
     if currentTask then
         task.cancel(currentTask)
@@ -276,7 +286,6 @@ local function followLoopFrom(folder)
                     currentTarget = newTarget
                     lastSwitch = now
 
-                    -- Tween selected model to near target instead of teleporting player
                     if selectedModel and currentTarget:FindFirstChild("HumanoidRootPart") then
                         local targetPos = currentTarget.HumanoidRootPart.Position + Vector3.new(0, 0, -5)
                         tweenToPosition(selectedModel, targetPos)
@@ -284,7 +293,7 @@ local function followLoopFrom(folder)
                 end
             end
 
-            -- Follow current target via tween
+            -- Follow current target
             if selectedModel and currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
                 local targetHRP = currentTarget.HumanoidRootPart
                 local primaryPart = selectedModel.PrimaryPart or selectedModel:FindFirstChildWhichIsA("BasePart")
@@ -309,10 +318,9 @@ local function updateIsland()
         currentIsland = island
         islandLabel.Text = "Island: " .. currentIsland
 
-        -- Also refresh selected model reference for new island
         for _, modelData in ipairs(modelList) do
             if modelData.displayName == selectedModelName then
-                selectedModel = findModelInIsland(modelData.name)
+                selectedModel = findModelInIsland(modelData.name, currentIsland)
                 break
             end
         end
@@ -340,7 +348,7 @@ pauseButton.MouseButton1Click:Connect(function()
 end)
 
 -- Init
-selectedModel = findModelInIsland(modelList[1].name)
+selectedModel = findModelInIsland(modelList[1].name, currentIsland)
 updateIsland()
 startAutoClicker()
 
