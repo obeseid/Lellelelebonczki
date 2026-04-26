@@ -1,4 +1,4 @@
--- ServicesHello
+-- Services
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
@@ -8,9 +8,16 @@ local TweenService = game:GetService("TweenService")
 
 -- State
 local currentTask
+local shouldStop = false
 local isPaused = false
-local currentIsland = "Unknown"
+local currentIslandIndex = 1
 local clickLoop = nil
+local islands = {
+    "Royal Island",
+    "Desert Island",
+    "Glacier Island",
+    "Mountain Island"
+}
 
 -- Virtual Input Manager Functions
 local function getClickPosition()
@@ -77,19 +84,17 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 8)
 corner.Parent = frame
 
--- Island label
 local islandLabel = Instance.new("TextLabel")
 islandLabel.Size = UDim2.new(1, -20, 0, 30)
 islandLabel.Position = UDim2.new(0, 10, 0, 10)
 islandLabel.BackgroundTransparency = 1
-islandLabel.Text = "Island: " .. currentIsland
+islandLabel.Text = "Low Islands"
 islandLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 islandLabel.TextSize = 14
 islandLabel.Font = Enum.Font.GothamBold
 islandLabel.TextXAlignment = Enum.TextXAlignment.Left
 islandLabel.Parent = frame
 
--- Pause button
 local pauseButton = Instance.new("TextButton")
 pauseButton.Size = UDim2.new(1, -20, 0, 30)
 pauseButton.Position = UDim2.new(0, 10, 0, 45)
@@ -104,101 +109,176 @@ local buttonCorner = Instance.new("UICorner")
 buttonCorner.CornerRadius = UDim.new(0, 6)
 buttonCorner.Parent = pauseButton
 
--- Island detection
-local function getCurrentIsland()
-    local char = lp.Character
-    if not char then return nil end
-    local islands = workspace:FindFirstChild("Islands")
-    if not islands then return nil end
-    for _, island in ipairs(islands:GetChildren()) do
-        if island:IsA("Model") or island:IsA("Folder") then
-            if island:FindFirstChild(lp.Name) then
-                return island.Name
+-- Island Travel Function
+local function movePlayerToIsland(islandName)
+    local char = lp.Character or lp.CharacterAdded:Wait()
+
+    local islandFolder = workspace.Islands:FindFirstChild(islandName)
+    if not islandFolder then
+        warn("Island not found:", islandName)
+        return false
+    end
+
+    print("Attempting to travel to:", islandName)
+
+    local References = game:GetService("ReplicatedStorage"):WaitForChild("References")
+    local Utilities = require(References).Utilities
+
+    local function attemptTravel()
+        char = lp.Character or lp.CharacterAdded:Wait()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local posBefore = hrp and hrp.Position or Vector3.new(0, 0, 0)
+
+        task.spawn(function()
+            local success, result = pcall(function()
+                return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
+            end)
+            if success then
+                print("Travel invoked for:", islandName, "| Result:", result)
+            else
+                warn("Travel invoke failed:", result)
+            end
+        end)
+
+        local deadline = tick() + 30
+        while tick() < deadline do
+            task.wait(0.2)
+            char = lp.Character
+            if char then
+                local hrpNow = char:FindFirstChild("HumanoidRootPart")
+                if hrpNow and (hrpNow.Position - posBefore).Magnitude >= 40 then
+                    print("Teleport confirmed! Moved " .. math.floor((hrpNow.Position - posBefore).Magnitude) .. " studs.")
+                    return true
+                end
             end
         end
+
+        print("30s elapsed without 40 stud movement. Retrying invoke...")
+        return false
     end
-    return nil
+
+    local attempts = 0
+    while true do
+        attempts = attempts + 1
+        print("Travel attempt #" .. attempts .. " to: " .. islandName)
+        if attemptTravel() then
+            task.wait(1)
+            return true
+        end
+    end
 end
 
--- Follow logic
+-- Follow Logic
 local function followLoopFrom(folder)
-    if currentTask then
-        task.cancel(currentTask)
+    shouldStop = true
+    task.wait(0.3)
+    shouldStop = false
+
+    local function getValidTargets()
+        local targets = {}
+        for _, model in ipairs(folder:GetChildren()) do
+            if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") then
+                local hasManeMesh = model:FindFirstChild("maneMesh")
+                local isReindeer = false
+                local overheadPart = model:FindFirstChild("OverheadPart")
+                if overheadPart then
+                    local overHead = overheadPart:FindFirstChild("OverHead")
+                    if overHead then
+                        local breedLabel = overHead:FindFirstChild("BreedLabel")
+                        if breedLabel and breedLabel.Text == "Reindeer" then
+                            isReindeer = true
+                        end
+                    end
+                end
+                if hasManeMesh or isReindeer then
+                    table.insert(targets, model)
+                end
+            end
+        end
+        return targets
     end
 
     currentTask = task.spawn(function()
         local currentTarget = nil
+        local noTargetChecks = 0
 
-        while true do
+        while not shouldStop do
             if isPaused then
                 task.wait(0.5)
                 continue
             end
 
-            -- Pick a new target if lost
-            if not currentTarget or not currentTarget.Parent then
-                local targets = {}
-                for _, model in ipairs(folder:GetChildren()) do
-                    if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") then
-                        local hasManeMesh = model:FindFirstChild("maneMesh")
-                        local isReindeer = false
-                        local overheadPart = model:FindFirstChild("OverheadPart")
-                        if overheadPart then
-                            local overHead = overheadPart:FindFirstChild("OverHead")
-                            if overHead then
-                                local breedLabel = overHead:FindFirstChild("BreedLabel")
-                                if breedLabel and breedLabel.Text == "Reindeer" then
-                                    isReindeer = true
-                                end
-                            end
+            local char = lp.Character
+            if not char then
+                task.wait(0.2)
+                continue
+            end
+
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then
+                task.wait(0.2)
+                continue
+            end
+
+            local targets = getValidTargets()
+
+            if #targets == 0 then
+                noTargetChecks = noTargetChecks + 1
+
+                if noTargetChecks >= 3 then
+                    print("No valid targets found in:", islands[currentIslandIndex])
+
+                    currentIslandIndex = currentIslandIndex + 1
+                    if currentIslandIndex > #islands then
+                        print("No more islands to check. Restarting from first island.")
+                        currentIslandIndex = 1
+                    end
+
+                    local nextIsland = islands[currentIslandIndex]
+                    print("Switching to:", nextIsland)
+
+                    if movePlayerToIsland(nextIsland) then
+                        local newFolder = workspace.Islands:FindFirstChild(nextIsland)
+                        if newFolder then
+                            followLoopFrom(newFolder)
+                            return
                         end
-                        if hasManeMesh or isReindeer then
-                            table.insert(targets, model)
-                        end
+                    end
+
+                    noTargetChecks = 0
+                end
+
+                task.wait(1)
+            else
+                noTargetChecks = 0
+
+                -- Pick new target only if current one is gone
+                if not currentTarget or not currentTarget.Parent then
+                    currentTarget = targets[math.random(1, #targets)]
+
+                    local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+                    if targetHRP then
+                        tweenToPosition(targetHRP.Position + Vector3.new(0, 0, -5))
                     end
                 end
 
-                if #targets > 0 then
-                    currentTarget = targets[math.random(1, #targets)]
-                end
-            end
-
-            -- Follow current target
-            if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
-                local char = lp.Character
-                local hrp = char and char:FindFirstChild("HumanoidRootPart")
-                if hrp then
+                -- Follow current target
+                if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
                     local targetHRP = currentTarget.HumanoidRootPart
                     local distance = (hrp.Position - targetHRP.Position).Magnitude
+
                     if distance > 6 then
-                        local targetPos = targetHRP.Position + Vector3.new(0, 0, -4)
-                        tweenToPosition(targetPos, 50)
+                        tweenToPosition(targetHRP.Position + Vector3.new(0, 0, -4), 50)
                     end
                 end
-            end
 
-            task.wait(0.2)
+                task.wait(0.2)
+            end
         end
     end)
 end
 
--- Update island
-local function updateIsland()
-    local island = getCurrentIsland()
-    if island then
-        currentIsland = island
-        islandLabel.Text = "Island: " .. currentIsland
-        local islands = workspace:FindFirstChild("Islands")
-        if islands then
-            local islandFolder = islands:FindFirstChild(currentIsland)
-            if islandFolder then
-                followLoopFrom(islandFolder)
-            end
-        end
-    end
-end
-
--- Pause button
+-- Pause/Resume button
 pauseButton.MouseButton1Click:Connect(function()
     isPaused = not isPaused
     if isPaused then
@@ -210,23 +290,6 @@ pauseButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Init
-updateIsland()
+-- Start
 startAutoClicker()
-
--- Monitor island changes
-task.spawn(function()
-    while true do
-        task.wait(5)
-        local newIsland = getCurrentIsland()
-        if newIsland and newIsland ~= currentIsland then
-            updateIsland()
-        end
-    end
-end)
-
--- Handle respawn
-lp.CharacterAdded:Connect(function()
-    task.wait(1)
-    updateIsland()
-end)
+followLoopFrom(workspace.Islands["Royal Island"])
