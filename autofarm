@@ -41,7 +41,7 @@ local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
 local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 
 
-local Paragraph = Tab:CreateParagraph({Title = "MULTI-ISLAND WYLACZONE PRZEZ NOWEGO ANTI CHIP", Content = "Rip szchoch and karolinka [*]"})
+local Paragraph = Tab:CreateParagraph({Title = "MULTI ISLAND JEST OKI, ALE I TAK NARAZIE UWAZAC TROCHE", Content = "Rip szchoch and karolinka [*]"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
@@ -57,23 +57,23 @@ local Divider = Tab:CreateDivider()
 local Section = Tab:CreateSection("Multiple Island Farms")
 
 local Button = Tab:CreateButton({
-   Name = "Low Islands (WYLACZONE)",
+   Name = "Low Islands",
    Callback = function()
-   print("Hello world!")
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/lowislands'))()
    end,
 })
 
 local Button = Tab:CreateButton({
-   Name = "Mid Islands (WYLACZONE)",
+   Name = "Mid Islands",
    Callback = function()
-   print("Hello world!")
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/midislands'))()
    end,
 })
 
 local Button = Tab:CreateButton({
-   Name = "High Islands (WYLACZONE)",
+   Name = "High Islands",
    Callback = function()
-   print("Hello world!")
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/highislands'))()
    end,
 })
 
@@ -82,9 +82,9 @@ local Divider = Tab:CreateDivider()
 local Section = Tab:CreateSection("Different Auto farms")
 
 local Button = Tab:CreateButton({
-   Name = "Volcanic Minerals",
+   Name = "Volcanic Minerals (DISABLED, ANTI CHIP)",
    Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/volcanic'))()
+   print("Hello world!")
    end,
 })
 
@@ -123,15 +123,6 @@ local Button = Misc:CreateButton({
    Name = "Auto sell (must be at Larry)",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/Autosell'))()
-   end,
-})
-
-local Divider = Misc:CreateDivider()
-
-local Button = Misc:CreateButton({
-   Name = "Reduce memory usage",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
    end,
 })
 
