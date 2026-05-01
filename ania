@@ -295,7 +295,7 @@ followLoopFrom(workspace.Islands["Blizzard Island"])
 
 -- Remove parts
 workspace.Islands["Mainland"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
-workspace.Islands["Blizzard Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
+workspace.Islands["Blizzard Island"]:WaitForChild("Buildings"):WaitForChild("Blizzard Island"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 workspace.Islands["Forest Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
