@@ -295,9 +295,9 @@ startAutoClicker()
 followLoopFrom(workspace.Islands["Royal Island"])
 
 -- Remove parts
-workspace.Islands["Royal Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
-workspace.Islands["Desert Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
-workspace.Islands["Glacier Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
-workspace.Islands["Mountain Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
+workspace.Islands["Royal Island"]:WaitForChild("Buildings"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
+workspace.Islands["Desert Island"]:WaitForChild("Buildings"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
+workspace.Islands["Glacier Island"]:WaitForChild("Buildings"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
+workspace.Islands["Mountain Island"]:WaitForChild("Buildings"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
