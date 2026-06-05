@@ -41,7 +41,7 @@ local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
 local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 
 
-local Paragraph = Tab:CreateParagraph({Title = "MULTI ISLAND JEST OKI, ALE I TAK NARAZIE UWAZAC TROCHE", Content = "Rip szchoch and karolinka [*]"})
+local Paragraph = Tab:CreateParagraph({Title = "Cichosza gnoje", Content = "tom pearl nie jadl kupy to byly nutella sticks"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
