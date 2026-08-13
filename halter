@@ -1,0 +1,173 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local References = require(ReplicatedStorage:WaitForChild("References"))
+local Utilities = References.Utilities
+local CraftingHandler = require(References.PlayerScripts.Secondary:WaitForChild("CraftingHandler"))
+
+-- Find halter ID
+local halterId = nil
+for id, entry in pairs(References.Items.byId) do
+    local info = References.Items.GetInfo(id)
+    if info and info.name and info.name:lower():find("halter") then
+        halterId = id
+        break
+    end
+end
+
+if not halterId then
+    warn("[AutoCraft] Could not find halter item.")
+    return
+end
+
+------------------------------------------------------------------------
+-- Build UI
+------------------------------------------------------------------------
+local player = game:GetService("Players").LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AutoCraftUI"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = playerGui
+
+-- Draggable container
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 220, 0, 110)
+frame.Position = UDim2.new(0.5, -110, 0, 20)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = frame
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(80, 80, 100)
+stroke.Thickness = 1
+stroke.Parent = frame
+
+-- Title bar
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 32)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
+title.BorderSizePixel = 0
+title.Text = "Halter crafter"
+title.TextColor3 = Color3.fromRGB(200, 190, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 13
+title.Parent = frame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 8)
+titleCorner.Parent = title
+
+-- Status label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -16, 0, 24)
+statusLabel.Position = UDim2.new(0, 8, 0, 38)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: Idle"
+statusLabel.TextColor3 = Color3.fromRGB(160, 160, 180)
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextSize = 12
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+statusLabel.Parent = frame
+
+-- Count label
+local countLabel = Instance.new("TextLabel")
+countLabel.Size = UDim2.new(1, -16, 0, 20)
+countLabel.Position = UDim2.new(0, 8, 0, 53)
+countLabel.BackgroundTransparency = 1
+countLabel.Text = "Crafted: 0"
+countLabel.TextColor3 = Color3.fromRGB(120, 120, 140)
+countLabel.Font = Enum.Font.Gotham
+countLabel.TextSize = 11
+countLabel.TextXAlignment = Enum.TextXAlignment.Left
+countLabel.Parent = frame
+
+-- Start/Stop button
+local btn = Instance.new("TextButton")
+btn.Size = UDim2.new(1, -16, 0, 28)
+btn.Position = UDim2.new(0, 8, 0, 74)
+btn.BackgroundColor3 = Color3.fromRGB(90, 200, 120)
+btn.BorderSizePixel = 0
+btn.Text = "Start"
+btn.TextColor3 = Color3.fromRGB(10, 10, 15)
+btn.Font = Enum.Font.GothamBold
+btn.TextSize = 13
+btn.Parent = frame
+
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 6)
+btnCorner.Parent = btn
+
+------------------------------------------------------------------------
+-- Loop logic
+------------------------------------------------------------------------
+local running = false
+local craftCount = 0
+local loopThread = nil
+
+local function setRunning(state)
+    running = state
+    if running then
+        btn.Text = "Stop"
+        btn.BackgroundColor3 = Color3.fromRGB(220, 80, 80)
+        statusLabel.Text = "Status: Running"
+        statusLabel.TextColor3 = Color3.fromRGB(120, 230, 140)
+    else
+        btn.Text = "Start"
+        btn.BackgroundColor3 = Color3.fromRGB(90, 200, 120)
+        statusLabel.Text = "Status: Idle"
+        statusLabel.TextColor3 = Color3.fromRGB(160, 160, 180)
+    end
+end
+
+local function startLoop()
+    loopThread = task.spawn(function()
+        while running do
+            local itemData = {
+                id = halterId,
+                amt = 1,
+                variants = { Prismatic = true },
+            }
+
+            local ok, reason = CraftingHandler.CanCraft(itemData)
+
+            if ok then
+                if Utilities.Cooldown.Check("craftItem", References.Constants.CRAFT_COOLDOWN, true) then
+                    Utilities.Network:FireServer("Crafting", "Craft", itemData)
+                    craftCount += 1
+                    countLabel.Text = ("Crafted: %d"):format(craftCount)
+                end
+            else
+                warn(("[AutoCraft] Stopped: %s"):format(reason or "unknown"))
+                statusLabel.Text = ("Stopped: %s"):format(reason or "unknown")
+                statusLabel.TextColor3 = Color3.fromRGB(230, 100, 100)
+                setRunning(false)
+                break
+            end
+
+            task.wait(1)
+        end
+    end)
+end
+
+btn.Activated:Connect(function()
+    if running then
+        running = false
+        setRunning(false)
+        if loopThread then
+            task.cancel(loopThread)
+            loopThread = nil
+        end
+    else
+        setRunning(true)
+        startLoop()
+    end
+end)
