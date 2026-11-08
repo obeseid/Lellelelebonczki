@@ -1,0 +1,44 @@
+-- LocalScript: AutoDestroyFrame
+-- Place this inside StarterPlayerScripts or StarterCharacterScripts
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local function destroyTarget()
+	local prompts = playerGui:FindFirstChild("Prompts")
+	if prompts then
+		local hardAFK = prompts:FindFirstChild("HardAFK")
+		if hardAFK then
+			hardAFK:Destroy()
+		end
+	end
+end
+
+-- Check immediately in case it already exists
+destroyTarget()
+
+-- Watch for Prompts being added to PlayerGui
+playerGui.ChildAdded:Connect(function(child)
+	if child.Name == "Prompts" then
+		-- Check if HardAFK is already inside
+		destroyTarget()
+
+		-- Watch for HardAFK being added inside Prompts
+		child.ChildAdded:Connect(function(grandchild)
+			if grandchild.Name == "HardAFK" then
+				grandchild:Destroy()
+			end
+		end)
+	end
+end)
+
+-- Also watch if Prompts already exists but HardAFK appears later
+local prompts = playerGui:FindFirstChild("Prompts")
+if prompts then
+	prompts.ChildAdded:Connect(function(child)
+		if child.Name == "HardAFK" then
+			child:Destroy()
+		end
+	end)
+end
