@@ -1,4 +1,5 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local run = game:GetService("RunService")
 
 local Window = Rayfield:CreateWindow({
    Name = "Farma Diega",
@@ -41,7 +42,7 @@ local Tab = Window:CreateTab("Autofarms", 4483362458) -- Title, Image
 local Misc = Window:CreateTab("Misc", 8882612828) -- wow thearchy
 
 
-local Paragraph = Tab:CreateParagraph({Title = "Cichosza gnoje", Content = "tom pearl nie jadl kupy to byly nutella sticks"})
+local Paragraph = Tab:CreateParagraph({Title = "Kupka leci z dupy", Content = "Me trying to impress cipowatyszchoch17 trade"})
 
 local Section = Tab:CreateSection("One Island Farm")
 
@@ -113,7 +114,7 @@ local Button = Tab:CreateButton({
 local Section = Misc:CreateSection("Mystery Scripts")
 
 local Button = Misc:CreateButton({
-   Name = "auto quick sale (view stat card first)",
+   Name = "Auto quick sale (view stat card first)",
    Callback = function()
    loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/quicksale'))()
    end,
@@ -129,25 +130,19 @@ local Button = Misc:CreateButton({
 local Divider = Misc:CreateDivider() 
 
 local Button = Misc:CreateButton({
-   Name = "disable hard afk",
+   Name = "Disable rendering",
    Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/disablehardafk'))()
+   run:Set3dRenderingEnabled(false)
    end,
 })
 
 local Button = Misc:CreateButton({
-   Name = "disable render",
+   Name = "Enable rendering",
    Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/reducelag'))()
+   run:Set3dRenderingEnabled(true)
    end,
 })
 
-local Button = Misc:CreateButton({
-   Name = "Who is this??",
-   Callback = function()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/tarchy'))()
-   end,
-})
 
 
 Rayfield:LoadConfiguration()
